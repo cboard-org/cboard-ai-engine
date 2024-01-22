@@ -1,6 +1,6 @@
 // engine.js
 //OpenAi API
-const openai = require("openai");
+const { Configuration, OpenAIApi } = require("openai");
 //HTTP library
 const axios = require("axios");
 //dotenv
@@ -9,66 +9,73 @@ require('dotenv').config();
 const { txt2imgBody } = require('./request.js'); 
 
 
-// Setting your OpenAI API key as an environment variable
-//const apiKey = process.env.OPENAI_API_KEY;
-const apiKey = process.env.OPENAI_API_KEY;
+// Setting Azure OpenAI API key as an environment variable
+const apiKey = process.env.AZURE_OPENAI_KEY;
 if (!apiKey) {
   console.error(
-    "OpenAI API key is missing. Set the OPENAI_API_KEY environment variable."
+    "OpenAI API key is missing. Set the AZURE_OPENAI_KEY environment variable."
   );
   process.exit(1);
 }
 
-const openaiInstance = new openai.OpenAI({ apiKey: apiKey });
+//Adding configuration to hit Azure Cboard Endpoint
+const configuration = new Configuration({
+  apiKey,
+  basePath: 'https://cboard-openai.openai.azure.com/openai/deployments/ToEdit',
+  baseOptions: {
+    headers: { 'api-key': apiKey },
+    params: {
+      'api-version': '2022-12-01'
+    }
+  }
+});
+
+//Instance of Azure OpenAI with Cboard configurations
+const openaiInstance = new OpenAIApi(configuration);
 
 // Function to generate word suggestions
-// Check for reference https://github.com/cboard-org/cboard-api/blob/72fb8e249503f31ec64c4f0b663969bf4325ac71/api/controllers/gpt.js#L3
+// Check for reference https://github.com/cboard-org/cboard-api/blob/master/api/controllers/gpt.js
 // Check for reference https://platform.openai.com/docs/overview
 
+//New function using Azure OpenAI Cboard API
 async function getWordSuggestions(prompt, maxWords, language) {
-  try {
-    const completion = await openaiInstance.chat.completions.create({
-      messages: [
-        {
-          role: "user",
-          content:
-            "act as a speech pathologist selecting pictograms in language " +
-            language +
-            " for a non verbal person about " +
-            prompt +
-            " .Only provide a list of words and a maximum of " +
-            maxWords +
-            " words. Do not add any other text or characters besides the list of words.",
-        },
-      ],
-      model: "gpt-3.5-turbo",
-      temperature: 0.0,
-      max_tokens: 100,
-    });
-
-    //Check the OpenAI output
-    console.log("OpenAI output:");
-    console.log(completion.choices[0]);
-
-    // Extract the 'content' object from the 'message' property
-    const response = completion.choices[0].message.content;
-
-    // Split the string into an array based on newline characters
-    const itemList = response.split("\n");
-
-    // Remove the numbers from each item in the array
-    const words = itemList.map((item) => item.replace(/^\d+\.\s/, ""));
-
-    // Check the list of words
-    console.log("words output:");
-    console.log(words);
-
-    // Return the list of words
-    return words;
-  } catch (error) {
-    console.error("Error generating word suggestions:", error);
-    return { error: "Error generating word suggestions" };
+  //TODO ver esto para pasar el lang
+  //const phraseToEdit = req.body.phrase;
+  //const phraseLanguage = req.body.language;
+  
+  if (!prompt || !maxWords || !language) {
+    console.error("Error with parameters");
+    return { error: "Error with parameters" };
   }
+
+  try {
+    const completionRequestParams = {
+      model: 'text-davinci-003',
+      prompt: "act as a speech pathologist selecting pictograms in language " + language + " for a non verbal person about " + prompt + " .You must provide a list of " + maxWords + ". Do not add any other text or characters to the list. Template for the list {word1, word2, word3,..., wordN}",
+      max_tokens: 100,
+      temperature: 0
+    };
+    const response = await openaiInstance.createCompletion(completionRequestParams);
+
+    const wordsSuggestionsData = response.data?.choices[0]?.text;
+    console.log("wordSuggestionData: " + JSON.stringify(wordsSuggestionsData));
+    
+    if (wordsSuggestionsData) {
+      // Remove the "\n\n" using replace() method
+      const trimmedString = wordsSuggestionsData.replace(/\n\n/g, '');
+      // Extract the words inside the curly braces using regular expressions
+      const wordsSuggestionsList = trimmedString.match(/{(.*?)}/)[1].split(',').map(word => word.trim());
+
+      return wordsSuggestionsList;
+    } else {
+      console.log("Error with the response");
+      return { error: "Error with the response" };
+    }
+  } catch (e) {
+    console.log("Error generating word suggestions: ");
+    console.log(e);
+  }
+  return { error: "Error generating word suggestions" }; 
 }
 
 // Function to fetch pictograms URLs for each word
@@ -89,10 +96,6 @@ async function fetchPictogramsURLs(words, symbolSet, language) {
     );
     const responses = await Promise.all(requests);
 
-    // Check the full responses
-    //console.log("responses output:");
-    //console.log(responses);
-    
 
     //Create a list of data from response, handle when data is empty
     const dataList = responses.map((response) => {
@@ -236,6 +239,7 @@ async function getSuggestions(prompt, maxWords, symbolSet, language) {
   // Return the list of words and pictograms URLs
   return { pictogramsURLs };
 }
+
 
 //Run the whole pipeline
 const getSuggestionsAndProcessPictograms = async (prompt, maxSuggestions, symbolSet, language) => {
