@@ -150,6 +150,10 @@ async function pictonizer(inputValue) {
     return;
   }
 
+  //TODO pedir que me de un prompt mejorado del picto a mejorar 
+  //https://platform.openai.com/docs/guides/prompt-engineering
+  //https://learnprompting.org/es/docs/intro Imageprompting
+
   // Update txt2imgBody object's properties that relate to input
   txt2imgBody.prompt = "a pictogram of " + inputValue + ", (vectorized, drawing, simplified, rounded face, digital art, icon)";
   txt2imgBody.negative_prompt = "(words, letters, text, numbers, symbols), (details, open traces, sharp corners, distorted proportion), (lip, nose, tooth, rouge, wrinkles, detailed face, deformed body, extra limbs)"
@@ -179,7 +183,7 @@ async function pictonizer(inputValue) {
     // Construct a new JSON object with the extracted data
     const resultJson = {
       images: images.map(image => ({
-        data: image, //Change this Base64 for an URL once we have deployed a function that runs this in Azure.
+        data: image, //TODO Change this Base64 for an URL once we have deployed a function that runs this in Azure.
         width: width,
         height: height
       })),
@@ -215,7 +219,7 @@ async function processPictograms(pictogramsURL) {
       if (isNaN(id)) {
         return {
           ...pictogram,
-          id: 123456,
+          id: 123456, //TODO add library to get id nanoid
           picto: await pictonizer(pictogram.text)
         };
       }
@@ -223,8 +227,9 @@ async function processPictograms(pictogramsURL) {
     })
   );
 
-  console.log("updatedPictograms: ");
-  console.log(updatedPictograms);
+  //console.log("updatedPictograms: ");
+  //console.log(updatedPictograms);
+
   // Return the updatedPictograms
   return updatedPictograms;
 }
@@ -245,10 +250,11 @@ async function getSuggestions(prompt, maxWords, symbolSet, language) {
 const getSuggestionsAndProcessPictograms = async (prompt, maxSuggestions, symbolSet, language) => {
   try {
     const suggestions = await getSuggestions(prompt, maxSuggestions, symbolSet, language);
-    const pictogramsURLs = suggestions.pictogramsURLs; //Aca se me ato la rama, problablemente esto se pueda mejorar
+    const pictogramsURLs = suggestions.pictogramsURLs; //TODO Aca se me ato la rama, problablemente esto se pueda mejorar
     const pictograms = await processPictograms(pictogramsURLs);
     return pictograms;
   } catch (error) {
+    //TODO return all error to the user
     console.error(error);
   }
 };
