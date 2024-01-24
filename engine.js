@@ -39,9 +39,6 @@ const openaiInstance = new OpenAIApi(configuration);
 
 //New function using Azure OpenAI Cboard API
 async function getWordSuggestions(prompt, maxWords, language) {
-  //TODO ver esto para pasar el lang
-  //const phraseToEdit = req.body.phrase;
-  //const phraseLanguage = req.body.language;
   
   if (!prompt || !maxWords || !language) {
     console.error("Error with parameters");
@@ -105,7 +102,7 @@ async function fetchPictogramsURLs(words, symbolSet, language) {
             {
               id: "NaN",
               text: words[responses.indexOf(response)],
-              locale: language,
+              language: language,  //TODO arreglame esto cat
               picto: { image_url: "ERROR: No image in the Symbol Set" },
             },
           ];
@@ -238,8 +235,8 @@ async function processPictograms(pictogramsURL) {
 
 //Function to get word suggestions and then fetch a Pictogram for each suggested word
 async function getSuggestions(prompt, maxWords, symbolSet, language) {
-  const words = await getWordSuggestions(prompt, maxWords, language);
-  //const words = ["Pizza", "Pasta", "Gelato", "Espresso", "Mocha"];
+  //const words = await getWordSuggestions(prompt, maxWords, language);
+  const words = ["Pizza", "Pasta", "Gelato", "Espresso", "Mocha"];
   const pictogramsURLs = await fetchPictogramsURLs(words, symbolSet, language);
   // Return the list of words and pictograms URLs
   return { pictogramsURLs };
@@ -250,7 +247,7 @@ async function getSuggestions(prompt, maxWords, symbolSet, language) {
 const getSuggestionsAndProcessPictograms = async (prompt, maxSuggestions, symbolSet, language) => {
   try {
     const suggestions = await getSuggestions(prompt, maxSuggestions, symbolSet, language);
-    const pictogramsURLs = suggestions.pictogramsURLs; //TODO Aca se me ato la rama, problablemente esto se pueda mejorar
+    const pictogramsURLs = suggestions.pictogramsURLs; 
     const pictograms = await processPictograms(pictogramsURLs);
     return pictograms;
   } catch (error) {

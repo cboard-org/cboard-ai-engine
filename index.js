@@ -5,12 +5,12 @@ const { getSuggestions } = require('./engine');
 const { processPictograms } = require('./engine');
 
 const language = 'eng';
-const maxSuggestions = 12;
+const maxSuggestions = 10;
 const symbolSet = 'arasaac';
-const prompt = 'indian drinks';
+const prompt = 'objects to draw and paint';
 const promptImage = 'orange';
 
-/*
+
 getSuggestions(prompt,maxSuggestions,symbolSet,language)
   .then(suggestions => console.log(suggestions))
   .then(result => console.log(result))
@@ -39,10 +39,12 @@ processPictograms(pictogramsURL)
 
 
 //Call getSuggestionsAndProcessPictograms to run the whole pipeline
+/*
 getSuggestionsAndProcessPictograms(prompt,maxSuggestions,symbolSet,language)
 .then(picto => console.log(picto)) 
 .then(result => console.log(result))
 .catch(error => console.error(error));
+*/
 
 // Export the functions to be used
 module.exports = { 
