@@ -4,10 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsup",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "Pictonizer",
+    "Cboard",
+    "Cboard-ai-engine"
+  ],
+  "author": "Cboard-org",
   "license": "MIT",
   "dependencies": {
     "axios": "^1.6.2",
@@ -15,6 +20,7 @@
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
+    "tsup": "^8.0.2",
     "typescript": "^5.3.3"
   }
 }
