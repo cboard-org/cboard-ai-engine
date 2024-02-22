@@ -1,62 +1,111 @@
-// engine.ts
-import openai from "openai";
+import { Configuration, OpenAIApi } from "openai";
 import axios, { AxiosRequestConfig } from "axios";
-import dotenv from "dotenv";
-dotenv.config();
+import { txt2imgBody } from "./request";
 
-// Setting your OpenAI API key as an environment variable
-const apiKey: string = process.env.OPENAI_API_KEY || "sk-AAAAAAAAAAAAAAAAAAAAAAAAAA";
-if (!apiKey) {
-  console.error(
-    "OpenAI API key is missing. Set the OPENAI_API_KEY environment variable."
-  );
-  process.exit(1);
-}
+let openaiInstance: OpenAIApi;
 
-const openaiInstance = new openai.OpenAI({ apiKey: apiKey });
+/*Constansts*/
+const globalSymbolsUrl = "https://www.globalsymbols.com/api/v1/labels/search/";
 
-async function getWordSuggestions(prompt: string, maxWords: number, language: string): Promise<string[] | { error: string }> {
-  try {
-    const completion = await openaiInstance.chat.completions.create({
-      messages: [
-        {
-          role: "user",
-          content:
-            "act as a speech pathologist selecting pictograms in language " +
-            language +
-            " for a non verbal person about " +
-            prompt +
-            " .Only provide a list of words and a maximum of " +
-            maxWords +
-            " words. Do not add any other text or characters besides the list of words.",
-        },
-      ],
-      model: "gpt-3.5-turbo",
-      temperature: 0.0,
-      max_tokens: 100,
-    });
-
-    const response: string = completion.choices[0].message.content;
-    const itemList: string[] = response.split("\n");
-    const words: string[] = itemList.map((item: string) => item.replace(/^\d+\.\s/, ""));
-
-    return words;
-  } catch (error) {
-    console.error("Error generating word suggestions:", error);
-    return { error: "Error generating word suggestions" };
+export default function init(AZURE_OPENAI_KEY: string | undefined) {
+  if (!AZURE_OPENAI_KEY) {
+    console.error("Error on init. The AZURE_OPENAI_KEY is not defined.");
+    return;
   }
+
+  const apiKey = AZURE_OPENAI_KEY;
+  const configuration = new Configuration({
+    apiKey,
+    basePath:
+      "https://cboard-openai.openai.azure.com/openai/deployments/ToEdit",
+    baseOptions: {
+      headers: { "api-key": apiKey },
+      params: {
+        "api-version": "2022-12-01",
+      },
+    },
+  });
+
+  openaiInstance = new OpenAIApi(configuration);
+
+  return {
+    getSuggestions,
+    pictonizer,
+    getSuggestionsAndProcessPictograms,
+  };
 }
 
-interface Pictogram {
+//New function using Azure OpenAI Cboard API
+async function getWordSuggestions(
+  prompt: string,
+  maxWords: number,
+  language: string
+): Promise<string[] | { error: string }> {
+  if (!prompt || !maxWords || !language) {
+    console.error("Error with parameters");
+    return { error: "Error with parameters" };
+  }
+
+  try {
+    const completionRequestParams = {
+      model: "text-davinci-003",
+      prompt:
+        "act as a speech pathologist selecting pictograms in language " +
+        language +
+        " for a non verbal person about " +
+        prompt +
+        " .You must provide a list of " +
+        maxWords +
+        ". Do not add any other text or characters to the list. Template for the list {word1, word2, word3,..., wordN}",
+      max_tokens: 100,
+      temperature: 0,
+    };
+    const response = await openaiInstance.createCompletion(
+      completionRequestParams
+    );
+
+    const wordsSuggestionsData = response.data?.choices[0]?.text;
+    //console.log("wordSuggestionData: " + JSON.stringify(wordsSuggestionsData));
+
+    if (wordsSuggestionsData) {
+      // Remove the "\n\n" using replace() method
+      const trimmedString = wordsSuggestionsData.replace(/\n\n/g, "");
+      // Extract the words inside the curly braces using regular expressions
+
+      /* OLD CODE
+        const wordsSuggestionsList = trimmedString
+        .match(/{(.*?)}/)[1]
+        .split(",")
+        .map((word) => word.trim());
+      */
+      const match = trimmedString.match(/{(.*?)}/);
+      const wordsSuggestionsList = match
+        ? match[1].split(",").map((word) => word.trim())
+        : [];
+
+      return wordsSuggestionsList;
+    } else {
+      console.log("Error with the response");
+      return { error: "Error with the response" };
+    }
+  } catch (e: Error | any) {
+    console.error("Error generating word suggestions: ", e.message);
+  }
+  return { error: "Error generating word suggestions" };
+}
+
+type Pictogram = {
   id: string;
   text: string;
   locale: string;
   picto: string[];
-}
+};
 
-async function fetchPictogramsURLs(words: string[], symbolSet: string, language: string): Promise<Pictogram[] | { error: string }> {
-  const globalSymbolsUrl: string =
-    "https://www.globalsymbols.com/api/v1/labels/search?";
+async function fetchPictogramsURLs(
+  words: string[],
+  symbolSet: string,
+  language: string
+): Promise<Pictogram[] | { error: string }> {
   try {
     const requests = words.map((word) =>
       axios.get(globalSymbolsUrl, {
@@ -76,7 +125,7 @@ async function fetchPictogramsURLs(words: string[], symbolSet: string, language:
             {
               id: "NaN",
               text: words[responses.indexOf(response)],
-              locale: language,
+              language: language,
               picto: { image_url: "ERROR: No image in the Symbol Set" },
             },
           ]
@@ -86,25 +135,151 @@ async function fetchPictogramsURLs(words: string[], symbolSet: string, language:
       id: data[0].id,
       text: data[0].text,
       locale: data[0].language,
-      picto: data.map((picto) => picto.picto.image_url),
+      picto: data.map((picto: any) => picto.picto.image_url),
     }));
 
     return pictogramsList;
-  } catch (error) {
-    console.error("Error fetching pictograms URLs:", error);
+  } catch (error: Error | any) {
+    console.error("Error fetching pictograms URLs:", error.message);
     return { error: "Error fetching pictograms URLs" };
   }
 }
 
-interface Suggestion {
-  pictogramsURLs: Pictogram[] | { error: string };
+async function pictonizer(inputValue: string) {
+  const pictonizerURL = process.env.PICTONIZER_URL;
+
+  // Validate environment variables and inputs
+  if (!pictonizerURL) {
+    console.error(
+      "PICTONIZER_URL is not defined in the environment variables."
+    );
+    return;
+  }
+  if (!inputValue) {
+    console.error("Input value cannot be empty.");
+    return;
+  }
+
+  //TODO pedir que me de un prompt mejorado del picto a mejorar
+  //https://platform.openai.com/docs/guides/prompt-engineering
+  //https://learnprompting.org/es/docs/intro Imageprompting
+
+  // Update txt2imgBody object's properties that relate to input
+  txt2imgBody.prompt =
+    "a pictogram of " +
+    inputValue +
+    ", (vectorized, drawing, simplified, rounded face, digital art, icon)";
+  txt2imgBody.negative_prompt =
+    "(words, letters, text, numbers, symbols), (details, open traces, sharp corners, distorted proportion), (lip, nose, tooth, rouge, wrinkles, detailed face, deformed body, extra limbs)";
+  txt2imgBody.width = 512;
+  txt2imgBody.height = 512;
+
+  try {
+    const response = await fetch(pictonizerURL, {
+      method: "POST",
+      body: JSON.stringify(txt2imgBody),
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const {
+      images,
+      parameters: { width, height, prompt },
+    } = data;
+
+    const resultJson = {
+      images: images.map((image: any) => ({
+        data: image, //TODO Change this Base64 for an URL once we have deployed a function that runs this in Azure.
+        width: width,
+        height: height,
+      })),
+      prompt: prompt,
+    };
+
+    // Return the result as a JSON string
+    return JSON.stringify(resultJson);
+  } catch (err) {
+    console.error("Error fetching data:", err);
+  }
 }
 
-async function getSuggestions(prompt: string, maxWords: number, symbolSet: string, language: string): Promise<Suggestion> {
-  const words: string[] | { error: string } = await getWordSuggestions(prompt, maxWords, language);
-  const pictogramsURLs: Pictogram[] | { error: string } = await fetchPictogramsURLs(words as string[], symbolSet, language);
+async function processPictograms(pictogramsURL: Pictogram[]) {
+  //console.log("pictogramsURLlenght: ");
+  //console.log(pictogramsURL.length);
+  if (!pictogramsURL.length) {
+    console.error("pictogramsURL is empty");
+    return;
+  }
+
+  const updatedPictograms = await Promise.all(
+    pictogramsURL.map(async (pictogram) => {
+      const id = parseInt(pictogram.id);
+      if (isNaN(id)) {
+        return {
+          ...pictogram,
+          id: 123456, //TODO add library to get id nanoid
+          picto: await pictonizer(pictogram.text),
+        };
+      }
+      return pictogram;
+    })
+  );
+
+  //console.log("updatedPictograms: ");
+  //console.log(updatedPictograms);
+  return updatedPictograms;
+}
+
+type Suggestion = {
+  pictogramsURLs: Pictogram[] | { error: string };
+};
+
+async function getSuggestions(
+  prompt: string,
+  maxWords: number,
+  symbolSet: string,
+  language: string
+): Promise<Suggestion> {
+  const words: string[] | { error: string } = await getWordSuggestions(
+    prompt,
+    maxWords,
+    language
+  );
+  const pictogramsURLs: Pictogram[] | { error: string } =
+    await fetchPictogramsURLs(words as string[], symbolSet, language);
 
   return { pictogramsURLs };
 }
 
-export { getSuggestions };
+//Run the whole pipeline
+const getSuggestionsAndProcessPictograms = async (
+  prompt: string,
+  maxSuggestions: number,
+  symbolSet: string,
+  language: string
+) => {
+  try {
+    const suggestions = await getSuggestions(
+      prompt,
+      maxSuggestions,
+      symbolSet,
+      language
+    );
+    const pictogramsURLs = suggestions.pictogramsURLs;
+    
+    if("error" in pictogramsURLs) throw new Error(pictogramsURLs.error); //Fix this
+
+    const pictograms = await processPictograms(pictogramsURLs);
+    return pictograms;
+  } catch (error) {
+    //TODO return all error to the user
+    console.error(error);
+  }
+};
