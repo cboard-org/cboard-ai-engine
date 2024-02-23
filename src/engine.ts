@@ -1,32 +1,31 @@
 import { Configuration, OpenAIApi } from "openai";
 import axios, { AxiosRequestConfig } from "axios";
 import { txt2imgBody } from "./request";
+import { ConfigurationParameters } from "openai";
 
 let openaiInstance: OpenAIApi;
+let globalSymbolsURL = "https://www.globalsymbols.com/api/v1/labels/search/";
+let pictonizerURL = "";
 
-/*Constansts*/
-const globalSymbolsUrl = "https://www.globalsymbols.com/api/v1/labels/search/";
+export function init({
+  openAIConfiguration,
+  globalSymbolsApiURL,
+  pictonizerApiURL,
+}: {
+  openAIConfiguration: ConfigurationParameters;
+  globalSymbolsApiURL?: string;
+  pictonizerApiURL?: string;
+}) {
+  const configuration = new Configuration(openAIConfiguration);
+  openaiInstance = new OpenAIApi(configuration);
 
-export default function init(AZURE_OPENAI_KEY: string | undefined) {
-  if (!AZURE_OPENAI_KEY) {
-    console.error("Error on init. The AZURE_OPENAI_KEY is not defined.");
-    return;
+  if (globalSymbolsApiURL) {
+    globalSymbolsURL = globalSymbolsApiURL;
   }
 
-  const apiKey = AZURE_OPENAI_KEY;
-  const configuration = new Configuration({
-    apiKey,
-    basePath:
-      "https://cboard-openai.openai.azure.com/openai/deployments/ToEdit",
-    baseOptions: {
-      headers: { "api-key": apiKey },
-      params: {
-        "api-version": "2022-12-01",
-      },
-    },
-  });
-
-  openaiInstance = new OpenAIApi(configuration);
+  if (pictonizerApiURL) {
+    pictonizerURL = pictonizerApiURL;
+  }
 
   return {
     getSuggestions,
@@ -60,6 +59,7 @@ async function getWordSuggestions(
       max_tokens: 100,
       temperature: 0,
     };
+
     const response = await openaiInstance.createCompletion(
       completionRequestParams
     );
@@ -108,7 +108,7 @@ async function fetchPictogramsURLs(
 ): Promise<Pictogram[] | { error: string }> {
   try {
     const requests = words.map((word) =>
-      axios.get(globalSymbolsUrl, {
+      axios.get(globalSymbolsURL, {
         params: {
           query: word,
           symbolset: symbolSet,
@@ -273,8 +273,8 @@ const getSuggestionsAndProcessPictograms = async (
       language
     );
     const pictogramsURLs = suggestions.pictogramsURLs;
-    
-    if("error" in pictogramsURLs) throw new Error(pictogramsURLs.error); //Fix this
+
+    if ("error" in pictogramsURLs) throw new Error(pictogramsURLs.error); //Fix this
 
     const pictograms = await processPictograms(pictogramsURLs);
     return pictograms;
