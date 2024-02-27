@@ -178,7 +178,7 @@ async function pictonizer(imagePrompt: string): Promise<string> {
     console.error("Error generating pictogram: ", error.message);
   } finally {
     return JSON.stringify({
-      images: [{ data: "ERROR Generating Pictogram puto" }],
+      images: [{ data: "ERROR Generating Pictogram" }],
       prompt: imagePrompt,
     });
   }
