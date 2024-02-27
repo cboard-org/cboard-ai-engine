@@ -44,13 +44,11 @@ async function getWordSuggestions(
   const completionRequestParams = {
     model: "text-davinci-003",
     prompt:
-      "act as a speech pathologist selecting pictograms in language " +
-      language +
-      " for a non verbal person about " +
-      prompt +
-      " .You must provide a list of " +
-      maxWords +
-      ". Do not add any other text or characters to the list. Template for the list {word1, word2, word3,..., wordN}",
+      `act as a speech pathologist selecting pictograms in language ${language} 
+      for a non verbal person about ${prompt}. 
+      You must provide a list of ${maxWords}. 
+      Do not add any other text or characters to the list. 
+      Template for the list {word1, word2, word3,..., wordN}`,
     max_tokens: 100,
     temperature: 0,
   };
