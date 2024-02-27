@@ -62,14 +62,7 @@ async function getWordSuggestions(
   const wordsSuggestionsData = response.data?.choices[0]?.text;
 
   if (wordsSuggestionsData) {
-    // Remove the "\n\n" using replace() method
     const trimmedString = wordsSuggestionsData.replace(/\n\n/g, "");
-    /* OLD CODE
-        const wordsSuggestionsList = trimmedString
-        .match(/{(.*?)}/)[1]
-        .split(",")
-        .map((word) => word.trim());
-      */
     const match = trimmedString.match(/{(.*?)}/);
     const wordsSuggestionsList = match
       ? match[1].split(",").map((word) => word.trim())
