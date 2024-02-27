@@ -1,11 +1,11 @@
 import { Configuration, OpenAIApi } from "openai";
 import axios, { AxiosRequestConfig } from "axios";
-import { txt2imgBody } from "./request";
+import { txt2imgBody, DEFAULT_GLOBAL_SYMBOLS_URL } from "./constants";
 import { ConfigurationParameters } from "openai";
 
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
-  globalSymbolsURL: "https://www.globalsymbols.com/api/v1/labels/search/",
+  globalSymbolsURL: DEFAULT_GLOBAL_SYMBOLS_URL,
   pictonizerURL:"",
 };
 

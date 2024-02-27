@@ -47,3 +47,5 @@ export const txt2imgBody = {
   save_images: true,
   alwayson_scripts: {},
 };
+
+export const DEFAULT_GLOBAL_SYMBOLS_URL =  "https://www.globalsymbols.com/api/v1/labels/search/";
