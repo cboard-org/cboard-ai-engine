@@ -3,9 +3,11 @@ import axios, { AxiosRequestConfig } from "axios";
 import { txt2imgBody } from "./request";
 import { ConfigurationParameters } from "openai";
 
-let openAIInstance: OpenAIApi;
-let globalSymbolsURL = "https://www.globalsymbols.com/api/v1/labels/search/";
-let pictonizerURL = "";
+const globalConfiguration = {
+  openAIInstance: {} as OpenAIApi,
+  globalSymbolsURL: "https://www.globalsymbols.com/api/v1/labels/search/",
+  pictonizerURL:"",
+};
 
 export function init({
   openAIConfiguration,
@@ -17,14 +19,14 @@ export function init({
   pictonizerApiURL?: string;
 }) {
   const configuration = new Configuration(openAIConfiguration);
-  openAIInstance = new OpenAIApi(configuration);
+  globalConfiguration.openAIInstance = new OpenAIApi(configuration);
 
   if (globalSymbolsApiURL) {
-    globalSymbolsURL = globalSymbolsApiURL;
+    globalConfiguration.globalSymbolsURL = globalSymbolsApiURL;
   }
 
   if (pictonizerApiURL) {
-    pictonizerURL = pictonizerApiURL;
+    globalConfiguration.pictonizerURL = pictonizerApiURL;
   }
 
   return {
@@ -53,7 +55,7 @@ async function getWordSuggestions(
     temperature: 0,
   };
 
-  const response = await openAIInstance.createCompletion(
+  const response = await globalConfiguration.openAIInstance.createCompletion(
     completionRequestParams
   );
 
@@ -92,7 +94,7 @@ async function fetchPictogramsURLs(
 ): Promise<Pictogram[]> {
   try {
     const requests = words.map((word) =>
-      axios.get(globalSymbolsURL, {
+      axios.get(globalConfiguration.globalSymbolsURL, {
         params: {
           query: word,
           symbolset: symbolSet,
@@ -144,8 +146,8 @@ async function pictonizer(imagePrompt: string): Promise<string> {
   txt2imgBody.height = 512;
 
   try {
-    if (!!pictonizerURL) {
-      const response = await fetch(pictonizerURL, {
+    if (!!globalConfiguration.pictonizerURL) {
+      const response = await fetch(globalConfiguration.pictonizerURL, {
         method: "POST",
         body: JSON.stringify(txt2imgBody),
         headers: {
@@ -175,14 +177,13 @@ async function pictonizer(imagePrompt: string): Promise<string> {
       return JSON.stringify(resultJson);
     }
     throw new Error("PictonizerURL is not defined");
-
   } catch (error: Error | any) {
     console.error("Error generating pictogram: ", error.message);
     return JSON.stringify({
       images: [{ data: "ERROR Generating Pictogram" }],
       prompt: imagePrompt,
     });
-  } 
+  }
 }
 
 async function processPictograms(pictogramsURL: Pictogram[]) {
