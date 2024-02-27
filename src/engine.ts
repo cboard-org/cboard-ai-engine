@@ -174,14 +174,15 @@ async function pictonizer(imagePrompt: string): Promise<string> {
       };
       return JSON.stringify(resultJson);
     }
+    throw new Error("PictonizerURL is not defined");
+
   } catch (error: Error | any) {
     console.error("Error generating pictogram: ", error.message);
-  } finally {
     return JSON.stringify({
       images: [{ data: "ERROR Generating Pictogram" }],
       prompt: imagePrompt,
     });
-  }
+  } 
 }
 
 async function processPictograms(pictogramsURL: Pictogram[]) {
