@@ -17,8 +17,12 @@
     "Cboard",
     "Cboard-ai-engine"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cboard-org/cboard-ai-engine"
+  },
   "author": "Cboard-org",
-  "license": "MIT",
+  "license": "GNU GPLv3",
   "dependencies": {
     "axios": "^1.6.2",
     "openai": "^3.3.0"
