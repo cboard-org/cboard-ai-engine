@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { txt2imgBody } from "./request";
 import { ConfigurationParameters } from "openai";
 
-let openaiInstance: OpenAIApi;
+let openAIInstance: OpenAIApi;
 let globalSymbolsURL = "https://www.globalsymbols.com/api/v1/labels/search/";
 let pictonizerURL = "";
 
@@ -17,7 +17,7 @@ export function init({
   pictonizerApiURL?: string;
 }) {
   const configuration = new Configuration(openAIConfiguration);
-  openaiInstance = new OpenAIApi(configuration);
+  openAIInstance = new OpenAIApi(configuration);
 
   if (globalSymbolsApiURL) {
     globalSymbolsURL = globalSymbolsApiURL;
@@ -53,7 +53,7 @@ async function getWordSuggestions(
     temperature: 0,
   };
 
-  const response = await openaiInstance.createCompletion(
+  const response = await openAIInstance.createCompletion(
     completionRequestParams
   );
 
