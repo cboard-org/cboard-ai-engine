@@ -128,9 +128,7 @@ async function pictonizer(imagePrompt: string): Promise<string> {
 
   // Update txt2imgBody object's properties that relate to input
   txt2imgBody.prompt =
-    "a pictogram of " +
-    imagePrompt +
-    ", (vectorized, drawing, simplified, rounded face, digital art, icon)";
+    `a pictogram of ${imagePrompt}, (vectorized, drawing, simplified, rounded face, digital art, icon)`;
   txt2imgBody.negative_prompt =
     "(words, letters, text, numbers, symbols), (details, open traces, sharp corners, distorted proportion), (lip, nose, tooth, rouge, wrinkles, detailed face, deformed body, extra limbs)";
   txt2imgBody.width = 512;
