@@ -35,5 +35,4 @@ interface Licence {
   properties: string;
 }
 
-// Assuming the response is an array of LabelSearchResponse
 export type LabelsSearchApiResponse = LabelSearchResponse[];
