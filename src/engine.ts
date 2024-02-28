@@ -192,14 +192,14 @@ async function processPictograms(pictogramsURL: Pictogram[]) {
   return updatedPictograms;
 }
 
-type Suggestion = Pictogram[];
+type Suggestions = Pictogram[];
 
 async function getSuggestions(
   prompt: string,
   maxWords: number,
   symbolSet: string,
   language: string
-): Promise<Suggestion> {
+): Promise<Suggestions> {
   const words: string[] = await getWordSuggestions(prompt, maxWords, language);
   const pictogramsURLs: Pictogram[] = await fetchPictogramsURLs(
     words as string[],
