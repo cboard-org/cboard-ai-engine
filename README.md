@@ -1,6 +1,6 @@
 # Cboard AI Engine
 
-This is a engine for the Cboard AI builder that is used to generate the boards content suggestions and create new pictograms if is necessary.
+This engine powers the Cboard AI builder, designed to generate content suggestions for boards and create new pictograms as necessary.
 
 With a simple prompt, it will generate a list of pictograms that can be used to create an AAC board. Each pictogram will be associated with a text description and a image.
 
@@ -10,25 +10,23 @@ The images are retrieved from the [Global Symbols](https://www.globalsymbols.com
 
 - [Installation](#installation)
 - [Usage](#usage)
-    - [Initialization](#initialization)
+  - [Initialization](#initialization)
 - [Methods](#methods)
-    - [getSuggestionsAndProcessPictograms](#getSuggestionsAndProcessPictograms)
-    - [getSuggestions](#getSuggestions)
-    - [pictonizer](#pictonizer)
+  - [getSuggestionsAndProcessPictograms](#getSuggestionsAndProcessPictograms)
+  - [getSuggestions](#getSuggestions)
+  - [pictonizer](#pictonizer)
 - [Error Handling](#error-handling)
 - [License](#license)
 
-
-
 ## Installation
 
-```
+```bash
 npm install cboard-ai-engine
 ```
 
 or
 
-```
+```bash
 yarn install cboard-ai-engine
 ```
 
@@ -37,42 +35,54 @@ yarn install cboard-ai-engine
 The code below shows how to get started using the Cboard AI Engine.
 
 ```javascript
+import { initEngine } from "cboard-ai-engine";
 
-    import { initEngine } from 'cboard-ai-engine';
+const engineInstance = initEngine({
+  openAIConfiguration,
+  globalSymbolsApiURL,
+  pictonizerApiURL,
+});
 
-    const engineInstance = initEngine({ openAIConfiguration, globalSymbolsApiURL, pictonizerApiURL });
-
-    const suggestions = await engineInstance.getSuggestionsAndProcessPictograms(prompt, maxSuggestions, symbolSet, language);
+const suggestions = await engineInstance.getSuggestionsAndProcessPictograms(
+  prompt,
+  maxSuggestions,
+  symbolSet,
+  language,
+);
 ```
 
 ### Initialization
 
 ```javascript
-    const engineInstance = initEngine({ openAIConfiguration: ConfigurationParameters, globalSymbolsApiURL: string, pictonizerApiURL: string });
+const engineInstance = initEngine({
+  openAIConfiguration,
+  globalSymbolsApiURL,
+  pictonizerApiURL,
+});
 ```
 
 The `initEngine` function is used to initialize the engine. Takes an object with the following properties as its only argument:
 
-
 - `openAIConfiguration`: Object with the OpenAI configuration. Required.
 
 ```javascript
-    const openAIConfiguration = {
-        apiKey: 'your openai api key',
-        basePath: 'https://your-openai-base-path.com',
-        baseOptions: {
-            headers: { 'api-key': 'your openai api key'},
-            params: {'api-version': '2022-12-01'}
-        }
-    }
+const openAIConfiguration = {
+  apiKey: "your openai api key",
+  basePath: "https://your-openai-base-path.com",
+  baseOptions: {
+    headers: { "api-key": "your openai api key" },
+    params: { "api-version": "2022-12-01" },
+  },
+};
 ```
+
 - `globalSymbolsApiURL`: The Global Symbols API URL. Default is `https://www.globalsymbols.com/api/v1/labels/search/`. Optional.
 
 - `pictonizerApiURL`: The Cboard Pictonizer API URL. Optional.
 
 Return:
 
- It returns an instance of the engine  with the following methods:
+It returns an instance of the engine with the following methods:
 
 - `getSuggestionsAndProcessPictograms`: This method is used to get the suggestions and process the pictograms. It returns a list of items that can be used to create an AAC board. Each item is associated with a text description and a pictogram.
 
@@ -104,7 +114,7 @@ Return:
 
 It returns an array of objects with the following properties:
 
-```javascript
+```typescript
     [
         {
             id: number;
@@ -114,8 +124,9 @@ It returns an array of objects with the following properties:
         }
     ]
 ```
-Where: 
- 
+
+Where:
+
 - `id`: The pictogram id. Type: number.
 
 - `picto`: The pictogram URL. Type: string[].
@@ -165,7 +176,7 @@ It returns an stringified object with the following properties:
 ```javascript
     {
         images: images.map((image: any) => ({
-          data: image, 
+          data: image,
           width: width,
           height: height,
         })),
@@ -173,7 +184,7 @@ It returns an stringified object with the following properties:
     };
 ```
 
-If no URL is passed on the `pictonizerApiURL` parameter, it will return: 
+If no URL is passed on the `pictonizerApiURL` parameter, it will return:
 
 ```javascript
     {
@@ -181,22 +192,27 @@ If no URL is passed on the `pictonizerApiURL` parameter, it will return:
         prompt: imagePrompt,
     };
 ```
+
 And no error will be thrown.
 
 ## Error Handling
 
 When an error occurs, an error will be thrown. It is recommended to use a try/catch block to handle it.
 
-
 ```javascript
-    try {
-        const suggestions = await engineInstance.getSuggestionsAndProcessPictograms(prompt, maxSuggestions, symbolSet, language);
-    } catch (error) {
-        console.error(error);
-    }
+try {
+  const suggestions = await engineInstance.getSuggestionsAndProcessPictograms(
+    prompt,
+    maxSuggestions,
+    symbolSet,
+    language,
+  );
+} catch (error) {
+  console.error(error);
+}
 ```
-    NOTE: Is not needed on the initialization method.
 
+    NOTE: Is not needed on the initialization method.
 
 ## License
 
@@ -204,6 +220,5 @@ Copyright © 2024 Cboard
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License version 3 as published by the Free Software Foundation.
 
-* Code - [GPLv3](https://github.com/cboard-org/cboard/blob/master/LICENSE.txt)
-* ARASAAC Symbols - [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-
+- Code - [GPLv3](https://github.com/cboard-org/cboard/blob/master/LICENSE.txt)
+- ARASAAC Symbols - [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)

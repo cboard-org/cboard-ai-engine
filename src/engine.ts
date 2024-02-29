@@ -1,12 +1,12 @@
-import { Configuration, OpenAIApi } from "openai";
+import { Configuration, OpenAIApi, ConfigurationParameters } from "openai";
 import axios, { AxiosRequestConfig } from "axios";
 import { txt2imgBody, DEFAULT_GLOBAL_SYMBOLS_URL } from "./constants";
-import { ConfigurationParameters } from "openai";
+import { LabelsSearchApiResponse } from "./types/global-symbols";
 
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
   globalSymbolsURL: DEFAULT_GLOBAL_SYMBOLS_URL,
-  pictonizerURL:"",
+  pictonizerURL: "",
 };
 
 export function init({
@@ -85,7 +85,7 @@ async function fetchPictogramsURLs(
 ): Promise<Pictogram[]> {
   try {
     const requests = words.map((word) =>
-      axios.get(globalConfiguration.globalSymbolsURL, {
+      axios.get<LabelsSearchApiResponse>(globalConfiguration.globalSymbolsURL, {
         params: {
           query: word,
           symbolSet: symbolSet,
@@ -109,10 +109,10 @@ async function fetchPictogramsURLs(
     );
 
     const pictogramsList: Pictogram[] = dataList.map((data) => ({
-      id: data[0].id,
+      id: data[0].id?.toString(),
       text: data[0].text,
       locale: data[0].language,
-      picto: data.map((picto: any) => picto.picto.image_url),
+      picto: data.map((label) => label.picto.image_url),
     }));
 
     return pictogramsList;
