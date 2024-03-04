@@ -88,7 +88,7 @@ async function fetchPictogramsURLs(
       axios.get<LabelsSearchApiResponse>(globalConfiguration.globalSymbolsURL, {
         params: {
           query: word,
-          symbolSet: symbolSet,
+          symbolset: symbolSet,
           language: language,
         },
       } as AxiosRequestConfig)
