@@ -1,6 +1,6 @@
 # Cboard AI Engine
 
-This engine powers the Cboard AI builder, designed to generate content suggestions for boards and create new pictograms as necessary.
+This engine powers the Cboard AI builder, designed to generate content suggestions for communication boards and create new pictograms as necessary.
 
 With a simple prompt, it will generate a list of pictograms that can be used to create an AAC board. Each pictogram will be associated with a text description and a image.
 
@@ -27,7 +27,7 @@ npm install cboard-ai-engine
 or
 
 ```bash
-yarn install cboard-ai-engine
+yarn add cboard-ai-engine
 ```
 
 ## Usage
