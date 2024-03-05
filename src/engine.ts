@@ -13,6 +13,15 @@ const globalConfiguration = {
   pictonizerURL: "",
 };
 
+export type Pictogram = {
+  id: string;
+  text: string;
+  locale: string;
+  picto: string[];
+};
+
+export type Suggestions = Pictogram[];
+
 export function init({
   openAIConfiguration,
   globalSymbolsApiURL,
@@ -77,13 +86,6 @@ async function getWordSuggestions({
   }
   return [];
 }
-
-type Pictogram = {
-  id: string;
-  text: string;
-  locale: string;
-  picto: string[];
-};
 
 async function fetchPictogramsURLs({
   words,
@@ -202,7 +204,6 @@ async function processPictograms(pictogramsURL: Pictogram[]) {
   return updatedPictograms;
 }
 
-type Suggestions = Pictogram[];
 
 async function getSuggestions({
   prompt,
