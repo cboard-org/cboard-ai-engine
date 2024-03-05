@@ -150,12 +150,12 @@ Where:
 ```typescript
 async function getSuggestions({
   prompt,
-  maxWords,
+  maxSuggestions,
   symbolSet,
   language = DEFAULT_LANGUAGE,
 }: {
   prompt: string;
-  maxWords: number;
+  maxSuggestions: number;
   symbolSet?: string;
   language: string;
 }): Promise<Pictogram[]>;
@@ -167,7 +167,7 @@ Parameters:
 
 - `prompt` : The prompt to be used to generate the suggestions. Required. Type: string.
 
-- `maxWords`: The maximum number of suggestions to be returned. Default is 10. Optional. Type: number.
+- `maxSuggestions`: The maximum number of suggestions to be returned. Default is 10. Optional. Type: number.
 
 - `symbolSet`: The symbol set to be used. If `undefined`, images will be searched across all Global Symbol image banks. Optional. Type: string.
 

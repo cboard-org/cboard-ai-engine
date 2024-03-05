@@ -206,18 +206,18 @@ async function processPictograms(pictogramsURL: Pictogram[]) {
 
 async function getSuggestions({
   prompt,
-  maxWords,
+  maxSuggestions,
   symbolSet,
   language = DEFAULT_LANGUAGE,
 }: {
   prompt: string;
-  maxWords: number;
+  maxSuggestions: number;
   symbolSet?: string;
   language: string;
 }): Promise<Pictogram[]> {
   const words: string[] = await getWordSuggestions({
     prompt,
-    maxWords,
+    maxWords: maxSuggestions,
     language,
   });
   const pictogramsURLs: Pictogram[] = await fetchPictogramsURLs({
@@ -242,7 +242,7 @@ const getSuggestionsAndProcessPictograms = async ({
 }) => {
   const suggestions = await getSuggestions({
     prompt,
-    maxWords: maxSuggestions,
+    maxSuggestions,
     symbolSet,
     language,
   });
