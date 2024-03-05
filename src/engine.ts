@@ -214,7 +214,7 @@ async function getSuggestions({
   maxWords: number;
   symbolSet?: string;
   language: string;
-}): Promise<Suggestions> {
+}): Promise<Pictogram[]> {
   const words: string[] = await getWordSuggestions({
     prompt,
     maxWords,
