@@ -22,7 +22,7 @@
     "url": "https://github.com/cboard-org/cboard-ai-engine.git"
   },
   "author": "Cboard-org",
-  "license": "GNU GPLv3",
+  "license": "GPL-3.0-only",
   "dependencies": {
     "axios": "^1.6.2",
     "openai": "^3.3.0"
