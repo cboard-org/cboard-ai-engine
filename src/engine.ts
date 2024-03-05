@@ -204,7 +204,6 @@ async function processPictograms(pictogramsURL: Pictogram[]) {
   return updatedPictograms;
 }
 
-
 async function getSuggestions({
   prompt,
   maxWords,
