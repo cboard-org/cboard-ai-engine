@@ -1,6 +1,10 @@
 import { Configuration, OpenAIApi, ConfigurationParameters } from "openai";
 import axios, { AxiosRequestConfig } from "axios";
-import { txt2imgBody, DEFAULT_GLOBAL_SYMBOLS_URL } from "./constants";
+import {
+  txt2imgBody,
+  DEFAULT_GLOBAL_SYMBOLS_URL,
+  DEFAULT_LANGUAGE,
+} from "./constants";
 import { LabelsSearchApiResponse } from "./types/global-symbols";
 
 const globalConfiguration = {
@@ -36,15 +40,18 @@ export function init({
   };
 }
 
-async function getWordSuggestions(
-  prompt: string,
-  maxWords: number,
-  language: string
-): Promise<string[]> {
+async function getWordSuggestions({
+  prompt,
+  maxWords,
+  language,
+}: {
+  prompt: string;
+  maxWords: number;
+  language: string;
+}): Promise<string[]> {
   const completionRequestParams = {
     model: "text-davinci-003",
-    prompt:
-      `act as a speech pathologist selecting pictograms in language ${language} 
+    prompt: `act as a speech pathologist selecting pictograms in language ${language} 
       for a non verbal person about ${prompt}. 
       You must provide a list of ${maxWords}. 
       Do not add any other text or characters to the list. 
@@ -78,11 +85,15 @@ type Pictogram = {
   picto: string[];
 };
 
-async function fetchPictogramsURLs(
-  words: string[],
-  symbolSet: string,
-  language: string
-): Promise<Pictogram[]> {
+async function fetchPictogramsURLs({
+  words,
+  symbolSet,
+  language,
+}: {
+  words: string[];
+  symbolSet?: string;
+  language: string;
+}): Promise<Pictogram[]> {
   try {
     const requests = words.map((word) =>
       axios.get<LabelsSearchApiResponse>(globalConfiguration.globalSymbolsURL, {
@@ -127,8 +138,7 @@ async function pictonizer(imagePrompt: string): Promise<string> {
   //https://learnprompting.org/es/docs/intro Imageprompting
 
   // Update txt2imgBody object's properties that relate to input
-  txt2imgBody.prompt =
-    `a pictogram of ${imagePrompt}, (vectorized, drawing, simplified, rounded face, digital art, icon)`;
+  txt2imgBody.prompt = `a pictogram of ${imagePrompt}, (vectorized, drawing, simplified, rounded face, digital art, icon)`;
   txt2imgBody.negative_prompt =
     "(words, letters, text, numbers, symbols), (details, open traces, sharp corners, distorted proportion), (lip, nose, tooth, rouge, wrinkles, detailed face, deformed body, extra limbs)";
   txt2imgBody.width = 512;
@@ -194,34 +204,48 @@ async function processPictograms(pictogramsURL: Pictogram[]) {
 
 type Suggestions = Pictogram[];
 
-async function getSuggestions(
-  prompt: string,
-  maxWords: number,
-  symbolSet: string,
-  language: string
-): Promise<Suggestions> {
-  const words: string[] = await getWordSuggestions(prompt, maxWords, language);
-  const pictogramsURLs: Pictogram[] = await fetchPictogramsURLs(
-    words as string[],
+async function getSuggestions({
+  prompt,
+  maxWords,
+  symbolSet,
+  language = DEFAULT_LANGUAGE,
+}: {
+  prompt: string;
+  maxWords: number;
+  symbolSet?: string;
+  language: string;
+}): Promise<Suggestions> {
+  const words: string[] = await getWordSuggestions({
+    prompt,
+    maxWords,
+    language,
+  });
+  const pictogramsURLs: Pictogram[] = await fetchPictogramsURLs({
+    words,
     symbolSet,
-    language
-  );
+    language,
+  });
 
   return pictogramsURLs;
 }
 
-const getSuggestionsAndProcessPictograms = async (
-  prompt: string,
-  maxSuggestions: number,
-  symbolSet: string,
-  language: string
-) => {
-  const suggestions = await getSuggestions(
+const getSuggestionsAndProcessPictograms = async ({
+  prompt,
+  maxSuggestions,
+  symbolSet,
+  language = DEFAULT_LANGUAGE,
+}: {
+  prompt: string;
+  maxSuggestions: number;
+  symbolSet?: string;
+  language: string;
+}) => {
+  const suggestions = await getSuggestions({
     prompt,
-    maxSuggestions,
+    maxWords: maxSuggestions,
     symbolSet,
-    language
-  );
+    language,
+  });
   const pictograms = await processPictograms(suggestions);
   return pictograms;
 };
