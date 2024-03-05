@@ -43,12 +43,12 @@ const engineInstance = initEngine({
   pictonizerApiURL,
 });
 
-const suggestions = await engineInstance.getSuggestionsAndProcessPictograms(
-  prompt,
-  maxSuggestions,
-  symbolSet,
-  language,
-);
+const suggestions = await engineInstance.getSuggestionsAndProcessPictograms({
+  prompt: "Brazilian food",
+  maxSuggestions: 5,
+  symbolSet: "arasaac",
+  language: "eng",
+});
 ```
 
 ### Initialization
@@ -94,8 +94,18 @@ It returns an instance of the engine with the following methods:
 
 ### getSuggestionsAndProcessPictograms
 
-```javascript
-    const suggestions = await engineInstance.getSuggestionsAndProcessPictograms(prompt: string, maxSuggestions: number, symbolSet: string, language: string) => Promise<Array<{id: number, picto: string[], text: string, locale: string}>>;
+```typescript
+async function getSuggestionsAndProcessPictograms({
+  prompt,
+  maxSuggestions,
+  symbolSet,
+  language = DEFAULT_LANGUAGE,
+}: {
+  prompt: string;
+  maxSuggestions: number;
+  symbolSet?: string;
+  language: string;
+});
 ```
 
 This method is used to get the suggestions and process the pictograms. It returns a list of items that can be used to create an AAC board. Each item is associated with a text description and a pictogram.
@@ -106,7 +116,7 @@ Parameters:
 
 - `maxSuggestions`: The maximum number of suggestions to be returned. Default is 10. Optional. Type: number.
 
-- `symbolSet`: The symbol set to be used. Default is `ARASAAC`. Optional. Type: string.
+- `symbolSet`: The symbol set to be used. If `undefined`, images will be searched across all Global Symbol image banks. Optional. Type: string.
 
 - `language`: The language to be used. Default is `eng`. Optional. Type: string.
 
@@ -137,8 +147,18 @@ Where:
 
 ### getSuggestions
 
-```javascript
-    const suggestions = await engineInstance.getSuggestions(prompt: string, maxSuggestions: number) => Promise<Array<string>>;
+```typescript
+async function getSuggestions({
+  prompt,
+  maxWords,
+  symbolSet,
+  language = DEFAULT_LANGUAGE,
+}: {
+  prompt: string;
+  maxWords: number;
+  symbolSet?: string;
+  language: string;
+}): Promise<Pictogram[]>;
 ```
 
 This method is used to get the words suggestions.
@@ -147,11 +167,15 @@ Parameters:
 
 - `prompt` : The prompt to be used to generate the suggestions. Required. Type: string.
 
-- `maxSuggestions`: The maximum number of suggestions to be returned. Default is 10. Optional. Type: number.
+- `maxWords`: The maximum number of suggestions to be returned. Default is 10. Optional. Type: number.
+
+- `symbolSet`: The symbol set to be used. If `undefined`, images will be searched across all Global Symbol image banks. Optional. Type: string.
+
+- `language`: The language to be used. Default is `eng`. Optional. Type: string.
 
 Return:
 
-It returns an array of strings with the suggestions.
+It returns an array of Pictograms.
 
 ### pictonizer
 
@@ -205,7 +229,7 @@ try {
     prompt,
     maxSuggestions,
     symbolSet,
-    language,
+    language
   );
 } catch (error) {
   console.error(error);
