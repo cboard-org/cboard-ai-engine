@@ -1,1 +1,1 @@
-export {init as initEngine, type Suggestion} from './engine';
+export {init as initEngine, type Suggestion, type PictonizerConfiguration} from './engine';

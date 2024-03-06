@@ -20,6 +20,13 @@ export type Suggestion = {
   picto: string[];
 };
 
+export type PictonizerConfiguration = {
+  URL?: string;
+  token?: string;
+  keyWords?: string;
+};
+
+
 export function init({
   openAIConfiguration,
   globalSymbolsApiURL,
