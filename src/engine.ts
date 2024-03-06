@@ -136,25 +136,17 @@ async function fetchPictogramsURLs({
 }
 
 async function pictonizer(imagePrompt: string): Promise<string> {
-  //TODO pedir que me de un prompt mejorado del picto a mejorar
-  //https://platform.openai.com/docs/guides/prompt-engineering
-  //https://learnprompting.org/es/docs/intro Imageprompting
-
-  // Update txt2imgBody object's properties that relate to input
-  txt2imgBody.prompt = `a pictogram of ${imagePrompt}, (vectorized, drawing, simplified, rounded face, digital art, icon)`;
-  txt2imgBody.negative_prompt =
-    "(words, letters, text, numbers, symbols), (details, open traces, sharp corners, distorted proportion), (lip, nose, tooth, rouge, wrinkles, detailed face, deformed body, extra limbs)";
-  txt2imgBody.width = 512;
-  txt2imgBody.height = 512;
-
+  const pictonizerConfig = globalConfiguration.pictonizer;
   try {
-    if (!!globalConfiguration.pictonizerURL) {
-      const response = await fetch(globalConfiguration.pictonizerURL, {
+    if (!!pictonizerConfig.URL && !!pictonizerConfig.token) {
+      const body = `input=${imagePrompt} ${pictonizerConfig.keyWords || ""}`;
+      const response = await fetch(pictonizerConfig.URL, {
         method: "POST",
-        body: JSON.stringify(txt2imgBody),
+        body: body,
         headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "image/*",
+          Authorization: `Bearer ${globalConfiguration.pictonizer.token}`,
         },
       });
 
@@ -162,23 +154,14 @@ async function pictonizer(imagePrompt: string): Promise<string> {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      const {
-        images,
-        parameters: { width, height, prompt },
-      } = data;
-
+      const data = await response.blob();
       const resultJson = {
-        images: images.map((image: any) => ({
-          data: image, //TODO Change this Base64 for an URL once we have deployed a function that runs this in Azure.
-          width: width,
-          height: height,
-        })),
-        prompt: prompt,
+        images: [{ data: data }],
+        prompt: imagePrompt,
       };
       return JSON.stringify(resultJson);
     }
-    throw new Error("PictonizerURL is not defined");
+    throw new Error("Pictonizer URL or Auth token not defined");
   } catch (error: Error | any) {
     console.error("Error generating pictogram: ", error.message);
     return JSON.stringify({
