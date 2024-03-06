@@ -1,10 +1,6 @@
 import { Configuration, OpenAIApi, ConfigurationParameters } from "openai";
 import axios, { AxiosRequestConfig } from "axios";
-import {
-  txt2imgBody,
-  DEFAULT_GLOBAL_SYMBOLS_URL,
-  DEFAULT_LANGUAGE,
-} from "./constants";
+import { DEFAULT_GLOBAL_SYMBOLS_URL, DEFAULT_LANGUAGE } from "./constants";
 import { LabelsSearchApiResponse } from "./types/global-symbols";
 
 const globalConfiguration = {
