@@ -6,7 +6,7 @@ import { LabelsSearchApiResponse } from "./types/global-symbols";
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
   globalSymbolsURL: DEFAULT_GLOBAL_SYMBOLS_URL,
-  pictonizerURL: "",
+  pictonizer: {} as PictonizerConfiguration,
 };
 
 export type Suggestion = {
@@ -26,11 +26,11 @@ export type PictonizerConfiguration = {
 export function init({
   openAIConfiguration,
   globalSymbolsApiURL,
-  pictonizerApiURL,
+  pictonizerConfiguration,
 }: {
   openAIConfiguration: ConfigurationParameters;
   globalSymbolsApiURL?: string;
-  pictonizerApiURL?: string;
+  pictonizerConfiguration?: PictonizerConfiguration;
 }) {
   const configuration = new Configuration(openAIConfiguration);
   globalConfiguration.openAIInstance = new OpenAIApi(configuration);
@@ -39,8 +39,8 @@ export function init({
     globalConfiguration.globalSymbolsURL = globalSymbolsApiURL;
   }
 
-  if (pictonizerApiURL) {
-    globalConfiguration.pictonizerURL = pictonizerApiURL;
+  if (pictonizerConfiguration) {
+    globalConfiguration.pictonizer = pictonizerConfiguration;
   }
 
   return {
