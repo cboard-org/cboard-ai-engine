@@ -105,7 +105,7 @@ async function getSuggestionsAndProcessPictograms({
   maxSuggestions: number;
   symbolSet?: string;
   language: string;
-});
+}): Promise<Suggestion[]>;
 ```
 
 This method is used to get the suggestions and process the pictograms. It returns a list of items that can be used to create an AAC board. Each item is associated with a text description and a pictogram.
@@ -122,17 +122,15 @@ Parameters:
 
 Return:
 
-It returns an array of objects with the following properties:
+It returns an array of Suggestion with the following properties:
 
 ```typescript
-    [
-        {
-            id: number;
-            picto: string[];
-            text: string;
-            locale: string;
-        }
-    ]
+    type Suggestion = {
+      id: string;
+      text: string;
+      locale: string;
+      picto: string[];
+    }
 ```
 
 Where:
@@ -158,7 +156,7 @@ async function getSuggestions({
   maxSuggestions: number;
   symbolSet?: string;
   language: string;
-}): Promise<Pictogram[]>;
+}): Promise<Suggestion[]>;
 ```
 
 This method is used to get the words suggestions.

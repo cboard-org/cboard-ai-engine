@@ -13,14 +13,12 @@ const globalConfiguration = {
   pictonizerURL: "",
 };
 
-export type Pictogram = {
+export type Suggestion = {
   id: string;
   text: string;
   locale: string;
   picto: string[];
 };
-
-export type Suggestions = Pictogram[];
 
 export function init({
   openAIConfiguration,
@@ -95,7 +93,7 @@ async function fetchPictogramsURLs({
   words: string[];
   symbolSet?: string;
   language: string;
-}): Promise<Pictogram[]> {
+}): Promise<Suggestion[]> {
   try {
     const requests = words.map((word) =>
       axios.get<LabelsSearchApiResponse>(globalConfiguration.globalSymbolsURL, {
@@ -121,7 +119,7 @@ async function fetchPictogramsURLs({
           ]
     );
 
-    const pictogramsList: Pictogram[] = dataList.map((data) => ({
+    const pictogramsList: Suggestion[] = dataList.map((data) => ({
       id: data[0].id?.toString(),
       text: data[0].text,
       locale: data[0].language,
@@ -187,14 +185,14 @@ async function pictonizer(imagePrompt: string): Promise<string> {
   }
 }
 
-async function processPictograms(pictogramsURL: Pictogram[]) {
+async function processPictograms(pictogramsURL: Suggestion[]) {
   const updatedPictograms = await Promise.all(
     pictogramsURL.map(async (pictogram) => {
       const id = parseInt(pictogram.id);
       if (isNaN(id)) {
         return {
           ...pictogram,
-          id: 123456, //TODO add library to get id nanoid
+          id: "123456", //TODO add library to get id nanoid
           picto: [await pictonizer(pictogram.text)],
         };
       }
@@ -214,13 +212,13 @@ async function getSuggestions({
   maxSuggestions: number;
   symbolSet?: string;
   language: string;
-}): Promise<Pictogram[]> {
+}): Promise<Suggestion[]> {
   const words: string[] = await getWordSuggestions({
     prompt,
     maxWords: maxSuggestions,
     language,
   });
-  const pictogramsURLs: Pictogram[] = await fetchPictogramsURLs({
+  const pictogramsURLs: Suggestion[] = await fetchPictogramsURLs({
     words,
     symbolSet,
     language,
