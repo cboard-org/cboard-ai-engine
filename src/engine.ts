@@ -166,12 +166,14 @@ async function fetchPictogramsURLs({
   }
 }
 
-async function pictonizer(imagePrompt: string): Promise<string> {
+async function pictonizer(imagePrompt: string): Promise<AIImage> {
   const pictonizerConfig = globalConfiguration.pictonizer;
+  const keyWords = pictonizerConfig.keyWords || "";
+  const pictonizerPrompt = `${imagePrompt} ${keyWords}`;
+
   try {
     if (!!pictonizerConfig.URL && !!pictonizerConfig.token) {
-      const keyWords = pictonizerConfig.keyWords || "";
-      const body = `input=${imagePrompt} ${keyWords}`;
+      const body = `input=${pictonizerPrompt}`;
       
       const response = await fetch(pictonizerConfig.URL, {
         method: "POST",
@@ -188,19 +190,24 @@ async function pictonizer(imagePrompt: string): Promise<string> {
       }
 
       const data = await response.blob();
-      const resultJson = {
-        images: [{ data: data }],
-        prompt: imagePrompt,
+      const pictogram: AIImage = {
+        blob: data,
+        ok: true,
+        prompt: `${pictonizerPrompt}`,
       };
-      return JSON.stringify(resultJson);
+
+      return pictogram;
     }
     throw new Error("Pictonizer URL or Auth token not defined");
   } catch (error: Error | any) {
-    console.error("Error generating pictogram: ", error.message);
-    return JSON.stringify({
-      images: [{ data: "ERROR Generating Pictogram" }],
-      prompt: imagePrompt,
-    });
+    console.log("Error generating pictogram: ", error.message);
+    const pictogram: AIImage = {
+      blob: null,
+      ok: false,
+      error: "ERROR: Can't generate image",
+      prompt: `${imagePrompt} ${keyWords}`,
+    };
+    return pictogram;
   }
 }
 
