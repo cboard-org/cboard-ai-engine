@@ -11,6 +11,7 @@ The images are retrieved from the [Global Symbols](https://www.globalsymbols.com
 - [Installation](#installation)
 - [Usage](#usage)
   - [Initialization](#initialization)
+- [Types](#types)
 - [Methods](#methods)
   - [getSuggestionsAndProcessPictograms](#getSuggestionsAndProcessPictograms)
   - [getSuggestions](#getSuggestions)
@@ -78,7 +79,7 @@ const openAIConfiguration = {
 
 - `globalSymbolsApiURL`: The Global Symbols API URL. Default is `https://www.globalsymbols.com/api/v1/labels/search/`. Optional.
 
-- `pictonizerConfiguration`: Object with the Pictonizer configuration. Optional. If not passed, the `pictonizer()` method will return a "empty" image. For more info see below.
+- `pictonizerConfiguration`: Object with the Pictonizer configuration. Optional. If not passed, the `pictonizer()` method will return a "empty" image. For more info see [pictonizer](#pictonizer).
 
 ```typescript
 import { type PictonizerConfiguration } from "cboard-ai-engine";
@@ -225,10 +226,11 @@ const AIImage = {
     prompt: "Brazilian food arasaac pictograms"; 
 }
 
-// NOTE: The prompt is a concatenation of the prompt and the keyWords from the PictonizerConfiguration.
+// NOTE: The prompt is a concatenation of the prompt
+// and the keyWords from the PictonizerConfiguration.
 ```
 
-If no URL or Token is passed on the `PictonizerConfiguration` parameter, it will return:
+If no URL or Token is passed on the `PictonizerConfiguration` parameter, or occurs an error while generating. It will return:
 
 ```javascript
 const AIImage = {
@@ -238,7 +240,8 @@ const AIImage = {
     prompt: "Brazilian food arasaac pictograms"; 
 }
 
-// NOTE: The prompt is a concatenation of the prompt and the keyWords from the PictonizerConfiguration.
+// NOTE: The prompt is a concatenation of the prompt
+// and the keyWords from the PictonizerConfiguration.
 ```
 
 And no error will be thrown.
