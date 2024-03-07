@@ -245,13 +245,14 @@ async function getSuggestions({
     maxWords: maxSuggestions,
     language,
   });
-  const pictogramsURLs: Suggestion[] = await fetchPictogramsURLs({
+  const suggestionsWithGlobalSymbolsImages: Suggestion[] =
+    await fetchPictogramsURLs({
     words,
     symbolSet,
     language,
   });
 
-  return pictogramsURLs;
+  return suggestionsWithGlobalSymbolsImages;
 }
 
 const getSuggestionsAndProcessPictograms = async ({
@@ -265,12 +266,14 @@ const getSuggestionsAndProcessPictograms = async ({
   symbolSet?: string;
   language: string;
 }) => {
-  const suggestions = await getSuggestions({
+  const suggestionsWithGlobalSymbolsImages = await getSuggestions({
     prompt,
     maxSuggestions,
     symbolSet,
     language,
   });
-  const pictograms = await processPictograms(suggestions);
-  return pictograms;
+  const suggestionsWithAIImages = await processPictograms(
+    suggestionsWithGlobalSymbolsImages
+  );
+  return suggestionsWithAIImages;
 };
