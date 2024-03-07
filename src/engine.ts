@@ -1,6 +1,6 @@
 import { Configuration, OpenAIApi, ConfigurationParameters } from "openai";
 import axios, { AxiosRequestConfig } from "axios";
-import { DEFAULT_GLOBAL_SYMBOLS_URL, DEFAULT_LANGUAGE } from "./constants";
+import { DEFAULT_GLOBAL_SYMBOLS_URL, DEFAULT_LANGUAGE, DEFAULT_MAX_SUGGESTIONS } from "./constants";
 import { LabelsSearchApiResponse } from "./types/global-symbols";
 import { nanoid } from "nanoid";
 
@@ -232,7 +232,7 @@ async function processPictograms(
 
 async function getSuggestions({
   prompt,
-  maxSuggestions,
+  maxSuggestions = DEFAULT_MAX_SUGGESTIONS,
   symbolSet,
   language = DEFAULT_LANGUAGE,
 }: {
@@ -258,7 +258,7 @@ async function getSuggestions({
 
 const getSuggestionsAndProcessPictograms = async ({
   prompt,
-  maxSuggestions,
+  maxSuggestions = DEFAULT_MAX_SUGGESTIONS,
   symbolSet,
   language = DEFAULT_LANGUAGE,
 }: {
