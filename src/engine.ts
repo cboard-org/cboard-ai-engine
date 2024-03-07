@@ -126,27 +126,41 @@ async function fetchPictogramsURLs({
     );
     const responses = await Promise.all(requests);
 
-    const dataList = responses.map((response) =>
-      response.data.length > 0
-        ? response.data
-        : [
+    const suggestions: Suggestion[] = responses.map((response) => {
+      const data = response.data;
+      if (data.length)
+        return {
+          id: nanoid(5),
+          label: data[0].text,
+          locale: data[0].language,
+          pictogram: {
+            isAIGenerated: false,
+            images: data.map((label) => ({
+              id: label.id.toString(),
+              symbolSet: label.picto.symbolset_id.toString(),
+              url: label.picto.image_url,
+            })),
+          },
+        };
+
+      return {
+        id: nanoid(5),
+        label: words[responses.indexOf(response)],
+        locale: language,
+        pictogram: {
+          isAIGenerated: true,
+          images: [
             {
-              id: "NaN",
-              text: words[responses.indexOf(response)],
-              language: language,
-              picto: { image_url: "ERROR: No image in the Symbol Set" },
+              blob: null,
+              ok: false,
+              error: "ERROR: No image in the Symbol Set",
+              prompt: words[responses.indexOf(response)],
             },
-          ]
-    );
-
-    const pictogramsList: Suggestion[] = dataList.map((data) => ({
-      id: data[0].id?.toString(),
-      text: data[0].text,
-      locale: data[0].language,
-      picto: data.map((label) => label.picto.image_url),
-    }));
-
-    return pictogramsList;
+          ],
+        },
+      };
+    });
+    return suggestions;
   } catch (error: Error | any) {
     throw new Error("Error fetching pictograms URLs " + error.message);
   }
