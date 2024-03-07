@@ -211,21 +211,22 @@ async function pictonizer(imagePrompt: string): Promise<AIImage> {
   }
 }
 
-async function processPictograms(pictogramsURL: Suggestion[]) {
-  const updatedPictograms = await Promise.all(
-    pictogramsURL.map(async (pictogram) => {
-      const id = parseInt(pictogram.id);
-      if (isNaN(id)) {
-        return {
-          ...pictogram,
-          id: "123456", //TODO add library to get id nanoid
-          picto: [await pictonizer(pictogram.text)],
-        };
+async function processPictograms(
+  suggestions: Suggestion[]
+): Promise<Suggestion[]> {
+  const suggestionsWithAIImage = await Promise.all(
+    suggestions.map(async (suggestion) => {
+      if (suggestion.pictogram.isAIGenerated) {
+        const suggestionWithAIImage = { ...suggestion };
+        suggestionWithAIImage.pictogram.images = [
+          await pictonizer(suggestion.label),
+        ];
+        return suggestionWithAIImage;
       }
-      return pictogram;
+      return suggestion;
     })
   );
-  return updatedPictograms;
+  return suggestionsWithAIImage;
 }
 
 async function getSuggestions({
