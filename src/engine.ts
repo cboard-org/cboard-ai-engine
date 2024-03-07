@@ -174,7 +174,7 @@ async function pictonizer(imagePrompt: string): Promise<AIImage> {
   try {
     if (!!pictonizerConfig.URL && !!pictonizerConfig.token) {
       const body = `input=${pictonizerPrompt}`;
-      
+
       const response = await fetch(pictonizerConfig.URL, {
         method: "POST",
         body: body,
@@ -247,10 +247,10 @@ async function getSuggestions({
   });
   const suggestionsWithGlobalSymbolsImages: Suggestion[] =
     await fetchPictogramsURLs({
-    words,
-    symbolSet,
-    language,
-  });
+      words,
+      symbolSet,
+      language,
+    });
 
   return suggestionsWithGlobalSymbolsImages;
 }
