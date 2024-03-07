@@ -139,14 +139,16 @@ async function pictonizer(imagePrompt: string): Promise<string> {
   const pictonizerConfig = globalConfiguration.pictonizer;
   try {
     if (!!pictonizerConfig.URL && !!pictonizerConfig.token) {
-      const body = `input=${imagePrompt} ${pictonizerConfig.keyWords || ""}`;
+      const keyWords = pictonizerConfig.keyWords || "";
+      const body = `input=${imagePrompt} ${keyWords}`;
+      
       const response = await fetch(pictonizerConfig.URL, {
         method: "POST",
         body: body,
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           Accept: "image/*",
-          Authorization: `Bearer ${globalConfiguration.pictonizer.token}`,
+          Authorization: `Bearer ${pictonizerConfig.token}`,
         },
       });
 
