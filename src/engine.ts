@@ -11,9 +11,25 @@ const globalConfiguration = {
 
 export type Suggestion = {
   id: string;
-  text: string;
+  label: string;
   locale: string;
-  picto: string[];
+  pictograms: {
+    isAIGenerated: boolean;
+    images:
+      | {
+          id: string;
+          symbolSet: string;
+          url: string;
+        }[]
+      | AIPictogram[];
+  }[];
+};
+
+export type AIPictogram = {
+  blob: Blob | null;
+  ok: boolean;
+  error?: string;
+  prompt: string;
 };
 
 export type PictonizerConfiguration = {
