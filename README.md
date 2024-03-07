@@ -41,7 +41,7 @@ import { initEngine } from "cboard-ai-engine";
 const engineInstance = initEngine({
   openAIConfiguration,
   globalSymbolsApiURL,
-  pictonizerApiURL,
+  pictonizerConfiguration,
 });
 
 const suggestions = await engineInstance.getSuggestionsAndProcessPictograms({
