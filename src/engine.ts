@@ -2,6 +2,7 @@ import { Configuration, OpenAIApi, ConfigurationParameters } from "openai";
 import axios, { AxiosRequestConfig } from "axios";
 import { DEFAULT_GLOBAL_SYMBOLS_URL, DEFAULT_LANGUAGE } from "./constants";
 import { LabelsSearchApiResponse } from "./types/global-symbols";
+import { nanoid } from "nanoid";
 
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
@@ -11,9 +12,25 @@ const globalConfiguration = {
 
 export type Suggestion = {
   id: string;
-  text: string;
+  label: string;
   locale: string;
-  picto: string[];
+  pictogram: {
+    isAIGenerated: boolean;
+    images:
+      | {
+          id: string;
+          symbolSet: string;
+          url: string;
+        }[]
+      | AIImage[];
+  };
+};
+
+export type AIImage = {
+  blob: Blob | null;
+  ok: boolean;
+  error?: string;
+  prompt: string;
 };
 
 export type PictonizerConfiguration = {
@@ -109,39 +126,55 @@ async function fetchPictogramsURLs({
     );
     const responses = await Promise.all(requests);
 
-    const dataList = responses.map((response) =>
-      response.data.length > 0
-        ? response.data
-        : [
+    const suggestions: Suggestion[] = responses.map((response) => {
+      const data = response.data;
+      if (data.length)
+        return {
+          id: nanoid(5),
+          label: data[0].text,
+          locale: data[0].language,
+          pictogram: {
+            isAIGenerated: false,
+            images: data.map((label) => ({
+              id: label.id.toString(),
+              symbolSet: label.picto.symbolset_id.toString(),
+              url: label.picto.image_url,
+            })),
+          },
+        };
+
+      return {
+        id: nanoid(5),
+        label: words[responses.indexOf(response)],
+        locale: language,
+        pictogram: {
+          isAIGenerated: true,
+          images: [
             {
-              id: "NaN",
-              text: words[responses.indexOf(response)],
-              language: language,
-              picto: { image_url: "ERROR: No image in the Symbol Set" },
+              blob: null,
+              ok: false,
+              error: "ERROR: No image in the Symbol Set",
+              prompt: words[responses.indexOf(response)],
             },
-          ]
-    );
-
-    const pictogramsList: Suggestion[] = dataList.map((data) => ({
-      id: data[0].id?.toString(),
-      text: data[0].text,
-      locale: data[0].language,
-      picto: data.map((label) => label.picto.image_url),
-    }));
-
-    return pictogramsList;
+          ],
+        },
+      };
+    });
+    return suggestions;
   } catch (error: Error | any) {
     throw new Error("Error fetching pictograms URLs " + error.message);
   }
 }
 
-async function pictonizer(imagePrompt: string): Promise<string> {
+async function pictonizer(imagePrompt: string): Promise<AIImage> {
   const pictonizerConfig = globalConfiguration.pictonizer;
+  const keyWords = pictonizerConfig.keyWords || "";
+  const pictonizerPrompt = `${imagePrompt} ${keyWords}`;
+
   try {
     if (!!pictonizerConfig.URL && !!pictonizerConfig.token) {
-      const keyWords = pictonizerConfig.keyWords || "";
-      const body = `input=${imagePrompt} ${keyWords}`;
-      
+      const body = `input=${pictonizerPrompt}`;
+
       const response = await fetch(pictonizerConfig.URL, {
         method: "POST",
         body: body,
@@ -157,37 +190,43 @@ async function pictonizer(imagePrompt: string): Promise<string> {
       }
 
       const data = await response.blob();
-      const resultJson = {
-        images: [{ data: data }],
-        prompt: imagePrompt,
+      const pictogram: AIImage = {
+        blob: data,
+        ok: true,
+        prompt: `${pictonizerPrompt}`,
       };
-      return JSON.stringify(resultJson);
+
+      return pictogram;
     }
     throw new Error("Pictonizer URL or Auth token not defined");
   } catch (error: Error | any) {
-    console.error("Error generating pictogram: ", error.message);
-    return JSON.stringify({
-      images: [{ data: "ERROR Generating Pictogram" }],
-      prompt: imagePrompt,
-    });
+    console.log("Error generating pictogram: ", error.message);
+    const pictogram: AIImage = {
+      blob: null,
+      ok: false,
+      error: "ERROR: Can't generate image",
+      prompt: `${imagePrompt} ${keyWords}`,
+    };
+    return pictogram;
   }
 }
 
-async function processPictograms(pictogramsURL: Suggestion[]) {
-  const updatedPictograms = await Promise.all(
-    pictogramsURL.map(async (pictogram) => {
-      const id = parseInt(pictogram.id);
-      if (isNaN(id)) {
-        return {
-          ...pictogram,
-          id: "123456", //TODO add library to get id nanoid
-          picto: [await pictonizer(pictogram.text)],
-        };
+async function processPictograms(
+  suggestions: Suggestion[]
+): Promise<Suggestion[]> {
+  const suggestionsWithAIImage = await Promise.all(
+    suggestions.map(async (suggestion) => {
+      if (suggestion.pictogram.isAIGenerated) {
+        const suggestionWithAIImage = { ...suggestion };
+        suggestionWithAIImage.pictogram.images = [
+          await pictonizer(suggestion.label),
+        ];
+        return suggestionWithAIImage;
       }
-      return pictogram;
+      return suggestion;
     })
   );
-  return updatedPictograms;
+  return suggestionsWithAIImage;
 }
 
 async function getSuggestions({
@@ -206,13 +245,14 @@ async function getSuggestions({
     maxWords: maxSuggestions,
     language,
   });
-  const pictogramsURLs: Suggestion[] = await fetchPictogramsURLs({
-    words,
-    symbolSet,
-    language,
-  });
+  const suggestionsWithGlobalSymbolsImages: Suggestion[] =
+    await fetchPictogramsURLs({
+      words,
+      symbolSet,
+      language,
+    });
 
-  return pictogramsURLs;
+  return suggestionsWithGlobalSymbolsImages;
 }
 
 const getSuggestionsAndProcessPictograms = async ({
@@ -226,12 +266,14 @@ const getSuggestionsAndProcessPictograms = async ({
   symbolSet?: string;
   language: string;
 }) => {
-  const suggestions = await getSuggestions({
+  const suggestionsWithGlobalSymbolsImages = await getSuggestions({
     prompt,
     maxSuggestions,
     symbolSet,
     language,
   });
-  const pictograms = await processPictograms(suggestions);
-  return pictograms;
+  const suggestionsWithAIImages = await processPictograms(
+    suggestionsWithGlobalSymbolsImages
+  );
+  return suggestionsWithAIImages;
 };
