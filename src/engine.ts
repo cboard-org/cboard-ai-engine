@@ -2,6 +2,7 @@ import { Configuration, OpenAIApi, ConfigurationParameters } from "openai";
 import axios, { AxiosRequestConfig } from "axios";
 import { DEFAULT_GLOBAL_SYMBOLS_URL, DEFAULT_LANGUAGE } from "./constants";
 import { LabelsSearchApiResponse } from "./types/global-symbols";
+import { nanoid } from "nanoid";
 
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
@@ -13,7 +14,7 @@ export type Suggestion = {
   id: string;
   label: string;
   locale: string;
-  pictograms: {
+  pictogram: {
     isAIGenerated: boolean;
     images:
       | {
@@ -21,11 +22,11 @@ export type Suggestion = {
           symbolSet: string;
           url: string;
         }[]
-      | AIPictogram[];
-  }[];
+      | AIImage[];
+  };
 };
 
-export type AIPictogram = {
+export type AIImage = {
   blob: Blob | null;
   ok: boolean;
   error?: string;
