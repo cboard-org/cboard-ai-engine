@@ -214,18 +214,19 @@ async function pictonizer(imagePrompt: string): Promise<AIImage> {
 async function processPictograms(
   suggestions: Suggestion[]
 ): Promise<Suggestion[]> {
-  const suggestionsWithAIImage = await Promise.all(
-    suggestions.map(async (suggestion) => {
-      if (suggestion.pictogram.isAIGenerated) {
-        const suggestionWithAIImage = { ...suggestion };
-        suggestionWithAIImage.pictogram.images = [
-          await pictonizer(suggestion.label),
-        ];
-        return suggestionWithAIImage;
-      }
-      return suggestion;
-    })
-  );
+  const suggestionsWithAIImage: Suggestion[] = [];
+
+  for (const suggestion of suggestions) {
+    if (suggestion.pictogram.isAIGenerated) {
+      const suggestionWithAIImage = { ...suggestion };
+      suggestionWithAIImage.pictogram.images = [
+        await pictonizer(suggestion.label),
+      ];
+      suggestionsWithAIImage.push(suggestionWithAIImage);
+    } else {
+      suggestionsWithAIImage.push(suggestion);
+    }
+  }
   return suggestionsWithAIImage;
 }
 
