@@ -1,8 +1,10 @@
 import { Configuration, OpenAIApi, ConfigurationParameters } from "openai";
-import axios, { AxiosRequestConfig } from "axios";
+import xior from "xior";
 import { DEFAULT_GLOBAL_SYMBOLS_URL, DEFAULT_LANGUAGE, DEFAULT_MAX_SUGGESTIONS } from "./constants";
 import { LabelsSearchApiResponse } from "./types/global-symbols";
 import { nanoid } from "nanoid";
+
+const axios = xior.create();
 
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
@@ -122,7 +124,7 @@ async function fetchPictogramsURLs({
           symbolset: symbolSet,
           language: language,
         },
-      } as AxiosRequestConfig)
+      })
     );
     const responses = await Promise.all(requests);
 
