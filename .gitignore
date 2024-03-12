@@ -1,6 +1,8 @@
 .idea
 node_modules
 .env
+.env.local
+.env.development.local
 
 # Ignore test-related files
 /coverage.data
