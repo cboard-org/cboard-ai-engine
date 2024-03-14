@@ -3,7 +3,11 @@
 
 import { initEngine, type PictonizerConfiguration } from "./src/index";
 
-const apiKey = process.env.AZURE_OPENAI_API_KEY;
+
+
+const apiKey = process.env.OPENAI_API_KEY;
+
+
 
 const openAIConfiguration = {
   apiKey,
@@ -27,12 +31,12 @@ const engineInstance = initEngine({
   pictonizerConfiguration,
 });
 
-const prompt = "Modern family";
-const maxSuggestions = 5;
+const prompt = "animals";
+const maxSuggestions = 30;
 const symbolSet = "arasaac";
 const language = "eng";
 
-// Get suggestions
+// Get suggestions with GlobalSymbols
 engineInstance
   .getSuggestions({
     prompt,
@@ -43,11 +47,12 @@ engineInstance
   .then((suggestions) =>
     console.log(
       "\nSuggestions -----------------------------------------------\n",
-      suggestions
+      suggestions,
+      "length: "+suggestions.length
     )
   );
 
-// Get suggestions with image
+/* // Get suggestions with GlobalSymbol and Pictonizer images
 engineInstance
   .getSuggestionsAndProcessPictograms({
     prompt,
@@ -61,11 +66,11 @@ engineInstance
       suggestions
     )
   );
-
-//Get Pictonizer image
+ */
+/* //Get Pictonizer image
 engineInstance.pictonizer("dog").then((image) => {
   console.log(
     "Pictonizer image -----------------------------------------------\n"
   );
   console.dir(image, { depth: null });
-});
+}); */
