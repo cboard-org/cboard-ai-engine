@@ -1,9 +1,9 @@
 // To run file
 // npm run dev
-
+require('dotenv').config()
 import { initEngine, type PictonizerConfiguration } from "./src/index";
 
-const apiKey = process.env.AZURE_OPENAI_API_KEY;
+const apiKey = process.env.OPENAI_API_KEY;
 
 const openAIConfiguration = {
   apiKey,
