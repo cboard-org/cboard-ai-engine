@@ -1,13 +1,9 @@
 // To run file
 // npm run dev
-
+require('dotenv').config()
 import { initEngine, type PictonizerConfiguration } from "./src/index";
 
-
-
 const apiKey = process.env.OPENAI_API_KEY;
-
-
 
 const openAIConfiguration = {
   apiKey,
@@ -52,7 +48,7 @@ engineInstance
     )
   );
 
-/* // Get suggestions with GlobalSymbol and Pictonizer images
+// Get suggestions with GlobalSymbol and Pictonizer images
 engineInstance
   .getSuggestionsAndProcessPictograms({
     prompt,
@@ -66,11 +62,11 @@ engineInstance
       suggestions
     )
   );
- */
-/* //Get Pictonizer image
+
+//Get Pictonizer image
 engineInstance.pictonizer("dog").then((image) => {
   console.log(
     "Pictonizer image -----------------------------------------------\n"
   );
   console.dir(image, { depth: null });
-}); */
+});
