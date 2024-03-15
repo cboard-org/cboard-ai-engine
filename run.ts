@@ -27,8 +27,8 @@ const engineInstance = initEngine({
   pictonizerConfiguration,
 });
 
-const prompt = "animals";
-const maxSuggestions = 30;
+const prompt = "good morning";
+const maxSuggestions = 5;
 const symbolSet = "arasaac";
 const language = "eng";
 
@@ -43,12 +43,12 @@ engineInstance
   .then((suggestions) =>
     console.log(
       "\nSuggestions -----------------------------------------------\n",
-      suggestions,
-      "length: "+suggestions.length
+      "label: " + suggestions[1].label,
+      "images: " + JSON.stringify(suggestions[1].pictogram.images),
     )
   );
 
-// Get suggestions with GlobalSymbol and Pictonizer images
+/* // Get suggestions with GlobalSymbol and Pictonizer images
 engineInstance
   .getSuggestionsAndProcessPictograms({
     prompt,
@@ -69,4 +69,4 @@ engineInstance.pictonizer("dog").then((image) => {
     "Pictonizer image -----------------------------------------------\n"
   );
   console.dir(image, { depth: null });
-});
+}); */
