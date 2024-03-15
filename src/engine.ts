@@ -25,6 +25,7 @@ export type Suggestion = {
           id: string;
           symbolSet: string;
           url: string;
+          fitzgerald: string;
         }[]
       | AIImage[];
   };
@@ -141,6 +142,7 @@ async function fetchPictogramsURLs({
               id: label.id.toString(),
               symbolSet: label.picto.symbolset_id.toString(),
               url: label.picto.image_url,
+              fitzgerald: label.picto.part_of_speech,
             })),
           },
         };
