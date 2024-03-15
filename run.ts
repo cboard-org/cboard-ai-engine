@@ -27,12 +27,12 @@ const engineInstance = initEngine({
   pictonizerConfiguration,
 });
 
-const prompt = "Modern family";
-const maxSuggestions = 5;
+const prompt = "animals";
+const maxSuggestions = 30;
 const symbolSet = "arasaac";
 const language = "eng";
 
-// Get suggestions
+// Get suggestions with GlobalSymbols
 engineInstance
   .getSuggestions({
     prompt,
@@ -43,11 +43,12 @@ engineInstance
   .then((suggestions) =>
     console.log(
       "\nSuggestions -----------------------------------------------\n",
-      suggestions
+      suggestions,
+      "length: "+suggestions.length
     )
   );
 
-// Get suggestions with image
+// Get suggestions with GlobalSymbol and Pictonizer images
 engineInstance
   .getSuggestionsAndProcessPictograms({
     prompt,
