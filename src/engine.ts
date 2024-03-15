@@ -1,6 +1,10 @@
 import { Configuration, OpenAIApi, ConfigurationParameters } from "openai";
 import axios, { AxiosRequestConfig } from "axios";
-import { DEFAULT_GLOBAL_SYMBOLS_URL, DEFAULT_LANGUAGE, DEFAULT_MAX_SUGGESTIONS } from "./constants";
+import {
+  DEFAULT_GLOBAL_SYMBOLS_URL,
+  DEFAULT_LANGUAGE,
+  DEFAULT_MAX_SUGGESTIONS,
+} from "./constants";
 import { LabelsSearchApiResponse } from "./types/global-symbols";
 import { nanoid } from "nanoid";
 
@@ -38,7 +42,6 @@ export type PictonizerConfiguration = {
   token?: string;
   keyWords?: string;
 };
-
 
 export function init({
   openAIConfiguration,
@@ -85,18 +88,14 @@ async function getWordSuggestions({
         -It is very important to not repeat words. 
         -Do not add any other text or characters to the list. 
         -Template for the list {word1, word2, word3,..., wordN}`,
-    max_tokens: 4*maxWords+80,
+    max_tokens: 4 * maxWords + 80,
     temperature: 0,
   };
 
   const response = await globalConfiguration.openAIInstance.createCompletion(
     completionRequestParams
   );
-
-  //console.log("reponse data: \n"+response.data.usage?.total_tokens);
-  
   const wordsSuggestionsData = response.data?.choices[0]?.text;
-  
   if (wordsSuggestionsData) {
     const trimmedString = wordsSuggestionsData.replace(/\n\n/g, "");
     const match = trimmedString.match(/{(.*?)}/);
