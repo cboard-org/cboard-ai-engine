@@ -100,11 +100,16 @@ async function getWordSuggestions({
     const trimmedString = wordsSuggestionsData.replace(/\n\n/g, "");
     const match = trimmedString.match(/{(.*?)}/);
     const wordsSuggestionsList = match
-      ? match[1].split(",").map((word) => word.trim())
+      ? match[1]
+          .split(",")
+          .map((word) => word.trim())
+          .slice(0, maxWords)
       : [];
+    if (!wordsSuggestionsList.length)
+      throw new Error("ERROR: Suggestion list is empty or maxToken reached");
     return wordsSuggestionsList;
   }
-  return [];
+  throw new Error("ERROR: Suggestion list is empty");
 }
 
 async function fetchPictogramsURLs({
