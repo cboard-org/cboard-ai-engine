@@ -3,11 +3,17 @@ import axios, { AxiosRequestConfig } from "axios";
 import { DEFAULT_GLOBAL_SYMBOLS_URL, DEFAULT_LANGUAGE, DEFAULT_MAX_SUGGESTIONS } from "./constants";
 import { LabelsSearchApiResponse } from "./types/global-symbols";
 import { nanoid } from "nanoid";
+//TODO @rodriSanchez check this is OK
+const ContentSafetyClient = require("@azure-rest/ai-content-safety").default,
+  { isUnexpected } = require("@azure-rest/ai-content-safety");
+const { AzureKeyCredential } = require("@azure/core-auth");
+
 
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
   globalSymbolsURL: DEFAULT_GLOBAL_SYMBOLS_URL,
   pictonizer: {} as PictonizerConfiguration,
+  contentSafety: {} as ContentSafetyConfiguration,
 };
 
 export type Suggestion = {
@@ -39,15 +45,22 @@ export type PictonizerConfiguration = {
   keyWords?: string;
 };
 
+export type ContentSafetyConfiguration = {
+  endpoint: string;
+  key: string;
+};
+
 
 export function init({
   openAIConfiguration,
   globalSymbolsApiURL,
   pictonizerConfiguration,
+  contentSafetyConfiguration,
 }: {
   openAIConfiguration: ConfigurationParameters;
   globalSymbolsApiURL?: string;
   pictonizerConfiguration?: PictonizerConfiguration;
+  contentSafetyConfiguration?: ContentSafetyConfiguration;
 }) {
   const configuration = new Configuration(openAIConfiguration);
   globalConfiguration.openAIInstance = new OpenAIApi(configuration);
@@ -60,10 +73,15 @@ export function init({
     globalConfiguration.pictonizer = pictonizerConfiguration;
   }
 
+  if (contentSafetyConfiguration) {
+    globalConfiguration.contentSafety = contentSafetyConfiguration;
+  }
+
   return {
     getSuggestions,
     pictonizer,
     getSuggestionsAndProcessPictograms,
+    isContentSafe,
   };
 }
 
@@ -278,3 +296,37 @@ const getSuggestionsAndProcessPictograms = async ({
   );
   return suggestionsWithAIImages;
 };
+
+async function isContentSafe(
+  textPrompt: string,
+  ): Promise<boolean> {
+    try {
+      const contentSafetyConfig = globalConfiguration.contentSafety;
+      const credential = new AzureKeyCredential(contentSafetyConfig.key);
+      const client = ContentSafetyClient(contentSafetyConfig.endpoint, credential);
+      const text = textPrompt;
+      const analyzeTextOption = { text: text };
+      const analyzeTextParameters = { body: analyzeTextOption };
+    
+      const result = await client.path("/text:analyze").post(analyzeTextParameters);
+    
+      if (isUnexpected(result)) {
+        throw result;
+      }
+      let severity = 0;
+      for (let i = 0; i < result.body.categoriesAnalysis.length; i++) {
+        const textCategoriesAnalysisOutput = result.body.categoriesAnalysis[i];
+        console.log(textCategoriesAnalysisOutput.category," severity: ",textCategoriesAnalysisOutput.severity);
+        severity = severity + textCategoriesAnalysisOutput.severity;
+      }
+      return new Promise<boolean>((resolve) => {
+        if (severity > 1)
+          resolve(false);
+        else
+          resolve(true);
+      });
+    } catch (error) {
+      throw new Error('Error checking content safety: '+error);
+    }
+     
+}

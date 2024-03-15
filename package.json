@@ -25,6 +25,7 @@
   "author": "Cboard-org",
   "license": "GPL-3.0-only",
   "dependencies": {
+    "@azure-rest/ai-content-safety": "^1.0.0",
     "axios": "^1.6.2",
     "dotenv": "^16.4.5",
     "nanoid": "^5.0.6",

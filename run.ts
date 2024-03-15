@@ -1,7 +1,7 @@
 // To run file
 // npm run dev
 require('dotenv').config()
-import { initEngine, type PictonizerConfiguration } from "./src/index";
+import { type ContentSafetyConfiguration, initEngine, type PictonizerConfiguration } from "./src/index";
 
 const apiKey = process.env.OPENAI_API_KEY;
 
@@ -22,15 +22,28 @@ const pictonizerConfiguration = {
   keyWords: "arasaac pictograms",
 } as PictonizerConfiguration;
 
+const contentSafetyConfiguration = {
+  endpoint: process.env.CONTENT_SAFETY_ENDPOINT,
+  key: process.env.CONTENT_SAFETY_KEY,
+} as ContentSafetyConfiguration;
+
 const engineInstance = initEngine({
   openAIConfiguration,
   pictonizerConfiguration,
+  contentSafetyConfiguration,
 });
 
 const prompt = "Modern family";
 const maxSuggestions = 5;
 const symbolSet = "arasaac";
 const language = "eng";
+
+//Check content safety
+//console.log("isPromptSafe: "+ engineInstance.isContentSafe(prompt));
+engineInstance.isContentSafe(prompt).then((result) => {
+  console.log('Is content safe?', result);
+});
+
 
 // Get suggestions
 engineInstance
@@ -47,7 +60,7 @@ engineInstance
     )
   );
 
-// Get suggestions with image
+/* // Get suggestions with image
 engineInstance
   .getSuggestionsAndProcessPictograms({
     prompt,
@@ -68,4 +81,4 @@ engineInstance.pictonizer("dog").then((image) => {
     "Pictonizer image -----------------------------------------------\n"
   );
   console.dir(image, { depth: null });
-});
+}); */
