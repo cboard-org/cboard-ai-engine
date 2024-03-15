@@ -1,6 +1,10 @@
 import { Configuration, OpenAIApi, ConfigurationParameters } from "openai";
 import axios, { AxiosRequestConfig } from "axios";
-import { DEFAULT_GLOBAL_SYMBOLS_URL, DEFAULT_LANGUAGE, DEFAULT_MAX_SUGGESTIONS } from "./constants";
+import {
+  DEFAULT_GLOBAL_SYMBOLS_URL,
+  DEFAULT_LANGUAGE,
+  DEFAULT_MAX_SUGGESTIONS,
+} from "./constants";
 import { LabelsSearchApiResponse } from "./types/global-symbols";
 import { nanoid } from "nanoid";
 
@@ -38,7 +42,6 @@ export type PictonizerConfiguration = {
   token?: string;
   keyWords?: string;
 };
-
 
 export function init({
   openAIConfiguration,
@@ -96,18 +99,16 @@ async function getWordSuggestions({
     const trimmedString = wordsSuggestionsData.replace(/\n\n/g, "");
     const match = trimmedString.match(/{(.*?)}/);
     const wordsSuggestionsList = match
-      ? match[1].split(",").map((word) => word.trim())
+      ? match[1]
+          .split(",")
+          .map((word) => word.trim())
+          .slice(0, maxWords)
       : [];
-      if (wordsSuggestionsList.length == 0)
-        throw new Error("ERROR: Suggestion list is empty or maxToken reached");
-      if (wordsSuggestionsList.length <= maxWords) {
-        return wordsSuggestionsList;
-      } else {
-        const trimmedList = wordsSuggestionsList.slice(0, maxWords);
-        return trimmedList;
-      }
+    if (!wordsSuggestionsList.length)
+      throw new Error("ERROR: Suggestion list is empty or maxToken reached");
+    return wordsSuggestionsList;
   }
-  throw new Error("ERROR: Suggestion list is null");
+  throw new Error("ERROR: Suggestion list is empty");
 }
 
 async function fetchPictogramsURLs({
