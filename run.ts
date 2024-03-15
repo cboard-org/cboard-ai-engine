@@ -27,8 +27,8 @@ const engineInstance = initEngine({
   pictonizerConfiguration,
 });
 
-const prompt = "Modern family";
-const maxSuggestions = 5;
+const prompt = "animals";
+const maxSuggestions = 40;
 const symbolSet = "arasaac";
 const language = "eng";
 
@@ -43,11 +43,11 @@ engineInstance
   .then((suggestions) =>
     console.log(
       "\nSuggestions -----------------------------------------------\n",
-      suggestions
+      suggestions.length
     )
   );
 
-// Get suggestions with image
+/* // Get suggestions with image
 engineInstance
   .getSuggestionsAndProcessPictograms({
     prompt,
@@ -68,4 +68,4 @@ engineInstance.pictonizer("dog").then((image) => {
     "Pictonizer image -----------------------------------------------\n"
   );
   console.dir(image, { depth: null });
-});
+}); */

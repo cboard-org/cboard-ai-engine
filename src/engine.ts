@@ -92,17 +92,22 @@ async function getWordSuggestions({
   );
 
   const wordsSuggestionsData = response.data?.choices[0]?.text;
-
   if (wordsSuggestionsData) {
     const trimmedString = wordsSuggestionsData.replace(/\n\n/g, "");
     const match = trimmedString.match(/{(.*?)}/);
     const wordsSuggestionsList = match
       ? match[1].split(",").map((word) => word.trim())
       : [];
-
-    return wordsSuggestionsList;
+      if (wordsSuggestionsList.length == 0)
+        throw new Error("ERROR: Suggestion list is empty or maxToken reached");
+      if (wordsSuggestionsList.length <= maxWords) {
+        return wordsSuggestionsList;
+      } else {
+        const trimmedList = wordsSuggestionsList.slice(0, maxWords);
+        return trimmedList;
+      }
   }
-  return [];
+  throw new Error("ERROR: Suggestion list is null");
 }
 
 async function fetchPictogramsURLs({
