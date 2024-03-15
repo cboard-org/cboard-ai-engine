@@ -1,6 +1,6 @@
 // To run file
 // npm run dev
-require('dotenv').config()
+require('dotenv').config();
 import { initEngine, type PictonizerConfiguration } from "./src/index";
 
 const apiKey = process.env.OPENAI_API_KEY;
@@ -32,7 +32,7 @@ const maxSuggestions = 40;
 const symbolSet = "arasaac";
 const language = "eng";
 
-// Get suggestions
+// Get suggestions with GlobalSymbols
 engineInstance
   .getSuggestions({
     prompt,
@@ -43,11 +43,13 @@ engineInstance
   .then((suggestions) =>
     console.log(
       "\nSuggestions -----------------------------------------------\n",
-      suggestions.length
+      suggestions,
+      "length: " + suggestions.length
     )
   );
 
-/* // Get suggestions with image
+/*
+// Get suggestions with GlobalSymbol and Pictonizer images
 engineInstance
   .getSuggestionsAndProcessPictograms({
     prompt,

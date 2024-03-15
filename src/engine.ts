@@ -83,17 +83,18 @@ async function getWordSuggestions({
     model: "text-davinci-003",
     prompt: `act as a speech pathologist selecting pictograms in language ${language} 
       for a non verbal person about ${prompt}. 
-      You must provide a list of ${maxWords}. 
-      Do not add any other text or characters to the list. 
-      Template for the list {word1, word2, word3,..., wordN}`,
-    max_tokens: 100,
+      Here are mandatory instructions for the list:
+        -You must provide a list of ${maxWords} maximum.
+        -It is very important to not repeat words. 
+        -Do not add any other text or characters to the list. 
+        -Template for the list {word1, word2, word3,..., wordN}`,
+    max_tokens: 4 * maxWords + 80,
     temperature: 0,
   };
 
   const response = await globalConfiguration.openAIInstance.createCompletion(
     completionRequestParams
   );
-
   const wordsSuggestionsData = response.data?.choices[0]?.text;
   if (wordsSuggestionsData) {
     const trimmedString = wordsSuggestionsData.replace(/\n\n/g, "");
