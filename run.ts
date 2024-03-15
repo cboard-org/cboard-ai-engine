@@ -43,12 +43,11 @@ engineInstance
   .then((suggestions) =>
     console.log(
       "\nSuggestions -----------------------------------------------\n",
-      "label: " + suggestions[1].label,
-      "images: " + JSON.stringify(suggestions[1].pictogram.images),
+      suggestions
     )
   );
 
-/* // Get suggestions with GlobalSymbol and Pictonizer images
+// Get suggestions with GlobalSymbol and Pictonizer images
 engineInstance
   .getSuggestionsAndProcessPictograms({
     prompt,
@@ -69,4 +68,4 @@ engineInstance.pictonizer("dog").then((image) => {
     "Pictonizer image -----------------------------------------------\n"
   );
   console.dir(image, { depth: null });
-}); */
+});
