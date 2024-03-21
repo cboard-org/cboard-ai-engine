@@ -33,7 +33,7 @@ const engineInstance = initEngine({
   contentSafetyConfiguration,
 });
 
-const prompt = "Modern family";
+const prompt = "A family of 5 people";
 const maxSuggestions = 5;
 const symbolSet = "arasaac";
 const language = "eng";

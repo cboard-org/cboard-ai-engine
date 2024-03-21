@@ -3,10 +3,8 @@ import axios, { AxiosRequestConfig } from "axios";
 import { DEFAULT_GLOBAL_SYMBOLS_URL, DEFAULT_LANGUAGE, DEFAULT_MAX_SUGGESTIONS } from "./constants";
 import { LabelsSearchApiResponse } from "./types/global-symbols";
 import { nanoid } from "nanoid";
-//TODO @rodriSanchez check this is OK
-const ContentSafetyClient = require("@azure-rest/ai-content-safety").default,
-  { isUnexpected } = require("@azure-rest/ai-content-safety");
-const { AzureKeyCredential } = require("@azure/core-auth");
+import ContentSafetyClient, { isUnexpected  } from "@azure-rest/ai-content-safety";
+import { AzureKeyCredential } from "@azure/core-auth";
 
 
 const globalConfiguration = {
@@ -302,6 +300,8 @@ async function isContentSafe(
   ): Promise<boolean> {
     try {
       const contentSafetyConfig = globalConfiguration.contentSafety;
+      if(!contentSafetyConfig.endpoint || !contentSafetyConfig.key)
+        throw new Error('Content safety endpoint or key not defined');
       const credential = new AzureKeyCredential(contentSafetyConfig.key);
       const client = ContentSafetyClient(contentSafetyConfig.endpoint, credential);
       const text = textPrompt;
@@ -313,18 +313,8 @@ async function isContentSafe(
       if (isUnexpected(result)) {
         throw result;
       }
-      let severity = 0;
-      for (let i = 0; i < result.body.categoriesAnalysis.length; i++) {
-        const textCategoriesAnalysisOutput = result.body.categoriesAnalysis[i];
-        console.log(textCategoriesAnalysisOutput.category," severity: ",textCategoriesAnalysisOutput.severity);
-        severity = severity + textCategoriesAnalysisOutput.severity;
-      }
-      return new Promise<boolean>((resolve) => {
-        if (severity > 1)
-          resolve(false);
-        else
-          resolve(true);
-      });
+      const severity = result.body.categoriesAnalysis.reduce((acc, cur) => acc + (cur.severity || 0), 0);
+      return severity <= 1;
     } catch (error) {
       throw new Error('Error checking content safety: '+error);
     }
