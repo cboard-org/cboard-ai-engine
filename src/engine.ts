@@ -95,6 +95,7 @@ async function getWordSuggestions({
   maxWords: number;
   language: string;
 }): Promise<string[]> {
+  const max_tokens = Math.round(4.2 * maxWords + 110);
   const completionRequestParams = {
     model: "text-davinci-003",
     prompt: `act as a speech pathologist selecting pictograms in language ${language} 
@@ -104,9 +105,9 @@ async function getWordSuggestions({
         -It is very important to not repeat words. 
         -Do not add any other text or characters to the list. 
         -Template for the list {word1, word2, word3,..., wordN}`,
-    max_tokens: 4 * maxWords + 80,
     temperature: 0,
-  };
+    max_tokens: max_tokens,
+  }; 
 
   const response = await globalConfiguration.openAIInstance.createCompletion(
     completionRequestParams
