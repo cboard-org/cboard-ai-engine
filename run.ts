@@ -45,7 +45,7 @@ engineInstance.isContentSafe(prompt).then((result) => {
 });
 
 
-// Get suggestions
+// Get suggestions with GlobalSymbols
 engineInstance
   .getSuggestions({
     prompt,
@@ -56,11 +56,13 @@ engineInstance
   .then((suggestions) =>
     console.log(
       "\nSuggestions -----------------------------------------------\n",
-      suggestions
+      suggestions,
+      "length: " + suggestions.length
     )
   );
 
-/* // Get suggestions with image
+/*
+// Get suggestions with GlobalSymbol and Pictonizer images
 engineInstance
   .getSuggestionsAndProcessPictograms({
     prompt,
