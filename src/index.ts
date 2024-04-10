@@ -3,4 +3,5 @@ export {
   type Suggestion,
   type AIImage,
   type PictonizerConfiguration,
+  type ContentSafetyConfiguration,
 } from "./engine";

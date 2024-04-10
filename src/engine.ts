@@ -7,11 +7,15 @@ import {
 } from "./constants";
 import { LabelsSearchApiResponse } from "./types/global-symbols";
 import { nanoid } from "nanoid";
+import ContentSafetyClient, { isUnexpected  } from "@azure-rest/ai-content-safety";
+import { AzureKeyCredential } from "@azure/core-auth";
+
 
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
   globalSymbolsURL: DEFAULT_GLOBAL_SYMBOLS_URL,
   pictonizer: {} as PictonizerConfiguration,
+  contentSafety: {} as ContentSafetyConfiguration,
 };
 
 export type Suggestion = {
@@ -43,14 +47,21 @@ export type PictonizerConfiguration = {
   keyWords?: string;
 };
 
+export type ContentSafetyConfiguration = {
+  endpoint: string;
+  key: string;
+};
+
 export function init({
   openAIConfiguration,
   globalSymbolsApiURL,
   pictonizerConfiguration,
+  contentSafetyConfiguration,
 }: {
   openAIConfiguration: ConfigurationParameters;
   globalSymbolsApiURL?: string;
   pictonizerConfiguration?: PictonizerConfiguration;
+  contentSafetyConfiguration?: ContentSafetyConfiguration;
 }) {
   const configuration = new Configuration(openAIConfiguration);
   globalConfiguration.openAIInstance = new OpenAIApi(configuration);
@@ -63,10 +74,15 @@ export function init({
     globalConfiguration.pictonizer = pictonizerConfiguration;
   }
 
+  if (contentSafetyConfiguration) {
+    globalConfiguration.contentSafety = contentSafetyConfiguration;
+  }
+
   return {
     getSuggestions,
     pictonizer,
     getSuggestionsAndProcessPictograms,
+    isContentSafe,
   };
 }
 
@@ -285,3 +301,29 @@ const getSuggestionsAndProcessPictograms = async ({
   );
   return suggestionsWithAIImages;
 };
+
+async function isContentSafe(
+  textPrompt: string,
+  ): Promise<boolean> {
+    try {
+      const contentSafetyConfig = globalConfiguration.contentSafety;
+      if(!contentSafetyConfig.endpoint || !contentSafetyConfig.key)
+        throw new Error('Content safety endpoint or key not defined');
+      const credential = new AzureKeyCredential(contentSafetyConfig.key);
+      const client = ContentSafetyClient(contentSafetyConfig.endpoint, credential);
+      const text = textPrompt;
+      const analyzeTextOption = { text: text };
+      const analyzeTextParameters = { body: analyzeTextOption };
+    
+      const result = await client.path("/text:analyze").post(analyzeTextParameters);
+    
+      if (isUnexpected(result)) {
+        throw result;
+      }
+      const severity = result.body.categoriesAnalysis.reduce((acc, cur) => acc + (cur.severity || 0), 0);
+      return severity <= 1;
+    } catch (error) {
+      throw new Error('Error checking content safety: '+error);
+    }
+     
+}
