@@ -52,6 +52,12 @@ export type ContentSafetyConfiguration = {
   key: string;
 };
 
+export type Board = {
+  boardTitle: string;
+  boardContent: string;
+  pictos: Suggestion[];
+};
+
 export function init({
   openAIConfiguration,
   globalSymbolsApiURL,
@@ -83,9 +89,11 @@ export function init({
     pictonizer,
     getSuggestionsAndProcessPictograms,
     isContentSafe,
+    getFullBoard,
   };
 }
 
+//Using a prompt get a list of suggested words.
 async function getWordSuggestions({
   prompt,
   maxWords,
@@ -129,6 +137,7 @@ async function getWordSuggestions({
   throw new Error("ERROR: Suggestion list is empty");
 }
 
+//Based on a list of words fetch the Pictogram URL from GlobalSymbols API
 async function fetchPictogramsURLs({
   words,
   symbolSet,
@@ -254,6 +263,7 @@ async function processPictograms(
   return suggestionsWithAIImage;
 }
 
+//Get suggested Pictograms based on a prompt.
 async function getSuggestions({
   prompt,
   maxSuggestions = DEFAULT_MAX_SUGGESTIONS,
@@ -276,7 +286,6 @@ async function getSuggestions({
       symbolSet,
       language,
     });
-
   return suggestionsWithGlobalSymbolsImages;
 }
 
@@ -303,6 +312,7 @@ const getSuggestionsAndProcessPictograms = async ({
   return suggestionsWithAIImages;
 };
 
+//Use Azure ContentSafety API to check if a string is safe for all users.
 async function isContentSafe(
   textPrompt: string,
   ): Promise<boolean> {
@@ -328,3 +338,69 @@ async function isContentSafe(
     }
      
 }
+
+
+//Using a list of words get a descriptive title.
+async function getBoardTitle( 
+  words: string[],
+  language: string
+): Promise<string> {
+  const max_tokens = Math.round(2 * words.length + 110);
+  const completionRequestParams = {
+    model: "text-davinci-003",
+    prompt: `act as a speech pathologist in language ${language} 
+      usign this list of words {${words}} create a descriptive title for a communication board. 
+      Here are mandatory instructions for the list:
+        -The title is 4 words maximum.
+        -It is very important to not repeat words. 
+        -Do not add any other text or characters to the title.`,
+    temperature: 0,
+    max_tokens: max_tokens,
+  }; 
+
+  const response = await globalConfiguration.openAIInstance.createCompletion(
+    completionRequestParams
+  );
+  const titleSuggestionsData = response.data?.choices[0]?.text;
+  if (titleSuggestionsData) {
+    return titleSuggestionsData;
+  } else {
+    return "No AI title.";
+  }
+}
+
+
+//Get a board with a title, a content desciption and Pictograms based on a prompt.
+async function getFullBoard({
+  prompt,
+  maxSuggestions = DEFAULT_MAX_SUGGESTIONS,
+  symbolSet,
+  language = DEFAULT_LANGUAGE,
+}: {
+  prompt: string;
+  maxSuggestions: number;
+  symbolSet?: string;
+  language: string;
+}): Promise<Board> {
+  const words: string[] = await getWordSuggestions({
+    prompt,
+    maxWords: maxSuggestions,
+    language,
+  });
+  //TODO we can check here if the word suggestions are safe @rodrisanchez
+  const title: string = await getBoardTitle(words,language);
+  console.log("Title: " + title);
+  const suggestionsWithGlobalSymbolsImages: Suggestion[] =
+    await fetchPictogramsURLs({
+      words,
+      symbolSet,
+      language,
+    });
+  return {
+    boardTitle: title,
+    boardContent: "MISC", //TODO change here to use a different midjourney model for different each category. 
+    pictos:suggestionsWithGlobalSymbolsImages,
+  };
+}
+
+

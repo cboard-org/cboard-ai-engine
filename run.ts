@@ -33,8 +33,8 @@ const engineInstance = initEngine({
   contentSafetyConfiguration,
 });
 
-const prompt = "A family of 5 people";
-const maxSuggestions = 5;
+const prompt = "elements to tell a story about a wizard and a lizard";
+const maxSuggestions = 10;
 const symbolSet = "arasaac";
 const language = "eng";
 
@@ -44,7 +44,7 @@ engineInstance.isContentSafe(prompt).then((result) => {
   console.log('Is content safe?', result);
 });
 
-
+/*
 // Get suggestions with GlobalSymbols
 engineInstance
   .getSuggestions({
@@ -58,8 +58,23 @@ engineInstance
       "\nSuggestions -----------------------------------------------\n",
       suggestions,
       "length: " + suggestions.length
-    )
+    )    
   );
+*/
+
+engineInstance
+  .getFullBoard({
+    prompt,
+    maxSuggestions,
+    symbolSet,
+    language,
+  })
+  .then((board) =>
+    console.log(
+      "\nFull board \n",
+      board
+    )
+);
 
 /*
 // Get suggestions with GlobalSymbol and Pictonizer images
