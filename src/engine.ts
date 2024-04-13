@@ -390,6 +390,7 @@ async function getFullBoard({
   //TODO we can check here if the word suggestions are safe @rodrisanchez
   const title: string = await getBoardTitle(words,language);
   console.log("Title: " + title);
+  const content: string = await getBoardContent(words,language);
   const suggestionsWithGlobalSymbolsImages: Suggestion[] =
     await fetchPictogramsURLs({
       words,
@@ -398,9 +399,35 @@ async function getFullBoard({
     });
   return {
     boardTitle: title,
-    boardContent: "MISC", //TODO change here to use a different midjourney model for different each category. 
+    boardContent: content, 
     pictos:suggestionsWithGlobalSymbolsImages,
   };
 }
 
 
+//Using a list of words get a descriptive title.
+async function getBoardContent( 
+  words: string[],
+  language: string
+): Promise<string> {
+  const max_tokens = Math.round(2 * words.length + 110);
+  const completionRequestParams = {
+    model: "text-davinci-003",
+    prompt: `given this list of words {${words}} you have to categorize all of them into one of the following categories only. 
+    If you can't find a category use MISC. Categories:{PEOPLE, EMOTIONS, FOOD, PLACES, NATURE, MISC}
+    Use the following template for the response {Category1:word1; Category2:word2,word3, Category3:word4,...}`,
+    //TODO its a good idea to use the content category for each picto instead of the whole board.
+    temperature: 0,
+    max_tokens: max_tokens,
+  }; 
+
+  const response = await globalConfiguration.openAIInstance.createCompletion(
+    completionRequestParams
+  );
+  const contentSuggestionData = response.data?.choices[0]?.text;
+  if (contentSuggestionData) {
+    return contentSuggestionData;
+  } else {
+    return "No AI content.";
+  }
+}

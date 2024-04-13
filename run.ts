@@ -33,7 +33,7 @@ const engineInstance = initEngine({
   contentSafetyConfiguration,
 });
 
-const prompt = "elements to tell a story about a wizard and a lizard";
+const prompt = "A japanese family";
 const maxSuggestions = 10;
 const symbolSet = "arasaac";
 const language = "eng";
