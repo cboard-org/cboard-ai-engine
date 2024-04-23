@@ -22,6 +22,7 @@ export type Suggestion = {
   id: string;
   label: string;
   locale: string;
+  category?: string;
   pictogram: {
     isAIGenerated: boolean;
     images:
@@ -54,7 +55,6 @@ export type ContentSafetyConfiguration = {
 
 export type Board = {
   boardTitle: string;
-  boardContent: string;
   pictos: Suggestion[];
 };
 
@@ -363,9 +363,9 @@ async function getBoardTitle(
   );
   const titleSuggestionsData = response.data?.choices[0]?.text;
   if (titleSuggestionsData) {
-    return titleSuggestionsData;
+    return titleSuggestionsData.replace(/^\n\n/, '');
   } else {
-    return "No AI title.";
+    throw new Error("Error fetching AI title");
   }
 }
 
@@ -390,16 +390,20 @@ async function getFullBoard({
   //TODO we can check here if the word suggestions are safe @rodrisanchez
   const title: string = await getBoardTitle(words,language);
   console.log("Title: " + title);
-  const content: string = await getBoardContent(words,language);
+  const categories: Map<string, string[]> = await getBoardContent(words,language);
+  //log
+  const categoryObject = Object.fromEntries(categories);
+  console.log("Categories:", categoryObject); 
+  //
   const suggestionsWithGlobalSymbolsImages: Suggestion[] =
     await fetchPictogramsURLs({
       words,
       symbolSet,
       language,
     });
+  categorizePictos(suggestionsWithGlobalSymbolsImages,categories)
   return {
-    boardTitle: title,
-    boardContent: content, 
+    boardTitle: title, 
     pictos:suggestionsWithGlobalSymbolsImages,
   };
 }
@@ -409,25 +413,52 @@ async function getFullBoard({
 async function getBoardContent( 
   words: string[],
   language: string
-): Promise<string> {
+): Promise<Map<string, string[]>> {
   const max_tokens = Math.round(2 * words.length + 110);
   const completionRequestParams = {
     model: "text-davinci-003",
-    prompt: `given this list of words {${words}} you have to categorize all of them into one of the following categories only. 
-    If you can't find a category use MISC. Categories:{PEOPLE, EMOTIONS, FOOD, PLACES, NATURE, MISC}
+    prompt: `given this list of words {${words}} you have to sort all of them into one of the following categories only. 
+    For default use DEF. Categories:{PEOPLE, EMOTIONS, FOOD, PLACES, NATURE, OTHER}
     Use the following template for the response {Category1:word1; Category2:word2,word3, Category3:word4,...}`,
     //TODO its a good idea to use the content category for each picto instead of the whole board.
     temperature: 0,
     max_tokens: max_tokens,
   }; 
-
   const response = await globalConfiguration.openAIInstance.createCompletion(
     completionRequestParams
   );
   const contentSuggestionData = response.data?.choices[0]?.text;
+  console.log("contentSuggestionData" + contentSuggestionData);
   if (contentSuggestionData) {
-    return contentSuggestionData;
+    return parseContent(contentSuggestionData);
   } else {
-    return "No AI content.";
+    throw new Error("Error fetching AI categories");
   }
+}
+
+
+// Function to parse categories and words from the board content
+function parseContent(content: string): Map<string, string[]> {
+  const categoryMap = new Map<string, string[]>();
+  const matches = content.match(/([^}]*)/);
+  if (matches && matches[1]) {
+      matches[1].split(';').forEach(pair => {
+          const [category, wordsString] = pair.split(':').map(item => item.trim());
+          const words = wordsString.split(',').map(word => word.trim());
+          categoryMap.set(category, words);
+      });
+  }
+
+  return categoryMap;
+}
+
+// Function to add categories to pictos
+function categorizePictos(pictos: Suggestion[], categoryMap: Map<string, string[]>): void {
+  pictos.forEach(picto => {
+    categoryMap.forEach((words, category) => {
+      if (words.some(word => word.toLowerCase() === picto.label.toLowerCase())) {
+        picto.category = category;
+      }
+    });
+  });
 }
