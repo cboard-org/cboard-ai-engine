@@ -183,7 +183,8 @@ async function fetchPictogramsURLs({
               images: data.map((pictogram: any) => ({
                 id: pictogram._id,
                 symbolSet: 'arasaac',
-                url: `https://api.arasaac.org/api/pictograms/${pictogram._id}`,
+                url: `https://static.arasaac.org/pictograms/${pictogram._id}/${pictogram._id}.png`,
+                //url: `https://api.arasaac.org/api/pictograms/${pictogram._id}`,
               })),
             },
           };
