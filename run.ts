@@ -36,7 +36,7 @@ const engineInstance = initEngine({
 const prompt = "A family of 5 people";
 const maxSuggestions = 5;
 const symbolSet = "arasaac";
-const language = "eng";
+const language = "eng"; 
 
 //Check content safety
 //console.log("isPromptSafe: "+ engineInstance.isContentSafe(prompt));

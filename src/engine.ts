@@ -1,6 +1,7 @@
 import { Configuration, OpenAIApi, ConfigurationParameters } from "openai";
 import axios, { AxiosRequestConfig } from "axios";
 import {
+  DEFAULT_ARASAAC_URL,
   DEFAULT_GLOBAL_SYMBOLS_URL,
   DEFAULT_LANGUAGE,
   DEFAULT_MAX_SUGGESTIONS,
@@ -14,6 +15,7 @@ import { AzureKeyCredential } from "@azure/core-auth";
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
   globalSymbolsURL: DEFAULT_GLOBAL_SYMBOLS_URL,
+  arasaacURL: DEFAULT_ARASAAC_URL,
   pictonizer: {} as PictonizerConfiguration,
   contentSafety: {} as ContentSafetyConfiguration,
 };
@@ -55,11 +57,13 @@ export type ContentSafetyConfiguration = {
 export function init({
   openAIConfiguration,
   globalSymbolsApiURL,
+  arasaacURL,
   pictonizerConfiguration,
   contentSafetyConfiguration,
 }: {
   openAIConfiguration: ConfigurationParameters;
   globalSymbolsApiURL?: string;
+  arasaacURL?:string;
   pictonizerConfiguration?: PictonizerConfiguration;
   contentSafetyConfiguration?: ContentSafetyConfiguration;
 }) {
@@ -68,6 +72,10 @@ export function init({
 
   if (globalSymbolsApiURL) {
     globalConfiguration.globalSymbolsURL = globalSymbolsApiURL;
+  }
+
+  if (arasaacURL) {
+    globalConfiguration.arasaacURL = arasaacURL;
   }
 
   if (pictonizerConfiguration) {
@@ -139,7 +147,68 @@ async function fetchPictogramsURLs({
   language: string;
 }): Promise<Suggestion[]> {
   try {
+    if(symbolSet == 'arasaac'){
+      //https://api.arasaac.org/api/pictograms/en/search/apple
+      //https://api.arasaac.org/api/pictograms/en/bestsearch/apple
+      //https://api.arasaac.org/api/pictograms/_id
+      
+      
+      const locale = convertLanguageToLocale(language); //Function to change from eng to en, spa to es
+
+      console.log('fetching words: -------------------------------------');
+      const responses = await Promise.all(
+        words.map(async (word) => {
+          const fullUrl = `${globalConfiguration.arasaacURL}/${locale}/bestsearch/${encodeURIComponent(word)}`;
+          console.log('fetching: '+fullUrl);
+          try {
+            const response = await axios.get(fullUrl);
+            return response.data;
+          } catch (error) {
+            // Handle error here
+            console.error(`Error for word "${word}": ${error}`);
+            return [{"_id":'0000',"keywords":[{"keyword":`${word}`}]}]
+          }
+        })
+      );
+
+      const suggestions: Suggestion[] = responses.map((response) => {
+        const data = response;
+        if (data[0]._id != '0000')
+          return {
+            id: nanoid(5),
+            label: data[0].keywords[0].keyword,
+            locale: language,
+            pictogram: {
+              isAIGenerated: false,
+              images: data.map((pictogram: any) => ({
+                id: pictogram._id,
+                symbolSet: 'arasaac',
+                url: `https://api.arasaac.org/api/pictograms/${pictogram._id}`,
+              })),
+            },
+          };
+        return {
+          id: nanoid(5),
+          label: words[responses.indexOf(response)],
+          locale: language,
+          pictogram: {
+            isAIGenerated: true,
+            images: [
+              {
+                blob: null,
+                ok: false,
+                error: "ERROR: No image in the Symbol Set",
+                prompt: words[responses.indexOf(response)],
+              },
+            ],
+          },
+        };
+      });
+      return suggestions;
+    
+    } else {
     const requests = words.map((word) =>
+      //@rodrisanchez esto no lo entiendi 
       axios.get<LabelsSearchApiResponse>(globalConfiguration.globalSymbolsURL, {
         params: {
           query: word,
@@ -149,7 +218,6 @@ async function fetchPictogramsURLs({
       } as AxiosRequestConfig)
     );
     const responses = await Promise.all(requests);
-
     const suggestions: Suggestion[] = responses.map((response) => {
       const data = response.data;
       if (data.length)
@@ -185,6 +253,7 @@ async function fetchPictogramsURLs({
       };
     });
     return suggestions;
+  }
   } catch (error: Error | any) {
     throw new Error("Error fetching pictograms URLs " + error.message);
   }
@@ -327,4 +396,13 @@ async function isContentSafe(
       throw new Error('Error checking content safety: '+error);
     }
      
+}
+
+function convertLanguageToLocale(language: string): string {
+  const languageMap: { [key: string]: string } = {
+    eng: 'en',
+    spa: 'es',
+    // Add more mappings as needed
+  };
+  return languageMap[language] || language;
 }
