@@ -419,7 +419,7 @@ async function getBoardContent(
     model: "text-davinci-003",
     prompt: `given this list of words {${words}} you have to sort all of them into one of the following categories only. 
     For default use DEF. Categories:{PEOPLE, EMOTIONS, FOOD, PLACES, NATURE, OTHER}
-    Use the following template for the response {Category1:word1; Category2:word2,word3, Category3:word4,...}`,
+    Use the following template for the response {Category1:word1; Category2:word2,word3; Category3:word4,...}`,
     //TODO its a good idea to use the content category for each picto instead of the whole board.
     temperature: 0,
     max_tokens: max_tokens,
