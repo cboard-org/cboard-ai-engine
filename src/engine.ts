@@ -440,7 +440,7 @@ async function getBoardContent(
 // Function to parse categories and words from the board content
 function parseContent(content: string): Map<string, string[]> {
   const categoryMap = new Map<string, string[]>();
-  const matches = content.match(/([^}]*)/);
+  const matches = content.match(/([^.]*)/);
   if (matches && matches[1]) {
       matches[1].split(';').forEach(pair => {
           const [category, wordsString] = pair.split(':').map(item => item.trim());
