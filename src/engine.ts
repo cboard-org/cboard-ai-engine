@@ -148,10 +148,6 @@ async function fetchPictogramsURLs({
 }): Promise<Suggestion[]> {
   try {
     if(symbolSet == 'arasaac'){
-      //https://api.arasaac.org/api/pictograms/en/search/apple
-      //https://api.arasaac.org/api/pictograms/en/bestsearch/apple
-      //https://api.arasaac.org/api/pictograms/_id
-      
       
       const locale = convertLanguageToLocale(language); //Function to change from eng to en, spa to es
 
