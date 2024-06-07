@@ -97,7 +97,7 @@ async function getWordSuggestions({
 }): Promise<string[]> {
   const max_tokens = Math.round(4.2 * maxWords + 110);
   const completionRequestParams = {
-    model: "text-davinci-003",
+    model: "gpt-3.5-turbo-instruct", 
     prompt: `act as a speech pathologist selecting pictograms in language ${language} 
       for a non verbal person about ${prompt}. 
       Here are mandatory instructions for the list:
@@ -112,7 +112,11 @@ async function getWordSuggestions({
   const response = await globalConfiguration.openAIInstance.createCompletion(
     completionRequestParams
   );
+  //Log to find the model
+  console.log("Model: "+response.data?.model);
   const wordsSuggestionsData = response.data?.choices[0]?.text;
+  //Log wordsSuggestionsData 
+  console.log("WordsSuggestionsData: "+wordsSuggestionsData);
   if (wordsSuggestionsData) {
     const trimmedString = wordsSuggestionsData.replace(/\n\n/g, "");
     const match = trimmedString.match(/{(.*?)}/);
