@@ -44,7 +44,7 @@ engineInstance.isContentSafe(prompt).then((result) => {
   console.log('Is content safe?', result);
 });
 
-
+/*
 // Get suggestions with GlobalSymbols
 engineInstance
   .getSuggestions({
@@ -58,8 +58,23 @@ engineInstance
       "\nSuggestions -----------------------------------------------\n",
       suggestions,
       "length: " + suggestions.length
-    )
+    )    
   );
+*/
+
+engineInstance
+  .getFullBoard({
+    prompt,
+    maxSuggestions,
+    symbolSet,
+    language,
+  })
+  .then((board) =>
+    console.log(
+      "\nFull board \n",
+      board
+    )
+);
 
 /*
 // Get suggestions with GlobalSymbol and Pictonizer images
