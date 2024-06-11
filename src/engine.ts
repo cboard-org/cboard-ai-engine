@@ -112,11 +112,7 @@ async function getWordSuggestions({
   const response = await globalConfiguration.openAIInstance.createCompletion(
     completionRequestParams
   );
-  //Log to find the model
-  console.log("Model: "+response.data?.model);
   const wordsSuggestionsData = response.data?.choices[0]?.text;
-  //Log wordsSuggestionsData 
-  console.log("WordsSuggestionsData: "+wordsSuggestionsData);
   if (wordsSuggestionsData) {
     const trimmedString = wordsSuggestionsData.replace(/\n\n/g, "");
     const match = trimmedString.match(/{(.*?)}/);
