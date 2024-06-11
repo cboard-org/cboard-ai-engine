@@ -7,7 +7,7 @@ const apiKey = process.env.OPENAI_API_KEY;
 
 const openAIConfiguration = {
   apiKey,
-  basePath: "https://cboard-openai.openai.azure.com/openai/deployments/ToEdit",
+  basePath: "https://cboard-openai.openai.azure.com/openai/deployments/ToEdit-01",
   baseOptions: {
     headers: { "api-key": apiKey },
     params: {
@@ -33,8 +33,8 @@ const engineInstance = initEngine({
   contentSafetyConfiguration,
 });
 
-const prompt = "school";
-const maxSuggestions = 10;
+const prompt = "Italian food";
+const maxSuggestions = 5;
 const symbolSet = "arasaac";
 const language = "eng";
 
