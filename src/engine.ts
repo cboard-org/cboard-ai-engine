@@ -347,7 +347,7 @@ async function getBoardTitle(
 ): Promise<string> {
   const max_tokens = Math.round(2 * words.length + 110);
   const completionRequestParams = {
-    model: "text-davinci-003",
+    model: "gpt-3.5-turbo-instruct",
     prompt: `act as a speech pathologist in language ${language} 
       usign this list of words {${words}} create a descriptive title for a communication board. 
       Here are mandatory instructions for the list:
@@ -416,7 +416,7 @@ async function getBoardContent(
 ): Promise<Map<string, string[]>> {
   const max_tokens = Math.round(2 * words.length + 110);
   const completionRequestParams = {
-    model: "text-davinci-003",
+    model: "gpt-3.5-turbo-instruct",
     prompt: `given this list of words {${words}} you have to sort all of them into one of the following categories only. 
     For default use DEF. Categories:{PEOPLE, EMOTIONS, FOOD, PLACES, NATURE, OTHER}
     Use the following template for the response {Category1:word1; Category2:word2,word3; Category3:word4,...}`,
