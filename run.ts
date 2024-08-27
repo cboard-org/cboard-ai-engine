@@ -34,8 +34,9 @@ const engineInstance = initEngine({
 });
 
 const prompt = "Italian food";
-const maxSuggestions = 5;
+const maxSuggestions = 15;
 const symbolSet = "arasaac";
+//const language = "spa";
 const language = "eng";
 
 //Check content safety
