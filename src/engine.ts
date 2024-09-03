@@ -129,7 +129,6 @@ async function getWordSuggestions({
   throw new Error("ERROR: Suggestion list is empty");
 }
 
-//Method to search in GlobalSymbols database the URL of each suggestion.
 async function fetchPictogramsURLs({
   words,
   symbolSet,
@@ -143,7 +142,7 @@ async function fetchPictogramsURLs({
     const requests = words.map((word) =>
       axios.get<LabelsSearchApiResponse>(globalConfiguration.globalSymbolsURL, {
         params: {
-          query: removeAccents(word),
+          query: removeDiacritics(word),
           symbolset: symbolSet,
           language: language,
         },
@@ -331,6 +330,6 @@ async function isContentSafe(
      
 }
 
-function removeAccents(str: string) {
+function removeDiacritics(str: string) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
