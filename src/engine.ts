@@ -142,14 +142,15 @@ async function fetchPictogramsURLs({
     const requests = words.map((word) =>
       axios.get<LabelsSearchApiResponse>(globalConfiguration.globalSymbolsURL, {
         params: {
-          query: word,
+          query: removeDiacritics(word),
           symbolset: symbolSet,
           language: language,
         },
       } as AxiosRequestConfig)
     );
     const responses = await Promise.all(requests);
-
+    //TODO: to get better results, we can use nlp.js to get the singular of each word
+    
     const suggestions: Suggestion[] = responses.map((response) => {
       const data = response.data;
       if (data.length)
@@ -327,4 +328,8 @@ async function isContentSafe(
       throw new Error('Error checking content safety: '+error);
     }
      
+}
+
+function removeDiacritics(str: string) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
