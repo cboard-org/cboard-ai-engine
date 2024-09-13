@@ -20,7 +20,7 @@ export async function getArasaacPictogramSuggestions({
   const locale = convertLanguageToLocale(language);
   const responses = await Promise.all(
     words.map(async (word) => {
-      const fullUrl = `${URL}/${locale}/bestsearch/${encodeURIComponent(word)}`;
+      const fullUrl = `${URL}/${locale}/bestsearch/${encodeURIComponent(removeDiacritics(word))}`;
       return axios
         .get<BestSearchApiResponse>(fullUrl)
         .then((response) => response.data)
@@ -66,7 +66,7 @@ export async function getGlobalSymbolsPictogramSuggestions({
       axios
         .get<LabelsSearchApiResponse>(URL, {
           params: {
-            query: word,
+            query: removeDiacritics(word),
             symbolset: symbolSet,
             language: language,
           },
@@ -126,4 +126,8 @@ function convertLanguageToLocale(language: string): string {
     // Add more mappings as needed
   };
   return languageMap[language] || language;
+}
+
+function removeDiacritics(str: string) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
