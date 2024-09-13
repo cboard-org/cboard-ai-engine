@@ -1,19 +1,26 @@
 import { Configuration, OpenAIApi, ConfigurationParameters } from "openai";
-import axios, { AxiosRequestConfig } from "axios";
 import {
+  ARASAAC,
+  DEFAULT_ARASAAC_URL,
   DEFAULT_GLOBAL_SYMBOLS_URL,
   DEFAULT_LANGUAGE,
   DEFAULT_MAX_SUGGESTIONS,
+  GLOBAL_SYMBOLS,
 } from "./constants";
-import { LabelsSearchApiResponse } from "./types/global-symbols";
-import { nanoid } from "nanoid";
-import ContentSafetyClient, { isUnexpected  } from "@azure-rest/ai-content-safety";
+import ContentSafetyClient, {
+  isUnexpected,
+} from "@azure-rest/ai-content-safety";
 import { AzureKeyCredential } from "@azure/core-auth";
-
+import {
+  getArasaacPictogramSuggestions,
+  getGlobalSymbolsPictogramSuggestions,
+} from "./lib/symbolSets";
+import { type SymbolSet } from "./lib/symbolSets";
 
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
   globalSymbolsURL: DEFAULT_GLOBAL_SYMBOLS_URL,
+  arasaacURL: DEFAULT_ARASAAC_URL,
   pictonizer: {} as PictonizerConfiguration,
   contentSafety: {} as ContentSafetyConfiguration,
 };
@@ -55,11 +62,13 @@ export type ContentSafetyConfiguration = {
 export function init({
   openAIConfiguration,
   globalSymbolsApiURL,
+  arasaacURL,
   pictonizerConfiguration,
   contentSafetyConfiguration,
 }: {
   openAIConfiguration: ConfigurationParameters;
   globalSymbolsApiURL?: string;
+  arasaacURL?: string;
   pictonizerConfiguration?: PictonizerConfiguration;
   contentSafetyConfiguration?: ContentSafetyConfiguration;
 }) {
@@ -68,6 +77,10 @@ export function init({
 
   if (globalSymbolsApiURL) {
     globalConfiguration.globalSymbolsURL = globalSymbolsApiURL;
+  }
+
+  if (arasaacURL) {
+    globalConfiguration.arasaacURL = arasaacURL;
   }
 
   if (pictonizerConfiguration) {
@@ -107,7 +120,7 @@ async function getWordSuggestions({
         -Template for the list {word1, word2, word3,..., wordN}`,
     temperature: 0,
     max_tokens: max_tokens,
-  }; 
+  };
 
   const response = await globalConfiguration.openAIInstance.createCompletion(
     completionRequestParams
@@ -131,64 +144,26 @@ async function getWordSuggestions({
 
 async function fetchPictogramsURLs({
   words,
-  symbolSet,
+  symbolSet = ARASAAC,
   language,
 }: {
   words: string[];
-  symbolSet?: string;
+  symbolSet?: SymbolSet;
   language: string;
 }): Promise<Suggestion[]> {
-  try {
-    const requests = words.map((word) =>
-      axios.get<LabelsSearchApiResponse>(globalConfiguration.globalSymbolsURL, {
-        params: {
-          query: removeDiacritics(word),
-          symbolset: symbolSet,
-          language: language,
-        },
-      } as AxiosRequestConfig)
-    );
-    const responses = await Promise.all(requests);
-    //TODO: to get better results, we can use nlp.js to get the singular of each word
-    
-    const suggestions: Suggestion[] = responses.map((response) => {
-      const data = response.data;
-      if (data.length)
-        return {
-          id: nanoid(5),
-          label: data[0].text,
-          locale: data[0].language,
-          pictogram: {
-            isAIGenerated: false,
-            images: data.map((label) => ({
-              id: label.id.toString(),
-              symbolSet: label.picto.symbolset_id.toString(),
-              url: label.picto.image_url,
-            })),
-          },
-        };
-
-      return {
-        id: nanoid(5),
-        label: words[responses.indexOf(response)],
-        locale: language,
-        pictogram: {
-          isAIGenerated: true,
-          images: [
-            {
-              blob: null,
-              ok: false,
-              error: "ERROR: No image in the Symbol Set",
-              prompt: words[responses.indexOf(response)],
-            },
-          ],
-        },
-      };
+  if (symbolSet === GLOBAL_SYMBOLS)
+    return await getGlobalSymbolsPictogramSuggestions({
+      URL: globalConfiguration.globalSymbolsURL,
+      words,
+      language,
+      symbolSet,
     });
-    return suggestions;
-  } catch (error: Error | any) {
-    throw new Error("Error fetching pictograms URLs " + error.message);
-  }
+  // Default to ARASAAC
+  return await getArasaacPictogramSuggestions({
+    URL: globalConfiguration.arasaacURL,
+    words,
+    language,
+  });
 }
 
 async function pictonizer(imagePrompt: string): Promise<AIImage> {
@@ -263,7 +238,7 @@ async function getSuggestions({
 }: {
   prompt: string;
   maxSuggestions: number;
-  symbolSet?: string;
+  symbolSet?: SymbolSet;
   language: string;
 }): Promise<Suggestion[]> {
   const words: string[] = await getWordSuggestions({
@@ -289,7 +264,7 @@ const getSuggestionsAndProcessPictograms = async ({
 }: {
   prompt: string;
   maxSuggestions: number;
-  symbolSet?: string;
+  symbolSet?: SymbolSet;
   language: string;
 }) => {
   const suggestionsWithGlobalSymbolsImages = await getSuggestions({
@@ -304,32 +279,33 @@ const getSuggestionsAndProcessPictograms = async ({
   return suggestionsWithAIImages;
 };
 
-async function isContentSafe(
-  textPrompt: string,
-  ): Promise<boolean> {
-    try {
-      const contentSafetyConfig = globalConfiguration.contentSafety;
-      if(!contentSafetyConfig.endpoint || !contentSafetyConfig.key)
-        throw new Error('Content safety endpoint or key not defined');
-      const credential = new AzureKeyCredential(contentSafetyConfig.key);
-      const client = ContentSafetyClient(contentSafetyConfig.endpoint, credential);
-      const text = textPrompt;
-      const analyzeTextOption = { text: text };
-      const analyzeTextParameters = { body: analyzeTextOption };
-    
-      const result = await client.path("/text:analyze").post(analyzeTextParameters);
-    
-      if (isUnexpected(result)) {
-        throw result;
-      }
-      const severity = result.body.categoriesAnalysis.reduce((acc, cur) => acc + (cur.severity || 0), 0);
-      return severity <= 1;
-    } catch (error) {
-      throw new Error('Error checking content safety: '+error);
-    }
-     
-}
+async function isContentSafe(textPrompt: string): Promise<boolean> {
+  try {
+    const contentSafetyConfig = globalConfiguration.contentSafety;
+    if (!contentSafetyConfig.endpoint || !contentSafetyConfig.key)
+      throw new Error("Content safety endpoint or key not defined");
+    const credential = new AzureKeyCredential(contentSafetyConfig.key);
+    const client = ContentSafetyClient(
+      contentSafetyConfig.endpoint,
+      credential
+    );
+    const text = textPrompt;
+    const analyzeTextOption = { text: text };
+    const analyzeTextParameters = { body: analyzeTextOption };
 
-function removeDiacritics(str: string) {
-  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const result = await client
+      .path("/text:analyze")
+      .post(analyzeTextParameters);
+
+    if (isUnexpected(result)) {
+      throw result;
+    }
+    const severity = result.body.categoriesAnalysis.reduce(
+      (acc, cur) => acc + (cur.severity || 0),
+      0
+    );
+    return severity <= 1;
+  } catch (error) {
+    throw new Error("Error checking content safety: " + error);
+  }
 }

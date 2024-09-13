@@ -14,10 +14,10 @@ type Pictogram = {
   image_url: string;
   native_format: string;
   adaptable: string;
-  symbolset: SymbolSet;
+  symbolset: GlobalSymbolsSymbolSet;
 };
 
-type SymbolSet = {
+type GlobalSymbolsSymbolSet = {
   id: number;
   slug: string;
   name: string;
