@@ -198,7 +198,7 @@ async function isContentSafe(textPrompt: string): Promise<boolean> {
       (acc, cur) => acc + (cur.severity || 0),
       0
     );
-    return severity <= 1;
+    return severity <= 3;
   } catch (error) {
     throw new Error("Error checking content safety: " + error);
   }
