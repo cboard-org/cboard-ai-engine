@@ -34,10 +34,11 @@ const engineInstance = initEngine({
   contentSafetyConfiguration,
 });
 
-const prompt = "A family of 5 people";
-const maxSuggestions = 5;
+const prompt = "Italian food";
+const maxSuggestions = 15;
 const symbolSet = "arasaac";
-const language = "eng"; 
+//const language = "spa";
+const language = "eng";
 
 //Check content safety
 //console.log("isPromptSafe: "+ engineInstance.isContentSafe(prompt));

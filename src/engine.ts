@@ -110,7 +110,7 @@ async function getWordSuggestions({
 }): Promise<string[]> {
   const max_tokens = Math.round(4.2 * maxWords + 110);
   const completionRequestParams = {
-    model: "text-davinci-003",
+    model: "gpt-3.5-turbo-instruct", 
     prompt: `act as a speech pathologist selecting pictograms in language ${language} 
       for a non verbal person about ${prompt}. 
       Here are mandatory instructions for the list:
@@ -308,4 +308,8 @@ async function isContentSafe(textPrompt: string): Promise<boolean> {
   } catch (error) {
     throw new Error("Error checking content safety: " + error);
   }
+}
+
+function removeDiacritics(str: string) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
