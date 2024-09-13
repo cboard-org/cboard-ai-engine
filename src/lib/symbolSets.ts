@@ -110,10 +110,9 @@ function getEmptyImageSuggestion(word: string, language: string): Suggestion {
       isAIGenerated: false,
       images: [
         {
-          blob: null,
-          ok: false,
-          error: "ERROR: No image in the Symbol Set",
-          prompt: word,
+          id: "0",
+          symbolSet: "0",
+          url: '',
         },
       ],
     },
