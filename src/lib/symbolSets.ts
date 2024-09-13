@@ -17,10 +17,9 @@ export async function getArasaacPictogramSuggestions({
   words: string[];
   language: string;
 }) {
-  const locale = convertLanguageToLocale(language);
   const responses = await Promise.all(
     words.map(async (word) => {
-      const fullUrl = `${URL}/${locale}/bestsearch/${encodeURIComponent(
+      const fullUrl = `${URL}/${language}/bestsearch/${encodeURIComponent(
         removeDiacritics(word)
       )}`;
       return axios
@@ -70,6 +69,7 @@ export async function getGlobalSymbolsPictogramSuggestions({
             query: removeDiacritics(word),
             symbolset: symbolSet || null,
             language: language,
+            language_iso_format: "639-1",
           },
         } as AxiosRequestConfig)
         .then((response) => response.data)
@@ -109,21 +109,11 @@ function getEmptyImageSuggestion(word: string, language: string): Suggestion {
         {
           id: "0",
           symbolSet: "0",
-          url: '',
+          url: "",
         },
       ],
     },
   };
-}
-
-function convertLanguageToLocale(language: string): string {
-  const languageMap: { [key: string]: string } = {
-    eng: "en",
-    spa: "es",
-    por: "pt",
-    // Add more mappings as needed
-  };
-  return languageMap[language] || language;
 }
 
 function removeDiacritics(str: string) {
