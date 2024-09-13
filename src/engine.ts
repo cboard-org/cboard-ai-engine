@@ -21,7 +21,6 @@ const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
   globalSymbolsURL: DEFAULT_GLOBAL_SYMBOLS_URL,
   arasaacURL: DEFAULT_ARASAAC_URL,
-  pictonizer: {} as PictonizerConfiguration,
   contentSafety: {} as ContentSafetyConfiguration,
 };
 
@@ -30,28 +29,13 @@ export type Suggestion = {
   label: string;
   locale: string;
   pictogram: {
-    isAIGenerated: boolean;
     images:
       | {
           id: string;
           symbolSet: string;
           url: string;
         }[]
-      | AIImage[];
   };
-};
-
-export type AIImage = {
-  blob: Blob | null;
-  ok: boolean;
-  error?: string;
-  prompt: string;
-};
-
-export type PictonizerConfiguration = {
-  URL?: string;
-  token?: string;
-  keyWords?: string;
 };
 
 export type ContentSafetyConfiguration = {
@@ -63,13 +47,11 @@ export function init({
   openAIConfiguration,
   globalSymbolsApiURL,
   arasaacURL,
-  pictonizerConfiguration,
   contentSafetyConfiguration,
 }: {
   openAIConfiguration: ConfigurationParameters;
   globalSymbolsApiURL?: string;
   arasaacURL?: string;
-  pictonizerConfiguration?: PictonizerConfiguration;
   contentSafetyConfiguration?: ContentSafetyConfiguration;
 }) {
   const configuration = new Configuration(openAIConfiguration);
@@ -83,18 +65,12 @@ export function init({
     globalConfiguration.arasaacURL = arasaacURL;
   }
 
-  if (pictonizerConfiguration) {
-    globalConfiguration.pictonizer = pictonizerConfiguration;
-  }
-
   if (contentSafetyConfiguration) {
     globalConfiguration.contentSafety = contentSafetyConfiguration;
   }
 
   return {
     getSuggestions,
-    pictonizer,
-    getSuggestionsAndProcessPictograms,
     isContentSafe,
   };
 }
@@ -168,70 +144,6 @@ async function fetchPictogramsURLs({
   });
 }
 
-async function pictonizer(imagePrompt: string): Promise<AIImage> {
-  const pictonizerConfig = globalConfiguration.pictonizer;
-  const keyWords = pictonizerConfig.keyWords || "";
-  const pictonizerPrompt = `${imagePrompt} ${keyWords}`;
-
-  try {
-    if (!!pictonizerConfig.URL && !!pictonizerConfig.token) {
-      const body = `input=${pictonizerPrompt}`;
-
-      const response = await fetch(pictonizerConfig.URL, {
-        method: "POST",
-        body: body,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Accept: "image/*",
-          Authorization: `Bearer ${pictonizerConfig.token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.blob();
-      const pictogram: AIImage = {
-        blob: data,
-        ok: true,
-        prompt: `${pictonizerPrompt}`,
-      };
-
-      return pictogram;
-    }
-    throw new Error("Pictonizer URL or Auth token not defined");
-  } catch (error: Error | any) {
-    console.log("Error generating pictogram: ", error.message);
-    const pictogram: AIImage = {
-      blob: null,
-      ok: false,
-      error: "ERROR: Can't generate image",
-      prompt: `${imagePrompt} ${keyWords}`,
-    };
-    return pictogram;
-  }
-}
-
-async function processPictograms(
-  suggestions: Suggestion[]
-): Promise<Suggestion[]> {
-  const suggestionsWithAIImage: Suggestion[] = [];
-
-  for (const suggestion of suggestions) {
-    if (suggestion.pictogram.isAIGenerated) {
-      const suggestionWithAIImage = { ...suggestion };
-      suggestionWithAIImage.pictogram.images = [
-        await pictonizer(suggestion.label),
-      ];
-      suggestionsWithAIImage.push(suggestionWithAIImage);
-    } else {
-      suggestionsWithAIImage.push(suggestion);
-    }
-  }
-  return suggestionsWithAIImage;
-}
-
 async function getSuggestions({
   prompt,
   maxSuggestions = DEFAULT_MAX_SUGGESTIONS,
@@ -260,29 +172,6 @@ async function getSuggestions({
 
   return suggestionsWithGlobalSymbolsImages;
 }
-
-const getSuggestionsAndProcessPictograms = async ({
-  prompt,
-  maxSuggestions = DEFAULT_MAX_SUGGESTIONS,
-  symbolSet,
-  language = DEFAULT_LANGUAGE,
-}: {
-  prompt: string;
-  maxSuggestions: number;
-  symbolSet?: SymbolSet;
-  language: string;
-}) => {
-  const suggestionsWithGlobalSymbolsImages = await getSuggestions({
-    prompt,
-    maxSuggestions,
-    symbolSet,
-    language,
-  });
-  const suggestionsWithAIImages = await processPictograms(
-    suggestionsWithGlobalSymbolsImages
-  );
-  return suggestionsWithAIImages;
-};
 
 async function isContentSafe(textPrompt: string): Promise<boolean> {
   try {

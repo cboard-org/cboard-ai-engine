@@ -107,7 +107,6 @@ function getEmptyImageSuggestion(word: string, language: string): Suggestion {
     label: word,
     locale: language,
     pictogram: {
-      isAIGenerated: false,
       images: [
         {
           id: "0",
