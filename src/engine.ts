@@ -16,6 +16,7 @@ import {
   getGlobalSymbolsPictogramSuggestions,
 } from "./lib/symbolSets";
 import { type SymbolSet } from "./lib/symbolSets";
+import { getLanguageName, getLanguageTwoLetterCode } from "./utils/language";
 
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
@@ -84,10 +85,11 @@ async function getWordSuggestions({
   maxWords: number;
   language: string;
 }): Promise<string[]> {
+  const languageName = getLanguageName(language);
   const max_tokens = Math.round(4.2 * maxWords + 110);
   const completionRequestParams = {
     model: "gpt-3.5-turbo-instruct", 
-    prompt: `act as a speech pathologist selecting pictograms in language ${language} 
+    prompt: `act as a speech pathologist selecting pictograms in language ${languageName} 
       for a non verbal person about ${prompt}. 
       Here are mandatory instructions for the list:
         -You must provide a list of ${maxWords} maximum.
@@ -129,18 +131,19 @@ async function fetchPictogramsURLs({
   symbolSet?: SymbolSet;
   globalSymbolsSymbolSet?: string;
 }): Promise<Suggestion[]> {
+  const twoLetterCodeLanguage = getLanguageTwoLetterCode(language);
   if (symbolSet === GLOBAL_SYMBOLS)
     return await getGlobalSymbolsPictogramSuggestions({
       URL: globalConfiguration.globalSymbolsURL,
       words,
-      language,
+      language: twoLetterCodeLanguage,
       symbolSet: globalSymbolsSymbolSet || null,
     });
   // Default to ARASAAC
   return await getArasaacPictogramSuggestions({
     URL: globalConfiguration.arasaacURL,
     words,
-    language,
+    language: twoLetterCodeLanguage,
   });
 }
 
@@ -162,7 +165,7 @@ async function getSuggestions({
     maxWords: maxSuggestions,
     language,
   });
-  const suggestionsWithGlobalSymbolsImages: Suggestion[] =
+  const suggestions: Suggestion[] =
     await fetchPictogramsURLs({
       words,
       language,
@@ -170,7 +173,7 @@ async function getSuggestions({
       globalSymbolsSymbolSet
     });
 
-  return suggestionsWithGlobalSymbolsImages;
+  return suggestions;
 }
 
 async function isContentSafe(textPrompt: string): Promise<boolean> {

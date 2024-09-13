@@ -27,13 +27,13 @@ const engineInstance = initEngine({
   contentSafetyConfiguration,
 });
 
-const prompt = "family";
+const prompt = "familia";
 const maxSuggestions = 15;
 const symbolSet = "arasaac";
 //const symbolSet = "global-symbols";
 const globalSymbolsSymbolSet = "global-symbols";
-//const language = "spa";
-const language = "eng";
+const language = "es";
+//const language = "en";
 
 //Check content safety
 //console.log("isPromptSafe: "+ engineInstance.isContentSafe(prompt));
