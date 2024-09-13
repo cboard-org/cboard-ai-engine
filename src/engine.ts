@@ -1,16 +1,21 @@
 import { Configuration, OpenAIApi, ConfigurationParameters } from "openai";
-import axios, { AxiosRequestConfig } from "axios";
 import {
+  ARASAAC,
   DEFAULT_ARASAAC_URL,
   DEFAULT_GLOBAL_SYMBOLS_URL,
   DEFAULT_LANGUAGE,
   DEFAULT_MAX_SUGGESTIONS,
+  GLOBAL_SYMBOLS,
 } from "./constants";
-import { LabelsSearchApiResponse } from "./types/global-symbols";
-import { nanoid } from "nanoid";
-import ContentSafetyClient, { isUnexpected  } from "@azure-rest/ai-content-safety";
+import ContentSafetyClient, {
+  isUnexpected,
+} from "@azure-rest/ai-content-safety";
 import { AzureKeyCredential } from "@azure/core-auth";
-
+import {
+  getArasaacPictogramSuggestions,
+  getGlobalSymbolsPictogramSuggestions,
+} from "./lib/symbolSets";
+import { type SymbolSet } from "./lib/symbolSets";
 
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
@@ -63,7 +68,7 @@ export function init({
 }: {
   openAIConfiguration: ConfigurationParameters;
   globalSymbolsApiURL?: string;
-  arasaacURL?:string;
+  arasaacURL?: string;
   pictonizerConfiguration?: PictonizerConfiguration;
   contentSafetyConfiguration?: ContentSafetyConfiguration;
 }) {
@@ -115,7 +120,7 @@ async function getWordSuggestions({
         -Template for the list {word1, word2, word3,..., wordN}`,
     temperature: 0,
     max_tokens: max_tokens,
-  }; 
+  };
 
   const response = await globalConfiguration.openAIInstance.createCompletion(
     completionRequestParams
@@ -139,121 +144,26 @@ async function getWordSuggestions({
 
 async function fetchPictogramsURLs({
   words,
-  symbolSet,
+  symbolSet = ARASAAC,
   language,
 }: {
   words: string[];
-  symbolSet?: string;
+  symbolSet?: SymbolSet;
   language: string;
 }): Promise<Suggestion[]> {
-  try {
-    if(symbolSet == 'arasaac'){
-      
-      const locale = convertLanguageToLocale(language); //Function to change from eng to en, spa to es
-
-      console.log('fetching words: -------------------------------------');
-      const responses = await Promise.all(
-        words.map(async (word) => {
-          const fullUrl = `${globalConfiguration.arasaacURL}/${locale}/bestsearch/${encodeURIComponent(word)}`;
-          console.log('fetching: '+fullUrl);
-          try {
-            const response = await axios.get(fullUrl);
-            return response.data;
-          } catch (error) {
-            // Handle error here
-            console.error(`Error for word "${word}": ${error}`);
-            return [{"_id":'0000',"keywords":[{"keyword":`${word}`}]}]
-          }
-        })
-      );
-
-      const suggestions: Suggestion[] = responses.map((response) => {
-        const data = response;
-        if (data[0]._id != '0000')
-          return {
-            id: nanoid(5),
-            label: data[0].keywords[0].keyword,
-            locale: language,
-            pictogram: {
-              isAIGenerated: false,
-              images: data.map((pictogram: any) => ({
-                id: pictogram._id,
-                symbolSet: 'arasaac',
-                url: `https://static.arasaac.org/pictograms/${pictogram._id}/${pictogram._id}.png`,
-                //url: `https://api.arasaac.org/api/pictograms/${pictogram._id}`,
-              })),
-            },
-          };
-        return {
-          id: nanoid(5),
-          label: words[responses.indexOf(response)],
-          locale: language,
-          pictogram: {
-            isAIGenerated: true,
-            images: [
-              {
-                blob: null,
-                ok: false,
-                error: "ERROR: No image in the Symbol Set",
-                prompt: words[responses.indexOf(response)],
-              },
-            ],
-          },
-        };
-      });
-      return suggestions;
-    
-    } else {
-    const requests = words.map((word) =>
-      //@rodrisanchez esto no lo entiendi 
-      axios.get<LabelsSearchApiResponse>(globalConfiguration.globalSymbolsURL, {
-        params: {
-          query: word,
-          symbolset: symbolSet,
-          language: language,
-        },
-      } as AxiosRequestConfig)
-    );
-    const responses = await Promise.all(requests);
-    const suggestions: Suggestion[] = responses.map((response) => {
-      const data = response.data;
-      if (data.length)
-        return {
-          id: nanoid(5),
-          label: data[0].text,
-          locale: data[0].language,
-          pictogram: {
-            isAIGenerated: false,
-            images: data.map((label) => ({
-              id: label.id.toString(),
-              symbolSet: label.picto.symbolset_id.toString(),
-              url: label.picto.image_url,
-            })),
-          },
-        };
-
-      return {
-        id: nanoid(5),
-        label: words[responses.indexOf(response)],
-        locale: language,
-        pictogram: {
-          isAIGenerated: true,
-          images: [
-            {
-              blob: null,
-              ok: false,
-              error: "ERROR: No image in the Symbol Set",
-              prompt: words[responses.indexOf(response)],
-            },
-          ],
-        },
-      };
+  if (symbolSet === GLOBAL_SYMBOLS)
+    return await getGlobalSymbolsPictogramSuggestions({
+      URL: globalConfiguration.globalSymbolsURL,
+      words,
+      language,
+      symbolSet,
     });
-    return suggestions;
-  }
-  } catch (error: Error | any) {
-    throw new Error("Error fetching pictograms URLs " + error.message);
-  }
+  // Default to ARASAAC
+  return await getArasaacPictogramSuggestions({
+    URL: globalConfiguration.arasaacURL,
+    words,
+    language,
+  });
 }
 
 async function pictonizer(imagePrompt: string): Promise<AIImage> {
@@ -328,7 +238,7 @@ async function getSuggestions({
 }: {
   prompt: string;
   maxSuggestions: number;
-  symbolSet?: string;
+  symbolSet?: SymbolSet;
   language: string;
 }): Promise<Suggestion[]> {
   const words: string[] = await getWordSuggestions({
@@ -354,7 +264,7 @@ const getSuggestionsAndProcessPictograms = async ({
 }: {
   prompt: string;
   maxSuggestions: number;
-  symbolSet?: string;
+  symbolSet?: SymbolSet;
   language: string;
 }) => {
   const suggestionsWithGlobalSymbolsImages = await getSuggestions({
@@ -369,37 +279,33 @@ const getSuggestionsAndProcessPictograms = async ({
   return suggestionsWithAIImages;
 };
 
-async function isContentSafe(
-  textPrompt: string,
-  ): Promise<boolean> {
-    try {
-      const contentSafetyConfig = globalConfiguration.contentSafety;
-      if(!contentSafetyConfig.endpoint || !contentSafetyConfig.key)
-        throw new Error('Content safety endpoint or key not defined');
-      const credential = new AzureKeyCredential(contentSafetyConfig.key);
-      const client = ContentSafetyClient(contentSafetyConfig.endpoint, credential);
-      const text = textPrompt;
-      const analyzeTextOption = { text: text };
-      const analyzeTextParameters = { body: analyzeTextOption };
-    
-      const result = await client.path("/text:analyze").post(analyzeTextParameters);
-    
-      if (isUnexpected(result)) {
-        throw result;
-      }
-      const severity = result.body.categoriesAnalysis.reduce((acc, cur) => acc + (cur.severity || 0), 0);
-      return severity <= 1;
-    } catch (error) {
-      throw new Error('Error checking content safety: '+error);
-    }
-     
-}
+async function isContentSafe(textPrompt: string): Promise<boolean> {
+  try {
+    const contentSafetyConfig = globalConfiguration.contentSafety;
+    if (!contentSafetyConfig.endpoint || !contentSafetyConfig.key)
+      throw new Error("Content safety endpoint or key not defined");
+    const credential = new AzureKeyCredential(contentSafetyConfig.key);
+    const client = ContentSafetyClient(
+      contentSafetyConfig.endpoint,
+      credential
+    );
+    const text = textPrompt;
+    const analyzeTextOption = { text: text };
+    const analyzeTextParameters = { body: analyzeTextOption };
 
-function convertLanguageToLocale(language: string): string {
-  const languageMap: { [key: string]: string } = {
-    eng: 'en',
-    spa: 'es',
-    // Add more mappings as needed
-  };
-  return languageMap[language] || language;
+    const result = await client
+      .path("/text:analyze")
+      .post(analyzeTextParameters);
+
+    if (isUnexpected(result)) {
+      throw result;
+    }
+    const severity = result.body.categoriesAnalysis.reduce(
+      (acc, cur) => acc + (cur.severity || 0),
+      0
+    );
+    return severity <= 1;
+  } catch (error) {
+    throw new Error("Error checking content safety: " + error);
+  }
 }
