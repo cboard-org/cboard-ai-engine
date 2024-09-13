@@ -162,7 +162,7 @@ async function getSuggestions({
     maxWords: maxSuggestions,
     language,
   });
-  const suggestionsWithGlobalSymbolsImages: Suggestion[] =
+  const suggestions: Suggestion[] =
     await fetchPictogramsURLs({
       words,
       language,
@@ -170,7 +170,7 @@ async function getSuggestions({
       globalSymbolsSymbolSet
     });
 
-  return suggestionsWithGlobalSymbolsImages;
+  return suggestions;
 }
 
 async function isContentSafe(textPrompt: string): Promise<boolean> {
