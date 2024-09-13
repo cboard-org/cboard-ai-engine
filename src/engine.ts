@@ -144,19 +144,21 @@ async function getWordSuggestions({
 
 async function fetchPictogramsURLs({
   words,
-  symbolSet = ARASAAC,
   language,
+  symbolSet = ARASAAC,
+  globalSymbolsSymbolSet
 }: {
   words: string[];
-  symbolSet?: SymbolSet;
   language: string;
+  symbolSet?: SymbolSet;
+  globalSymbolsSymbolSet?: string;
 }): Promise<Suggestion[]> {
   if (symbolSet === GLOBAL_SYMBOLS)
     return await getGlobalSymbolsPictogramSuggestions({
       URL: globalConfiguration.globalSymbolsURL,
       words,
       language,
-      symbolSet,
+      symbolSet: globalSymbolsSymbolSet || null,
     });
   // Default to ARASAAC
   return await getArasaacPictogramSuggestions({
@@ -233,13 +235,15 @@ async function processPictograms(
 async function getSuggestions({
   prompt,
   maxSuggestions = DEFAULT_MAX_SUGGESTIONS,
-  symbolSet,
   language = DEFAULT_LANGUAGE,
+  symbolSet,
+  globalSymbolsSymbolSet,
 }: {
   prompt: string;
   maxSuggestions: number;
-  symbolSet?: SymbolSet;
   language: string;
+  symbolSet?: SymbolSet;
+  globalSymbolsSymbolSet?: string;
 }): Promise<Suggestion[]> {
   const words: string[] = await getWordSuggestions({
     prompt,
@@ -249,8 +253,9 @@ async function getSuggestions({
   const suggestionsWithGlobalSymbolsImages: Suggestion[] =
     await fetchPictogramsURLs({
       words,
-      symbolSet,
       language,
+      symbolSet,
+      globalSymbolsSymbolSet
     });
 
   return suggestionsWithGlobalSymbolsImages;

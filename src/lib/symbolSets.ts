@@ -61,7 +61,7 @@ export async function getGlobalSymbolsPictogramSuggestions({
   URL: string;
   words: string[];
   language: string;
-  symbolSet: string;
+  symbolSet: string | null;
 }) {
   const responses = await Promise.all(
     words.map((word) =>
@@ -69,7 +69,7 @@ export async function getGlobalSymbolsPictogramSuggestions({
         .get<LabelsSearchApiResponse>(URL, {
           params: {
             query: removeDiacritics(word),
-            symbolset: symbolSet,
+            symbolset: symbolSet || null,
             language: language,
           },
         } as AxiosRequestConfig)
