@@ -309,7 +309,3 @@ async function isContentSafe(textPrompt: string): Promise<boolean> {
     throw new Error("Error checking content safety: " + error);
   }
 }
-
-function removeDiacritics(str: string) {
-  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
