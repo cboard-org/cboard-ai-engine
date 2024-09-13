@@ -143,6 +143,26 @@ Return:
 It returns an array of Suggestion.
 
 
+### isContentSafe
+
+```typescript
+async function isContentSafe({
+  text,
+}: {
+  text: string;
+}): Promise<boolean>;
+```
+
+This method is used to check if the provided text is safe for use.
+
+Parameters:
+
+- `text`: The text to be checked. Required. Type: string.
+
+Return:
+
+It returns a boolean indicating whether the content is safe.
+
 ## Error Handling
 
 When an error occurs, an error will be thrown. It is recommended to use a try/catch block to handle it.
