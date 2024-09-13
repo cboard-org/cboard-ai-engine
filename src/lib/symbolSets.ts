@@ -39,7 +39,6 @@ export async function getArasaacPictogramSuggestions({
         label: label,
         locale: language,
         pictogram: {
-          isAIGenerated: false,
           images: data.map((pictogram: any) => ({
             id: pictogram._id,
             symbolSet: ARASAAC,
@@ -88,7 +87,6 @@ export async function getGlobalSymbolsPictogramSuggestions({
         label: label,
         locale: data[0].language,
         pictogram: {
-          isAIGenerated: false,
           images: data.map((label) => ({
             id: label.id.toString(),
             symbolSet: label.picto.symbolset_id.toString(),
