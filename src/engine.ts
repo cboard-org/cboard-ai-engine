@@ -93,6 +93,7 @@ async function getWordSuggestions({
       for a non verbal person about ${prompt}. 
       Here are mandatory instructions for the list:
         -You must provide a list of ${maxWords} maximum.
+        -If you use verb, just use inifinitive form, not gerunds
         -It is very important to not repeat words. 
         -Do not add any other text or characters to the list. 
         -Template for the list {word1, word2, word3,..., wordN}`,
