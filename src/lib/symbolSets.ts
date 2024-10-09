@@ -19,9 +19,9 @@ export async function getArasaacPictogramSuggestions({
 }) {
   const responses = await Promise.all(
     words.map(async (word) => {
-      const fullUrl = `${URL}/${language}/bestsearch/${encodeURIComponent(
-        removeDiacritics(word)
-      )}`;
+      const fullUrl = word.includes(" ")
+      ? `${URL}/${language}/search/${encodeURIComponent(removeDiacritics(word))}`
+      : `${URL}/${language}/bestsearch/${encodeURIComponent(removeDiacritics(word))}`;
       return axios
         .get<BestSearchApiResponse>(fullUrl)
         .then((response) => response.data)
