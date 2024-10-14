@@ -59,7 +59,8 @@ async function fetchArasaacData(URL: string, word: string, language: string) {
     return data;
   } catch {
     try {
-      const { data } = await axios.get<BestSearchApiResponse>(searchUrl);
+      let { data } = await axios.get<BestSearchApiResponse>(searchUrl);
+      if (data.length > 5) data = data.slice(0, 5);
       return data;
     } catch {
       return [];
