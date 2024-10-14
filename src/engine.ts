@@ -92,8 +92,9 @@ async function getWordSuggestions({
     prompt: `act as a speech pathologist selecting pictograms in language ${languageName} 
       for a non verbal person about ${prompt}. 
       Here are mandatory instructions for the list:
-        -Provide a list containing a maximum of ${maxWords} words.
-        -When using verbs you must use infinitive form. Do not use gerunds, conjugated forms, or any other variations of the verb. 
+        -Ensure that the list contains precisely ${maxWords} words; it must not be shorter or longer.
+        -The words should be related to the topic.
+        -When using verbs, you must use the infinitive form. Do not use gerunds, conjugated forms, or any other variations of the verb. 
         -Do not repeat any words.
         -Do not include any additional text, symbols, or characters beyond the words requested.
         -The list should follow this exact format: {word1, word2, word3,..., wordN}.`,
