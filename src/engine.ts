@@ -35,7 +35,7 @@ export type Suggestion = {
           id: string;
           symbolSet: string;
           url: string;
-        }[]
+        }[];
   };
 };
 
@@ -88,15 +88,15 @@ async function getWordSuggestions({
   const languageName = getLanguageName(language);
   const max_tokens = Math.round(4.2 * maxWords + 110);
   const completionRequestParams = {
-    model: "gpt-3.5-turbo-instruct", 
+    model: "gpt-3.5-turbo-instruct",
     prompt: `act as a speech pathologist selecting pictograms in language ${languageName} 
       for a non verbal person about ${prompt}. 
       Here are mandatory instructions for the list:
-        -You must provide a list of ${maxWords} maximum.
-        -If you use verb, just use inifinitive form, not gerunds
-        -It is very important to not repeat words. 
-        -Do not add any other text or characters to the list. 
-        -Template for the list {word1, word2, word3,..., wordN}`,
+        -Provide a list containing a maximum of ${maxWords} words.
+        -When using verbs you must use infinitive form. Do not use gerunds, conjugated forms, or any other variations of the verb. 
+        -Do not repeat any words.
+        -Do not include any additional text, symbols, or characters beyond the words requested.
+        -The list should follow this exact format: {word1, word2, word3,..., wordN}.`,
     temperature: 0,
     max_tokens: max_tokens,
   };
@@ -125,7 +125,7 @@ async function fetchPictogramsURLs({
   words,
   language,
   symbolSet = ARASAAC,
-  globalSymbolsSymbolSet
+  globalSymbolsSymbolSet,
 }: {
   words: string[];
   language: string;
@@ -166,13 +166,12 @@ async function getSuggestions({
     maxWords: maxSuggestions,
     language,
   });
-  const suggestions: Suggestion[] =
-    await fetchPictogramsURLs({
-      words,
-      language,
-      symbolSet,
-      globalSymbolsSymbolSet
-    });
+  const suggestions: Suggestion[] = await fetchPictogramsURLs({
+    words,
+    language,
+    symbolSet,
+    globalSymbolsSymbolSet,
+  });
 
   return suggestions;
 }
