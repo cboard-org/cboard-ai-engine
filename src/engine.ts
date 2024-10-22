@@ -213,12 +213,11 @@ export async function getSynonym(
   language: string
 ): Promise<string> {
   const languageName = getLanguageName(language);
-  const prompt = `Act as a speech pathologist providing synonym for the word "${word}" in ${languageName} to support a non-verbal person.
-    Follow these mandatory instructions when generating the synonym:
-    -Provide only one synonym for each word.
-    -Ensure the synonym is simple and commonly used in everyday speech.
-    -If no synonym exists, return the original word.
-    -Do not include any additional text, symbols, or characters beyond the words requested.
+  const prompt = `Provide a simple, commonly used synonym for the word "${word}" in ${languageName} to support a non-verbal person. Follow these mandatory instructions:
+    - Return only one synonym.
+    - Ensure the synonym is simple, familiar, and frequently used in everyday language.
+    - If no suitable synonym exists, return the original word unchanged.
+    - Do not include any additional words, explanations, symbols, or characters; only the synonym itself.
   `;
   const completionRequestParams = {
     model: "gpt-3.5-turbo-instruct",

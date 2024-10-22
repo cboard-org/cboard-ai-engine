@@ -46,34 +46,56 @@ export async function getArasaacPictogramSuggestions({
   );
 }
 
-async function fetchArasaacData(URL: string, word: string, language: string): Promise<BestSearchApiResponse | []> {
+async function fetchArasaacData(
+  URL: string,
+  word: string,
+  language: string
+): Promise<BestSearchApiResponse | []> {
   const cleanedWord = removeDiacritics(word);
-  const bestSearchUrl = `${URL}/${language}/bestsearch/${encodeURIComponent(cleanedWord)}`;
-  const searchUrl = `${URL}/${language}/search/${encodeURIComponent(cleanedWord)}`;
+  const bestSearchUrl = `${URL}/${language}/bestsearch/${encodeURIComponent(
+    cleanedWord
+  )}`;
+  const searchUrl = `${URL}/${language}/search/${encodeURIComponent(
+    cleanedWord
+  )}`;
 
   let data: BestSearchApiResponse | [] = [];
 
-  const bestSearchResponse = await axios.get<BestSearchApiResponse>(bestSearchUrl).catch(() => null);
+  const bestSearchResponse = await axios
+    .get<BestSearchApiResponse>(bestSearchUrl)
+    .catch(() => null);
   if (bestSearchResponse && bestSearchResponse.data.length) {
     return bestSearchResponse.data;
   }
 
-  const searchResponse = await axios.get<BestSearchApiResponse>(searchUrl).catch(() => null);
+  const searchResponse = await axios
+    .get<BestSearchApiResponse>(searchUrl)
+    .catch(() => null);
   if (searchResponse && searchResponse.data.length) {
-    data = searchResponse.data.length > 5 ? searchResponse.data.slice(0, 5) : searchResponse.data;
+    data =
+      searchResponse.data.length > 5
+        ? searchResponse.data.slice(0, 5)
+        : searchResponse.data;
     return data;
   }
 
   for (let attempt = 0; attempt < 5; attempt++) {
-    const synonym = await getSynonym(word, language).catch(() => null);
+    const synonym = await getSynonym(word, language).catch(() => "");
     if (!synonym) continue;
-
+    word = synonym;
     const cleanedSynonym = removeDiacritics(synonym);
-    const synonymSearchUrl = `${URL}/${language}/search/${encodeURIComponent(cleanedSynonym)}`;
+    const synonymSearchUrl = `${URL}/${language}/search/${encodeURIComponent(
+      cleanedSynonym
+    )}`;
 
-    const synonymResponse = await axios.get<BestSearchApiResponse>(synonymSearchUrl).catch(() => null);
-    if (synonymResponse && synonymResponse.data) {
-      data = synonymResponse.data.length > 5 ? synonymResponse.data.slice(0, 5) : synonymResponse.data;
+    const synonymResponse = await axios
+      .get<BestSearchApiResponse>(synonymSearchUrl)
+      .catch(() => null);
+    if (synonymResponse && synonymResponse.data.length) {
+      data =
+        synonymResponse.data.length > 5
+          ? synonymResponse.data.slice(0, 5)
+          : synonymResponse.data;
       return data;
     }
   }
