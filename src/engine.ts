@@ -134,7 +134,7 @@ async function fetchPictogramsURLs({
   globalSymbolsSymbolSet?: string;
 }): Promise<Suggestion[]> {
   const twoLetterCodeLanguage = getLanguageTwoLetterCode(language);
-  // if (symbolSet === GLOBAL_SYMBOLS)
+  if (symbolSet === GLOBAL_SYMBOLS)
     return await getGlobalSymbolsPictogramSuggestions({
       URL: globalConfiguration.globalSymbolsURL,
       words,
