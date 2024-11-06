@@ -86,13 +86,14 @@ async function getWordSuggestions({
   language: string;
 }): Promise<string[]> {
   const languageName = getLanguageName(language);
-  const max_tokens = Math.round(4.2 * maxWords * 2 + 110);
+  const max_tokens = Math.round(4.2 * maxWords + 110);
   const completionRequestParams = {
     model: "gpt-3.5-turbo-instruct",
     prompt: `act as a speech pathologist selecting pictograms in language ${languageName} 
       for a non verbal person about ${prompt}. 
       Here are mandatory instructions for the list:
         -You must provide a list of ${maxWords} maximum.
+        -When using verbs you must use infinitive form. Do not use gerunds, conjugated forms, or any other variations of the verb. 
         -It is very important to not repeat words. 
         -Do not add any other text or characters to the list. 
         -Template for the list {word1, word2, word3,..., wordN}`,
