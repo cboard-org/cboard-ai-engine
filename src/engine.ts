@@ -86,18 +86,16 @@ async function getWordSuggestions({
   language: string;
 }): Promise<string[]> {
   const languageName = getLanguageName(language);
-  const max_tokens = Math.round(4.2 * maxWords + 110);
+  const max_tokens = Math.round(4.2 * maxWords * 2 + 110);
   const completionRequestParams = {
     model: "gpt-3.5-turbo-instruct",
     prompt: `act as a speech pathologist selecting pictograms in language ${languageName} 
       for a non verbal person about ${prompt}. 
       Here are mandatory instructions for the list:
-        -Ensure that the list contains precisely ${maxWords} words; it must not be shorter or longer.
-        -The words should be related to the topic.
-        -When using verbs, you must use the infinitive form. Do not use gerunds, conjugated forms, or any other variations of the verb. 
-        -Do not repeat any words.
-        -Do not include any additional text, symbols, or characters beyond the words requested.
-        -The list should follow this exact format: {word1, word2, word3,..., wordN}.`,
+        -You must provide a list of ${maxWords} maximum.
+        -It is very important to not repeat words. 
+        -Do not add any other text or characters to the list. 
+        -Template for the list {word1, word2, word3,..., wordN}`,
     temperature: 0,
     max_tokens: max_tokens,
   };
@@ -134,7 +132,7 @@ async function fetchPictogramsURLs({
   globalSymbolsSymbolSet?: string;
 }): Promise<Suggestion[]> {
   const twoLetterCodeLanguage = getLanguageTwoLetterCode(language);
-  // if (symbolSet === GLOBAL_SYMBOLS)
+  if (symbolSet === GLOBAL_SYMBOLS)
     return await getGlobalSymbolsPictogramSuggestions({
       URL: globalConfiguration.globalSymbolsURL,
       words,
@@ -147,6 +145,21 @@ async function fetchPictogramsURLs({
     words,
     language: twoLetterCodeLanguage,
   });
+}
+
+async function checkWordAvailability(
+  word: string,
+  language: string,
+  symbolSet?: SymbolSet,
+  globalSymbolsSymbolSet?: string
+): Promise<boolean> {
+  const urls = await fetchPictogramsURLs({
+    words: [word],
+    language,
+    symbolSet,
+    globalSymbolsSymbolSet,
+  });
+  return urls[0].pictogram.images.length > 0 && urls[0].pictogram.images[0].url !== "";
 }
 
 async function getSuggestions({
@@ -164,18 +177,44 @@ async function getSuggestions({
 }): Promise<Suggestion[]> {
   const words: string[] = await getWordSuggestions({
     prompt,
-    maxWords: maxSuggestions,
+    maxWords: maxSuggestions * 2,
     language,
   });
-  const suggestions: Suggestion[] = await fetchPictogramsURLs({
-    words,
+
+  const validatedWords: string[] = [];
+  const unavailableWords: string[] = [];
+  
+  for (const word of words) {
+    if (validatedWords.length >= maxSuggestions) {
+      break;
+    }
+    
+    const isAvailable = await checkWordAvailability(
+      word,
+      language,
+      symbolSet,
+      globalSymbolsSymbolSet
+    );
+    
+    if (isAvailable) {
+      validatedWords.push(word);
+    } else {
+      unavailableWords.push(word);
+    }
+  }
+  //In case the number of validated words is less than the maxSuggestions, we add unavailable words to reach the maxSuggestions
+  while (validatedWords.length < maxSuggestions) {
+    validatedWords.push(unavailableWords.pop() || "");
+  }
+  
+  return await fetchPictogramsURLs({
+    words: validatedWords,
     language,
     symbolSet,
     globalSymbolsSymbolSet,
   });
-
-  return suggestions;
 }
+
 
 async function isContentSafe(textPrompt: string): Promise<boolean> {
   try {
