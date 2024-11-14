@@ -27,13 +27,13 @@ const engineInstance = initEngine({
   contentSafetyConfiguration,
 });
 
-const prompt = "hygene activities";
-const maxSuggestions = 15;
+const prompt = "colorful birds";
+const maxSuggestions = 25;
 const symbolSet = "arasaac";
 //const symbolSet = "global-symbols";
 const globalSymbolsSymbolSet = "global-symbols";
-const language = "es";
-//const language = "en";
+//const language = "es";
+const language = "en";
 
 //Check content safety
 //console.log("isPromptSafe: "+ engineInstance.isContentSafe(prompt));
@@ -56,5 +56,5 @@ engineInstance
     //   // suggestions,
     //   // "length: " + suggestions.length
     // )
-    console.dir(suggestions, { depth: 2 })
+    console.dir(suggestions, { depth: 4 })
   );

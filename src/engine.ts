@@ -88,7 +88,7 @@ async function getWordSuggestions({
   const languageName = getLanguageName(language);
   const max_tokens = Math.round(4.5 * maxWords + 200);
   const completionRequestParams = {
-    model: "gpt-3.5-turbo-instruct",
+    model: "gpt-4o-mini",
     prompt: `act as a speech pathologist selecting pictograms in language ${languageName} 
       for a non verbal person about ${prompt}. 
       Here are mandatory instructions for the list:
@@ -134,13 +134,13 @@ async function fetchPictogramsURLs({
   globalSymbolsSymbolSet?: string;
 }): Promise<Suggestion[]> {
   const twoLetterCodeLanguage = getLanguageTwoLetterCode(language);
-  // if (symbolSet === GLOBAL_SYMBOLS)
-  return await getGlobalSymbolsPictogramSuggestions({
-    URL: globalConfiguration.globalSymbolsURL,
-    words,
-    language: twoLetterCodeLanguage,
-    symbolSet: globalSymbolsSymbolSet || null,
-  });
+  if (symbolSet === GLOBAL_SYMBOLS)
+    return await getGlobalSymbolsPictogramSuggestions({
+      URL: globalConfiguration.globalSymbolsURL,
+      words,
+      language: twoLetterCodeLanguage,
+      symbolSet: globalSymbolsSymbolSet || null,
+    });
   // Default to ARASAAC
   return await getArasaacPictogramSuggestions({
     URL: globalConfiguration.arasaacURL,
