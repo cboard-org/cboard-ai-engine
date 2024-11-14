@@ -87,25 +87,32 @@ async function getWordSuggestions({
 }): Promise<string[]> {
   const languageName = getLanguageName(language);
   const max_tokens = Math.round(4.5 * maxWords + 200);
-  const completionRequestParams = {
-    model: "gpt-4o-mini",
-    prompt: `act as a speech pathologist selecting pictograms in language ${languageName} 
-      for a non verbal person about ${prompt}. 
-      Here are mandatory instructions for the list:
-        -Ensure that the list contains precisely ${maxWords} words; it must not be shorter or longer.
-        -The words should be related to the topic.
-        -When using verbs, you must use the infinitive form. Do not use gerunds, conjugated forms, or any other variations of the verb. 
-        -Do not repeat any words.
-        -Do not include any additional text, symbols, or characters beyond the words requested.
-        -The list should follow this exact format: {word1, word2, word3,..., wordN}.`,
-    temperature: 0,
-    max_tokens: max_tokens,
-  };
+  const response =
+    await globalConfiguration.openAIInstance.createChatCompletion({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `act as a speech pathologist selecting pictograms in language ${languageName} 
+        for a non verbal person about what the user asks you to.
+        Here are mandatory instructions for the list:
+         -Ensure that the list contains precisely ${maxWords} words; it must not be shorter or longer.
+         -The words should be related to the topic.
+         -When using verbs, you must use the infinitive form. Do not use gerunds, conjugated forms, or any other variations of the verb. 
+         -Do not repeat any words.
+         -Do not include any additional text, symbols, or characters beyond the words requested.
+         -The list should follow this exact format: {word1, word2, word3,..., wordN}.`,
+        },
+        {
+          role: "user",
+          content: `Create a board about ${prompt}`,
+        },
+      ],
+      temperature: 0,
+      max_tokens: max_tokens,
+    });
 
-  const response = await globalConfiguration.openAIInstance.createCompletion(
-    completionRequestParams
-  );
-  const wordsSuggestionsData = response.data?.choices[0]?.text;
+  const wordsSuggestionsData = response.data?.choices[0]?.message?.content;
   if (wordsSuggestionsData) {
     const trimmedString = wordsSuggestionsData.replace(/\n\n/g, "");
     const match = trimmedString.match(/{(.*?)}/);
@@ -115,6 +122,7 @@ async function getWordSuggestions({
           .map((word) => word.trim())
           .slice(0, maxWords)
       : [];
+    console.log(wordsSuggestionsList);
     if (!wordsSuggestionsList.length)
       throw new Error("ERROR: Suggestion list is empty or maxToken reached");
     return wordsSuggestionsList;
