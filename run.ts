@@ -1,6 +1,6 @@
 // To run file
 // npm run dev
-require('dotenv').config()
+require("dotenv").config();
 import { type ContentSafetyConfiguration, initEngine } from "./src/index";
 
 const apiKey = process.env.OPENAI_API_KEY;
@@ -27,7 +27,7 @@ const engineInstance = initEngine({
   contentSafetyConfiguration,
 });
 
-const prompt = "familia";
+const prompt = "hygene activities";
 const maxSuggestions = 15;
 const symbolSet = "arasaac";
 //const symbolSet = "global-symbols";
@@ -38,9 +38,8 @@ const language = "es";
 //Check content safety
 //console.log("isPromptSafe: "+ engineInstance.isContentSafe(prompt));
 engineInstance.isContentSafe(prompt).then((result) => {
-  console.log('Is content safe?', result);
+  console.log("Is content safe?", result);
 });
-
 
 // Get suggestions with GlobalSymbols
 engineInstance
@@ -57,6 +56,5 @@ engineInstance
     //   // suggestions,
     //   // "length: " + suggestions.length
     // )
-    console.dir(suggestions, { depth: null })
+    console.dir(suggestions, { depth: 2 })
   );
-
