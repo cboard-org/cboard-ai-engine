@@ -92,12 +92,11 @@ async function getWordSuggestions({
     prompt: `act as a speech pathologist selecting pictograms in language ${languageName} 
       for a non verbal person about ${prompt}. 
       Here are mandatory instructions for the list:
-        -Ensure that the list contains precisely ${maxWords} words; it must not be shorter or longer.
-        -The words should be related to the topic.
-        -When using verbs, you must use the infinitive form. Do not use gerunds, conjugated forms, or any other variations of the verb. 
-        -Do not repeat any words.
-        -Do not include any additional text, symbols, or characters beyond the words requested.
-        -The list should follow this exact format: {word1, word2, word3,..., wordN}.`,
+        -You must provide a list of ${maxWords} maximum.
+        -When using verbs you must use infinitive form. Do not use gerunds, conjugated forms, or any other variations of the verb. 
+        -It is very important to not repeat words. 
+        -Do not add any other text or characters to the list. 
+        -Template for the list {word1, word2, word3,..., wordN}`,
     temperature: 0,
     max_tokens: max_tokens,
   };
@@ -149,6 +148,51 @@ async function fetchPictogramsURLs({
   });
 }
 
+async function processBatch<TInput, TOutput>({
+  items,
+  batchSize,
+  processor,
+  maxResults,
+  validator,
+}: {
+  items: TInput[];
+  batchSize: number;
+  processor: (batch: TInput[]) => Promise<TOutput[]>;
+  maxResults: number;
+  validator?: (item: TOutput) => boolean;
+}): Promise<TOutput[]> {
+  const results: TOutput[] = [];
+  
+  for (let i = 0; i < items.length; i += batchSize) {
+    // Stop if we have enough valid results
+    if (results.length >= maxResults) {
+      break;
+    }
+
+    const remainingNeeded = maxResults - results.length;
+    const currentBatchSize = Math.min(batchSize, items.length - i);
+    const batch = items.slice(i, i + currentBatchSize);
+    
+    const batchResults = await processor(batch);
+    
+    // Filter and add valid results
+    if (validator) {
+      for (const result of batchResults) {
+        if (results.length >= maxResults) {
+          break;
+        }
+        if (validator(result)) {
+          results.push(result);
+        }
+      }
+    } else {
+      results.push(...batchResults.slice(0, remainingNeeded));
+    }
+  }
+  
+  return results;
+}
+
 async function getSuggestions({
   prompt,
   maxSuggestions = DEFAULT_MAX_SUGGESTIONS,
@@ -162,16 +206,25 @@ async function getSuggestions({
   symbolSet?: SymbolSet;
   globalSymbolsSymbolSet?: string;
 }): Promise<Suggestion[]> {
-  const words: string[] = await getWordSuggestions({
+  const words = await getWordSuggestions({
     prompt,
-    maxWords: maxSuggestions,
+    maxWords: maxSuggestions * 2,
     language,
   });
-  const suggestions: Suggestion[] = await fetchPictogramsURLs({
-    words,
-    language,
-    symbolSet,
-    globalSymbolsSymbolSet,
+
+  const suggestions = await processBatch<string, Suggestion>({
+    items: words,
+    batchSize: 5,
+    maxResults: maxSuggestions,
+    processor: (batch) => fetchPictogramsURLs({
+      words: batch,
+      language,
+      symbolSet,
+      globalSymbolsSymbolSet,
+    }),
+    validator: (suggestion) => 
+      suggestion.pictogram.images.length > 0 && 
+      suggestion.pictogram.images[0].url !== ""
   });
 
   return suggestions;
