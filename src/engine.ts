@@ -121,46 +121,6 @@ async function getWordSuggestions({
   throw new Error("ERROR: Suggestion list is empty");
 }
 
-// A function to generate a prompt for generating images from Leonardo AI using GPT3.5-turbo-instruct and provided template and words
-export async function generatePromptForImageGeneration({
-  word,
-}: {
-  word: string;
-}): Promise<string> {
-  const completionRequestParams = {
-    model: "gpt-3.5-turbo-instruct",
-    prompt: 
-    `Create a detailed prompt to generate a pictogram for '${word}'. 
-    First, determine if this is primarily an ACTION or OBJECT, then create a prompt following the appropriate template below.
-
-    For ACTIONS (verbs, activities):
-    - Show a figure actively performing the action
-    - Include clear motion indicators where appropriate
-    - Focus on the most recognizable moment of the action
-    - Use side view if it better shows the action
-    - Include minimal but necessary context elements
-    
-    Style requirements:
-    - Bold black outlines
-    - Flat colors
-    - High contrast
-    - Centered composition
-    - White background
-    - Simple geometric shapes
-    
-    Return only the prompt, no explanations. Keep it under 100 words.`,
-    temperature: 0,
-    max_tokens: 150,
-  };
-
-  const response = await globalConfiguration.openAIInstance.createCompletion(
-    completionRequestParams
-  );
-  const prompt = response.data?.choices[0]?.text;
-  if (!prompt) throw new Error("Error generating prompt for image generation");
-  return prompt;
-}
-
 async function fetchPictogramsURLs({
   words,
   language,
@@ -188,39 +148,46 @@ async function fetchPictogramsURLs({
   });
 }
 
-async function checkWordAvailability(
-  word: string,
-  language: string,
-  symbolSet?: SymbolSet,
-  globalSymbolsSymbolSet?: string
-): Promise<boolean> {
-  const urls = await fetchPictogramsURLs({
-    words: [word],
-    language,
-    symbolSet,
-    globalSymbolsSymbolSet,
-  });
-  return (
-    urls[0].pictogram.images.length > 0 &&
-    urls[0].pictogram.images[0].url !== ""
-  );
-}
-
-async function processBatch<T>({
+async function processBatch<TInput, TOutput>({
   items,
   batchSize,
   processor,
+  maxResults,
+  validator,
 }: {
-  items: T[];
+  items: TInput[];
   batchSize: number;
-  processor: (batch: T[]) => Promise<any>;
-}): Promise<any[]> {
-  const results: any[] = [];
+  processor: (batch: TInput[]) => Promise<TOutput[]>;
+  maxResults: number;
+  validator?: (item: TOutput) => boolean;
+}): Promise<TOutput[]> {
+  const results: TOutput[] = [];
   
   for (let i = 0; i < items.length; i += batchSize) {
-    const batch = items.slice(i, i + batchSize);
+    // Stop if we have enough valid results
+    if (results.length >= maxResults) {
+      break;
+    }
+
+    const remainingNeeded = maxResults - results.length;
+    const currentBatchSize = Math.min(batchSize, items.length - i);
+    const batch = items.slice(i, i + currentBatchSize);
+    
     const batchResults = await processor(batch);
-    results.push(...batchResults);
+    
+    // Filter and add valid results
+    if (validator) {
+      for (const result of batchResults) {
+        if (results.length >= maxResults) {
+          break;
+        }
+        if (validator(result)) {
+          results.push(result);
+        }
+      }
+    } else {
+      results.push(...batchResults.slice(0, remainingNeeded));
+    }
   }
   
   return results;
@@ -245,24 +212,22 @@ async function getSuggestions({
     language,
   });
 
-  const suggestions = await processBatch({
+  const suggestions = await processBatch<string, Suggestion>({
     items: words,
     batchSize: 5,
+    maxResults: maxSuggestions,
     processor: (batch) => fetchPictogramsURLs({
       words: batch,
       language,
       symbolSet,
       globalSymbolsSymbolSet,
     }),
+    validator: (suggestion) => 
+      suggestion.pictogram.images.length > 0 && 
+      suggestion.pictogram.images[0].url !== ""
   });
 
-  const validSuggestions = suggestions.filter(
-    suggestion => 
-      suggestion.pictogram.images.length > 0 &&
-      suggestion.pictogram.images[0].url !== ""
-  );
-
-  return validSuggestions.slice(0, maxSuggestions);
+  return suggestions;
 }
 
 async function isContentSafe(textPrompt: string): Promise<boolean> {
