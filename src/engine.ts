@@ -73,6 +73,7 @@ export function init({
   return {
     getSuggestions,
     isContentSafe,
+    generateAPromptForLeonardo
   };
 }
 
@@ -175,6 +176,120 @@ async function getSuggestions({
   });
 
   return suggestions;
+}
+
+// A function to generate a prompt for generating images from Leonardo AI using GPT3.5-turbo-instruct and provided template and words
+export async function generatePromptForImageGeneration({
+  words,
+}: {
+  words: string[];
+}): Promise<Array<{word: string, prompt: string}>> {
+  const completionRequestParams = {
+    model: "gpt-3.5-turbo-instruct",
+    prompt: 
+    `Create a detailed prompt to generate a pictogram for each word of the words array: '${words}'. 
+    First, determine if this is primarily an ACTION or OBJECT, then create a prompt following the appropriate template below.
+
+    For ACTIONS (verbs, activities):
+    - Show a figure actively performing the action
+    - Include clear motion indicators where appropriate
+    - Focus on the most recognizable moment of the action
+    - Use side view if it better shows the action
+    - Include minimal but necessary context elements
+    
+    Style requirements:
+    - Bold black outlines
+    - Flat colors
+    - High contrast
+    - Centered composition
+    - White background
+    - Simple geometric shapes
+    
+    Return only the prompt for each word, no explanations. Keep it under 100 words for each word. 
+    The returned template should be like this: 
+    word1: 'prompt',
+    word2: 'prompt', 
+    ...
+    wordN: 'prompt'`,
+    temperature: 0,
+    max_tokens: 1500,
+  };
+
+  const response = await globalConfiguration.openAIInstance.createCompletion(
+    completionRequestParams
+  );
+  const promptText = response.data?.choices[0]?.text;
+  if (!promptText) throw new Error("Error generating prompt for image generation");
+  try {
+    // Split the text by newlines and parse each line
+    const lines = promptText.split('\n').filter(line => line.trim());
+    return lines.map(line => {
+      const [word, ...promptParts] = line.split(':');
+      return {
+        word: word.trim(),
+        prompt: promptParts.join(':').trim().replace(/^['"]|['"]$/g, '') // Remove quotes if present
+      };
+    });
+  } catch (error) {
+    throw new Error("Error parsing image generation prompts: " + error);
+  }
+}
+
+export async function getPromptsForLenonardo({
+  prompt,
+  maxWords,
+  language
+}:{prompt:string, maxWords:number, language: string}) {
+  const promptedWords = await getWordSuggestions({prompt, maxWords, language})
+  const leonardoPrompts = await generatePromptForImageGeneration({words: promptedWords});
+
+  return leonardoPrompts;
+}
+
+export async function generateAPromptForLeonardo({
+  word,
+}: {
+  word: string;
+}): Promise<string> {
+  const completionRequestParams = {
+    model: "gpt-3.5-turbo-instruct",
+    prompt:
+    `Create a detailed prompt to generate a pictogram for '${word}'. 
+First, determine if this is primarily an ACTION or OBJECT, then create a prompt following the appropriate template below.
+
+For ACTIONS (verbs, activities):
+- Show a figure actively performing the action
+- Include clear motion indicators where appropriate
+- Focus on the most recognizable moment of the action
+- Use side view if it better shows the action
+- Include minimal but necessary context elements
+
+For OBJECTS (nouns like animals, things):
+- Show the most recognizable view of the object
+- Focus on distinctive features and characteristics
+- For animals: show full body in profile view
+- For items: show the most common usage angle
+- Keep details minimal but identifiable
+
+Style requirements:
+- Bold black outlines
+- Flat colors
+- High contrast
+- Centered composition
+- White background
+- Simple geometric shapes
+
+Return only the prompt, no explanations. Keep it under 100 words.`,
+    temperature: 0,
+    max_tokens: 150,
+  };
+
+  const response = await globalConfiguration.openAIInstance.createCompletion(
+    completionRequestParams
+  );
+  const promptText = response.data?.choices[0]?.text;
+  if (!promptText) throw new Error("Error generating prompt for image generation");
+  return promptText;
 }
 
 async function isContentSafe(textPrompt: string): Promise<boolean> {
