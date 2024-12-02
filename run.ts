@@ -2,6 +2,8 @@
 // npm run dev
 require("dotenv").config();
 import { type ContentSafetyConfiguration, initEngine } from "./src/index";
+import * as fs from "fs";
+import { CoreBoardService } from "./src/coreBoardService";
 
 const apiKey = process.env.OPENAI_API_KEY;
 const basePath = process.env.OPENAI_BASE_PATH;
@@ -64,41 +66,34 @@ engineInstance
     //console.dir(suggestions, { depth: 2 })
   );*/
 
-console.log("Creating a CORE board...");
+const promptCore = "math";
+const totalButtons = 84; // Define how many buttons you want in total
+// First check if content is safe
+engineInstance.isContentSafe(promptCore).then(async (isSafe) => {
+  console.log("Is content safe?", isSafe);
 
-engineInstance
-  .getCoreBoardSuggestions({
-    topic: "surfing",
-    maxWords: 30,
-    language: "en",
-  })
-  .then((coreBoard) => {
-    console.log(
-      "\nCore Board Suggestions ------------------------------------\n"
-    );
+  if (isSafe) {
+    try {
+      // Generate CORE board
+      console.log("Generating CORE board...");
+      const coreBoard = await engineInstance.generateCoreBoard(
+        promptCore,
+        totalButtons
+      );
 
-    // Count words per category
-    const wordsByCategory = coreBoard.BoardName[0].words.reduce((acc, word) => {
-      const category = Object.keys(word)[0];
-      acc[category] = (acc[category] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+      // Save to file
+      const filename = `${promptCore}CoreBoard.obf`;
+      console.log(`Saving CORE board to file: ${filename}`);
+      fs.writeFileSync(filename, JSON.stringify(coreBoard, null, 2));
 
-    // Calculate total words
-    const totalWords = coreBoard.BoardName[0].words.length;
-
-    // Log word counts
-    console.log("\nWord Count Summary:");
-    console.log("------------------");
-    Object.entries(wordsByCategory)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .forEach(([category, count]) => {
-        console.log(`${category}: ${count} words`);
-      });
-    console.log("------------------");
-    console.log(`Total words: ${totalWords}`);
-    console.log("\n");
-
-    // Log the full board
-    console.dir(coreBoard, { depth: 5 });
-  });
+      /*console.log(
+        "\nCore Board Generated ------------------------------------\n"
+      );*/
+      //console.dir(coreBoard, { depth: 5 });
+    } catch (error) {
+      console.error("Error generating CORE board:", error);
+    }
+  } else {
+    console.log("Content was flagged as unsafe, aborting board generation");
+  }
+});
