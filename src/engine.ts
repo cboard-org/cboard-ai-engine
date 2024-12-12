@@ -254,30 +254,60 @@ export async function generateAPromptForLeonardo({
   const completionRequestParams = {
     model: "gpt-3.5-turbo-instruct",
     prompt:
-    `Create a detailed prompt to generate a pictogram for '${word}'. 
-First, determine if this is primarily an ACTION or OBJECT, then create a prompt following the appropriate template below.
+    `Create a detailed prompt to generate a pictogram for '${word}'.
+First, analyze the word using these criteria:
 
-For ACTIONS (verbs, activities):
-- Show a figure actively performing the action
-- Include clear motion indicators where appropriate
-- Focus on the most recognizable moment of the action
-- Use side view if it better shows the action
-- Include minimal but necessary context elements
+ACTIONS (Classification Criteria):
+-Can it be performed/demonstrated?
+-Does it involve movement or change?
+-Can you complete the phrase "to [word]"?
+-Examples: run, eat, jump, write, dance
 
-For OBJECTS (nouns like animals, things):
-- Show the most recognizable view of the object
-- Focus on distinctive features and characteristics
-- For animals: show full body in profile view
-- For items: show the most common usage angle
-- Keep details minimal but identifiable
+OBJECTS (Classification Criteria):
+-Can it be touched or physically exist?
+-Is it a person, place, or thing?
+-Can you put "the" or "a" before it?
+-Examples: chair, dog, house, tree, book
+
+ADJECTIVES (Classification Criteria):
+-Does it describe a quality or state?
+-Can you put "very" before it?
+-Can you add "-er" or "-est" to compare it?
+-Examples: tall, hot, happy, heavy, bright
+
+Once classified, follow the appropriate template:
+For ACTIONS:
+-Show a simplified human figure mid-action
+-Capture the most distinctive moment of the action
+-Include motion lines or indicators where needed
+-Use side view for directional actions (run, jump)
+-Use front view for symmetrical actions (stretch, dance)
+-Include only props essential to understand the action
+
+For OBJECTS:
+-Show the complete item in its most recognizable form
+-Use the view that shows key identifying features
+-For animals: side profile, all limbs visible
+-For tools/items: standard usage orientation
+-For buildings/structures: front-facing view
+-Avoid showing interaction or movement
+
+For ADJECTIVES:
+-Show a clear comparison or extreme example
+-Use a split scene with contrasting states if applicable
+-Include a reference object/figure for scale-based adjectives
+-Use universal symbols (↑↓ for tall/short, 🌡️ for hot/cold)
+-Emphasize the quality through size, position, or proportion
+-For emotions: use simplified facial expressions and body language
 
 Style requirements:
-- Bold black outlines
-- Flat colors
-- High contrast
-- Centered composition
-- White background
-- Simple geometric shapes
+-Bold black outlines (3px weight)
+-Flat, solid fill colors
+-High contrast shapes
+-Centered in frame
+-Pure white background
+-No gradients or shadows
+-1:1 aspect ratio
 
 Return only the prompt, no explanations. Keep it under 100 words.`,
     temperature: 0,
