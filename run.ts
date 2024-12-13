@@ -4,15 +4,15 @@ require("dotenv").config();
 import { type ContentSafetyConfiguration, initEngine } from "./src/index";
 
 const apiKey = process.env.OPENAI_API_KEY;
+const basePath = process.env.OPENAI_BASE_PATH;
 
 const openAIConfiguration = {
   apiKey,
-  basePath:
-    "https://cboard-openai.openai.azure.com/openai/deployments/ToEdit-01",
+  basePath,
   baseOptions: {
     headers: { "api-key": apiKey },
     params: {
-      "api-version": "2022-12-01",
+      "api-version": "2024-08-01-preview",
     },
   },
 };
@@ -27,13 +27,13 @@ const engineInstance = initEngine({
   contentSafetyConfiguration,
 });
 
-const prompt = "hygene activities";
+const prompt = "jungle birds";
 const maxSuggestions = 15;
 const symbolSet = "arasaac";
 //const symbolSet = "global-symbols";
 const globalSymbolsSymbolSet = "global-symbols";
-const language = "es";
-//const language = "en";
+//const language = "es";
+const language = "en";
 
 //Check content safety
 //console.log("isPromptSafe: "+ engineInstance.isContentSafe(prompt));
@@ -49,12 +49,16 @@ engineInstance
     symbolSet,
     language,
   })
-  .then((suggestions) =>
-    // console.log(
-    //   "\nSuggestions -----------------------------------------------\n"
+  .then(
+    (suggestions) =>
+      // console.log(
+      //   "\nSuggestions -----------------------------------------------\n"
 
-    //   // suggestions,
-    //   // "length: " + suggestions.length
-    // )
-    console.dir(suggestions, { depth: 2 })
+      //   // suggestions,
+      //   // "length: " + suggestions.length
+      // )
+      console.log(
+        "\nSuggestions -----------------------------------------------\n"
+      )
+    //console.dir(suggestions, { depth: 2 })
   );
