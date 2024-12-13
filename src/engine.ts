@@ -242,14 +242,14 @@ type CoreCategory = {
 
 // Define valid category names as a union type
 type CategoryName =
+  | "Pronouns"
   | "Actions"
   | "Adjectives/Adverbs"
-  | "Pronouns"
-  | "Questions"
-  | "Interjections"
   | "Determiners"
   | "Prepositions"
-  | "Negation";
+  | "Questions"
+  | "Negation"
+  | "Interjections";
 
 type CoreWord = {
   id: string;
@@ -269,7 +269,7 @@ type FixedCoreWords = {
 // Core categories with their target percentages
 const CORE_CATEGORIES: CoreCategory[] = [
   { name: "Pronouns", percentage: 0.15, required: true, gridPercentage: 0.9 },
-  { name: "Actions", percentage: 0.3, required: false, gridPercentage: 0.8 },
+  { name: "Actions", percentage: 0.25, required: false, gridPercentage: 0.8 },
   {
     name: "Adjectives/Adverbs",
     percentage: 0.3,
@@ -278,11 +278,11 @@ const CORE_CATEGORIES: CoreCategory[] = [
   },
   {
     name: "Determiners",
-    percentage: 0.1,
+    percentage: 0.08,
     required: false,
     gridPercentage: 0.5,
   },
-  { name: "Prepositions", percentage: 0.1, required: false },
+  { name: "Prepositions", percentage: 0.15, required: false },
   { name: "Questions", percentage: 0.05, required: true, gridPercentage: 0.4 },
   { name: "Negation", percentage: 0.02, required: true },
   { name: "Interjections", percentage: 0.08, required: true },
@@ -474,7 +474,7 @@ const CATEGORY_COLORS: CategoryColors = {
   Pronouns: "rgb(255, 255, 200)", // yellow
   Interjections: "rgb(255, 192, 203)", // pink
   Questions: "rgb(255, 200, 255)", // purple
-  Determiners: "rgb(240, 240, 240)", // gray
+  Determiners: "rgb(230, 230, 230)", // gray
   Prepositions: "rgb(255, 255, 255)", // wwhite
   Negation: "rgb(255, 140, 140)", // red
 };
@@ -545,6 +545,7 @@ function createGridOrder(
   let currentWordsByCategory =
     wordsByCategory[CORE_CATEGORIES[currentCategory].name] || [];
 
+  // Fill pronouns, actions and adjectives
   for (let col = 0; col < columns; col++) {
     for (let row = 0; row < currentRowLimit; row++) {
       if (addedWords < currentWordsByCategory.length) {
@@ -560,6 +561,7 @@ function createGridOrder(
       }
     }
   }
+
   // Fill determiners and prepositions
   // Get the last position where we placed a pronoun
   let lastPronounRow = Math.floor(
@@ -570,6 +572,7 @@ function createGridOrder(
     ((wordsByCategory[CORE_CATEGORIES[0].name] || []).length - 1) /
       pronounColumnSize
   );
+
   addedWords = 0;
   currentCategory = 3;
   currentWordsByCategory =
@@ -591,7 +594,8 @@ function createGridOrder(
       }
     }
   }
-  //Fill bottom rows
+
+  //Fill bottom rows with questions, negation and interjections /*
   currentWordsByCategory = wordsByCategory[CORE_CATEGORIES[5].name];
   for (let col = 0; col < columns; col++) {
     for (let row = pronounColumnSize; row < rows; row++) {

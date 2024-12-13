@@ -331,7 +331,7 @@
     },
     {
       "id": "55",
-      "label": "partial",
+      "label": "approximate",
       "background_color": "rgb(135, 206, 250)",
       "border_color": "rgb(0, 0, 0)"
     },
@@ -379,25 +379,25 @@
     },
     {
       "id": "63",
-      "label": "careful",
+      "label": "detailed",
       "background_color": "rgb(135, 206, 250)",
       "border_color": "rgb(0, 0, 0)"
     },
     {
       "id": "64",
-      "label": "effective",
-      "background_color": "rgb(135, 206, 250)",
-      "border_color": "rgb(0, 0, 0)"
-    },
-    {
-      "id": "65",
       "label": "efficient",
       "background_color": "rgb(135, 206, 250)",
       "border_color": "rgb(0, 0, 0)"
     },
     {
-      "id": "66",
+      "id": "65",
       "label": "necessary",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "66",
+      "label": "relevant",
       "background_color": "rgb(135, 206, 250)",
       "border_color": "rgb(0, 0, 0)"
     },
