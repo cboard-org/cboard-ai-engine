@@ -73,7 +73,7 @@ export function init({
   return {
     getSuggestions,
     isContentSafe,
-    generateAPromptForLeonardo
+    generateAPromptForLeonardo,
   };
 }
 
@@ -123,7 +123,6 @@ async function getWordSuggestions({
           .map((word) => word.trim())
           .slice(0, maxWords)
       : [];
-    console.log(wordsSuggestionsList);
     if (!wordsSuggestionsList.length)
       throw new Error("ERROR: Suggestion list is empty or maxToken reached");
     return wordsSuggestionsList;
@@ -191,11 +190,10 @@ export async function generatePromptForImageGeneration({
   words,
 }: {
   words: string[];
-}): Promise<Array<{word: string, prompt: string}>> {
+}): Promise<Array<{ word: string; prompt: string }>> {
   const completionRequestParams = {
     model: "gpt-3.5-turbo-instruct",
-    prompt: 
-    `Create a detailed prompt to generate a pictogram for each word of the words array: '${words}'. 
+    prompt: `Create a detailed prompt to generate a pictogram for each word of the words array: '${words}'. 
     First, determine if this is primarily an ACTION or OBJECT, then create a prompt following the appropriate template below.
 
     For ACTIONS (verbs, activities):
@@ -227,15 +225,19 @@ export async function generatePromptForImageGeneration({
     completionRequestParams
   );
   const promptText = response.data?.choices[0]?.text;
-  if (!promptText) throw new Error("Error generating prompt for image generation");
+  if (!promptText)
+    throw new Error("Error generating prompt for image generation");
   try {
     // Split the text by newlines and parse each line
-    const lines = promptText.split('\n').filter(line => line.trim());
-    return lines.map(line => {
-      const [word, ...promptParts] = line.split(':');
+    const lines = promptText.split("\n").filter((line) => line.trim());
+    return lines.map((line) => {
+      const [word, ...promptParts] = line.split(":");
       return {
         word: word.trim(),
-        prompt: promptParts.join(':').trim().replace(/^['"]|['"]$/g, '') // Remove quotes if present
+        prompt: promptParts
+          .join(":")
+          .trim()
+          .replace(/^['"]|['"]$/g, ""), // Remove quotes if present
       };
     });
   } catch (error) {
@@ -246,10 +248,20 @@ export async function generatePromptForImageGeneration({
 export async function getPromptsForLenonardo({
   prompt,
   maxWords,
-  language
-}:{prompt:string, maxWords:number, language: string}) {
-  const promptedWords = await getWordSuggestions({prompt, maxWords, language})
-  const leonardoPrompts = await generatePromptForImageGeneration({words: promptedWords});
+  language,
+}: {
+  prompt: string;
+  maxWords: number;
+  language: string;
+}) {
+  const promptedWords = await getWordSuggestions({
+    prompt,
+    maxWords,
+    language,
+  });
+  const leonardoPrompts = await generatePromptForImageGeneration({
+    words: promptedWords,
+  });
 
   return leonardoPrompts;
 }
@@ -259,74 +271,74 @@ export async function generateAPromptForLeonardo({
 }: {
   word: string;
 }): Promise<string> {
-  const completionRequestParams = {
-    model: "gpt-3.5-turbo-instruct",
-    prompt:
-    `Create a detailed prompt to generate a pictogram for '${word}'.
-First, analyze the word using these criteria:
+  const max_tokens = Math.round(2 * 100 + 460);
+  const response = await globalConfiguration.openAIInstance.createChatCompletion({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: `You are an expert in creating pictogram prompts. Analyze the word and create a detailed prompt following these guidelines:
 
-ACTIONS (Classification Criteria):
+CLASSIFICATION CRITERIA:
+For ACTIONS:
 -Can it be performed/demonstrated?
 -Does it involve movement or change?
 -Can you complete the phrase "to [word]"?
--Examples: run, eat, jump, write, dance
 
-OBJECTS (Classification Criteria):
+For OBJECTS:
 -Can it be touched or physically exist?
 -Is it a person, place, or thing?
 -Can you put "the" or "a" before it?
--Examples: chair, dog, house, tree, book
 
-ADJECTIVES (Classification Criteria):
+For ADJECTIVES:
 -Does it describe a quality or state?
 -Can you put "very" before it?
 -Can you add "-er" or "-est" to compare it?
--Examples: tall, hot, happy, heavy, bright
 
-Once classified, follow the appropriate template:
+TEMPLATE REQUIREMENTS:
 For ACTIONS:
--Show a simplified human figure mid-action
--Capture the most distinctive moment of the action
--Include motion lines or indicators where needed
--Use side view for directional actions (run, jump)
--Use front view for symmetrical actions (stretch, dance)
--Include only props essential to understand the action
+-Show simplified human figure mid-action
+-Capture distinctive moment
+-Include motion indicators
+-Use appropriate view angle
+-Include essential props only
 
 For OBJECTS:
--Show the complete item in its most recognizable form
--Use the view that shows key identifying features
--For animals: side profile, all limbs visible
--For tools/items: standard usage orientation
--For buildings/structures: front-facing view
--Avoid showing interaction or movement
+-Show complete item in recognizable form
+-Use optimal viewing angle
+-Follow specific guidelines for category
+-Avoid interaction/movement
 
 For ADJECTIVES:
--Show a clear comparison or extreme example
--Use a split scene with contrasting states if applicable
--Include a reference object/figure for scale-based adjectives
--Use universal symbols (↑↓ for tall/short, 🌡️ for hot/cold)
--Emphasize the quality through size, position, or proportion
--For emotions: use simplified facial expressions and body language
+-Show clear comparison/extreme example
+-Use split scenes if needed
+-Include reference objects
+-Use universal symbols
+-Emphasize through composition
 
-Style requirements:
--Bold black outlines (3px weight)
--Flat, solid fill colors
--High contrast shapes
--Centered in frame
--Pure white background
--No gradients or shadows
--1:1 aspect ratio
+STYLE:
+-Bold black outlines (3px)
+-Flat colors
+-High contrast
+-Centered composition
+-White background
+-No gradients/shadows
+-1:1 ratio
 
-Return only the prompt, no explanations. Keep it under 100 words.`,
+Return only the prompt, under 100 words, no explanations.`
+      },
+      {
+        role: "user",
+        content: `Create a pictogram prompt for the word: '${word}'`
+      }
+    ],
     temperature: 0,
-    max_tokens: 150,
-  };
+    max_tokens: max_tokens
+  });
 
-  const response = await globalConfiguration.openAIInstance.createCompletion(
-    completionRequestParams
-  );
-  const promptText = response.data?.choices[0]?.text;
-  if (!promptText) throw new Error("Error generating prompt for image generation");
+  const promptText = response.data?.choices[0]?.message?.content;
+  if (!promptText)
+    throw new Error("Error generating prompt for image generation");
   return promptText;
 }
 
