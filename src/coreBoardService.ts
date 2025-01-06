@@ -1,4 +1,5 @@
 import { OpenAIApi, Configuration } from "openai";
+import { getArasaacOBFImages, OBFImage } from "./lib/symbolSets";
 
 // Types for the CORE board structure
 export type CoreCategory = {
@@ -119,8 +120,27 @@ export class CoreBoardService {
     // Combine fixed and dynamic words
     const allWords = this.combineWords(dynamicWords, categorySlots);
 
+    // Get ARASAAC images
+    const images = await getArasaacOBFImages({
+      URL: process.env.ARASAAC_API_URL || '',
+      words: allWords.map(w => w.label),
+      language: 'en'
+    });
+
+    // Create image ID mapping
+    const imageMapping = new Map(images.map(img => [img.url, img.id]));
+
+    // Update words with image IDs
+    const wordsWithImages = allWords.map(word => {
+      const imageUrl = `https://static.arasaac.org/pictograms/${word.id}/${word.id}_500.png`;
+      return {
+        ...word,
+        image_id: imageMapping.get(imageUrl)
+      };
+    });
+
     // Create OBF format board
-    const board = this.createOBFBoard(allWords, prompt, totalButtons);
+    const board = this.createOBFBoard(wordsWithImages, prompt, images);
     this.visualizeBoard(board);
     return board;
   }
@@ -228,11 +248,11 @@ export class CoreBoardService {
   private createOBFBoard(
     words: CoreWord[],
     prompt: string,
-    totalButtons: number
+    images: OBFImage[]
   ): any {
     // Calculate grid dimensions
-    const columns = Math.ceil(Math.sqrt(totalButtons));
-    const rows = Math.ceil(totalButtons / columns);
+    const columns = Math.ceil(Math.sqrt(words.length));
+    const rows = Math.ceil(words.length / columns);
 
     // Create grid order
     const gridOrder = this.createGridOrder(words, rows, columns);
@@ -244,17 +264,25 @@ export class CoreBoardService {
       locale: "en",
       name: `Core Board - ${prompt}`,
       description_html: `Core vocabulary board generated for the topic: ${prompt}`,
+      license: {
+        type: "CC By",
+        copyright_notice_url: "https://creativecommons.org/licenses/by/4.0/",
+        author_name: "OpenAAC",
+        author_url: "https://www.openaac.org",
+      },
       buttons: words.map((word) => ({
         id: word.id,
         label: word.label,
         background_color: word.background_color,
         border_color: word.border_color,
+        image_id: word.id
       })),
       grid: {
         rows,
         columns,
         order: gridOrder,
       },
+      images: images
     };
   }
 
