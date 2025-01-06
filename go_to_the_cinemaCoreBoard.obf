@@ -1,0 +1,339 @@
+{
+  "format": "open-board-0.1",
+  "id": "1",
+  "locale": "en",
+  "name": "Core Board - go to the cinema",
+  "description_html": "Core vocabulary board generated for the topic: go to the cinema",
+  "buttons": [
+    {
+      "id": "1",
+      "label": "I",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "2",
+      "label": "you",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "3",
+      "label": "it",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "4",
+      "label": "we",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "5",
+      "label": "they",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "6",
+      "label": "he",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "7",
+      "label": "what",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "8",
+      "label": "where",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "9",
+      "label": "yes",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "10",
+      "label": "no",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "11",
+      "label": "please",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "12",
+      "label": "not",
+      "background_color": "rgb(255, 140, 140)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "13",
+      "label": "watch",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "14",
+      "label": "see",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "15",
+      "label": "go",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "16",
+      "label": "sit",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "17",
+      "label": "eat",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "18",
+      "label": "buy",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "19",
+      "label": "wait",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "20",
+      "label": "enjoy",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "21",
+      "label": "talk",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "22",
+      "label": "laugh",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "23",
+      "label": "leave",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "24",
+      "label": "fun",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "25",
+      "label": "exciting",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "26",
+      "label": "loud",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "27",
+      "label": "bright",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "28",
+      "label": "dark",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "29",
+      "label": "new",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "30",
+      "label": "popular",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "31",
+      "label": "nearby",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "32",
+      "label": "quickly",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "33",
+      "label": "happily",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "34",
+      "label": "comfortably",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "35",
+      "label": "often",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "36",
+      "label": "together",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "37",
+      "label": "the",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "38",
+      "label": "a",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "39",
+      "label": "my",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "40",
+      "label": "to",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "41",
+      "label": "in",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "42",
+      "label": "at",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "43",
+      "label": "for",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "44",
+      "label": "with",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "45",
+      "label": "from",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    }
+  ],
+  "grid": {
+    "rows": 6,
+    "columns": 7,
+    "order": [
+      [
+        "1",
+        "6",
+        "16",
+        "20",
+        "24",
+        "28",
+        "32"
+      ],
+      [
+        "2",
+        "13",
+        "17",
+        "21",
+        "25",
+        "29",
+        "33"
+      ],
+      [
+        "3",
+        "14",
+        "18",
+        "22",
+        "26",
+        "30",
+        "34"
+      ],
+      [
+        "4",
+        "15",
+        "19",
+        "23",
+        "27",
+        "31",
+        "35"
+      ],
+      [
+        "5",
+        "37",
+        "38",
+        "39",
+        "40",
+        "41",
+        "42"
+      ],
+      [
+        null,
+        "7",
+        "8",
+        "12",
+        "9",
+        "10",
+        "11"
+      ]
+    ]
+  }
+}

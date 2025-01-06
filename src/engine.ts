@@ -14,6 +14,8 @@ import { AzureKeyCredential } from "@azure/core-auth";
 import {
   getArasaacPictogramSuggestions,
   getGlobalSymbolsPictogramSuggestions,
+  getArasaacOBFImages,
+  OBFImage,
 } from "./lib/symbolSets";
 import { type SymbolSet } from "./lib/symbolSets";
 import { getLanguageName, getLanguageTwoLetterCode } from "./utils/language";
@@ -305,7 +307,7 @@ function hasFixedWords(
 
 async function generateCoreBoard(
   prompt: string,
-  totalButtons: number = 1
+  totalButtons: number = 42
 ): Promise<any> {
   // Calculate slots for each category based on percentages
   let categorySlots = CORE_CATEGORIES.map((category) => ({
@@ -314,21 +316,21 @@ async function generateCoreBoard(
     required: category.required,
   }));
 
-  //Log category slots
-  console.log("\nCategory Slots: ");
-  categorySlots.forEach((category) => {
-    console.log(`${category.name}: ${category.slots} slots`);
-  });
-  console.log("\n");
-
   // Generate dynamic words from LLM for non-fixed categories
   const dynamicWords = await generateDynamicWords(prompt, categorySlots);
 
   // Combine fixed and dynamic words
   const allWords = combineWords(dynamicWords, categorySlots);
 
+  // Get ARASAAC images
+  const images = await getArasaacOBFImages({
+    URL: globalConfiguration.arasaacURL,
+    words: allWords.map(w => w.label),
+    language: 'en'
+  });
+
   // Create OBF format board
-  const board = createOBFBoard(allWords, prompt, totalButtons);
+  const board = createOBFBoard(allWords, prompt, images, totalButtons);
   visualizeBoard(board);
   return board;
 }
@@ -434,33 +436,42 @@ function combineWords(
 function createOBFBoard(
   words: CoreWord[],
   prompt: string,
+  images: OBFImage[],
   totalButtons: number
 ): any {
-  // Calculate grid dimensions
+  // Calculate grid dimensions using the same approach as the previous code
   const columns = Math.ceil(Math.sqrt(totalButtons));
   const rows = Math.ceil(totalButtons / columns);
 
   // Create grid order
   const gridOrder = createGridOrder(words, rows, columns);
-
-  // Create OBF format object
+  console.log(gridOrder)
+  
   return {
     format: "open-board-0.1",
     id: "1",
     locale: "en",
     name: `Core Board - ${prompt}`,
     description_html: `Core vocabulary board generated for the topic: ${prompt}`,
-    buttons: words.map((word) => ({
+    license: {
+      type: "CC By",
+      copyright_notice_url: "https://creativecommons.org/licenses/by/4.0/",
+      author_name: "OpenAAC",
+      author_url: "https://www.openaac.org",
+    },
+    buttons: words.map((word, index) => ({
       id: word.id,
       label: word.label,
       background_color: word.background_color,
       border_color: word.border_color,
+      image_id: images[index]?.id.toString()
     })),
     grid: {
       rows,
       columns,
       order: gridOrder,
     },
+    images: images
   };
 }
 

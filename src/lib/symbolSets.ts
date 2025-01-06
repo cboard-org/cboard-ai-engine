@@ -7,6 +7,21 @@ import { ARASAAC } from "../constants";
 
 export type SymbolSet = "arasaac" | "global-symbols";
 
+export type OBFImage = {
+  id: string;
+  url: string;
+  width: number;
+  height: number;
+  content_type: string;
+  license: {
+    type: string;
+    copyright_notice_url: string;
+    source_url: string;
+    author_name: string;
+    author_url: string;
+  };
+};
+
 function removeDiacritics(str: string) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
@@ -155,4 +170,42 @@ function mapGlobalSymbolsResponse(
     };
   }
   return getEmptyImageSuggestion(word, language);
+}
+
+export async function getArasaacOBFImages({
+  URL,
+  words,
+  language,
+}: {
+  URL: string;
+  words: string[];
+  language: string;
+}): Promise<OBFImage[]> {
+  const requests = words.map((word) => fetchArasaacData(URL, word, language));
+  const responses = await Promise.all(requests);
+  
+  const images: OBFImage[] = [];
+  
+  responses.forEach((response, index) => {
+    if (response && response.length > 0) {
+      // Take the first (best) match for each word
+      const pictogram = response[0];
+      images.push({
+        id: pictogram._id.toString(),
+        url: `https://static.arasaac.org/pictograms/${pictogram._id}/${pictogram._id}_500.png`,
+        width: 500,
+        height: 500,
+        content_type: "image/png",
+        license: {
+          type: "CC BY-NC-SA",
+          copyright_notice_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+          source_url: "https://arasaac.org",
+          author_name: "ARASAAC",
+          author_url: "https://arasaac.org",
+        }
+      });
+    }
+  });
+
+  return images;
 }

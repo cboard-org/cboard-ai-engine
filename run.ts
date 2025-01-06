@@ -67,7 +67,7 @@ engineInstance
   );*/
 
 const promptCore = "go to the cinema";
-const totalButtons = 42; // Define how many buttons you want in total
+const totalButtons = 45; // Define how many buttons you want in total
 // First check if content is safe
 engineInstance.isContentSafe(promptCore).then(async (isSafe) => {
   console.log("Is content safe?", isSafe);
