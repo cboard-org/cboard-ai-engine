@@ -31,7 +31,7 @@ const engineInstance = initEngine({
 
 const prompt = "go to the cinema";
 const totalButtons = 50;
-const symbolSet = "arasaac";
+const symbolSet = "global-symbols";
 const globalSymbolsSet = "mulberry";
 const language = "en";
 

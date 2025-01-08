@@ -20,7 +20,7 @@ import {
 } from "./lib/symbolSets";
 import { type SymbolSet } from "./lib/symbolSets";
 import { getLanguageName, getLanguageTwoLetterCode } from "./utils/language";
-import { CoreBoardService } from './coreBoardService';
+import { CoreBoardService } from "./coreBoardService";
 
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
@@ -236,77 +236,6 @@ async function isContentSafe(textPrompt: string): Promise<boolean> {
 
 export { getSuggestions, isContentSafe };
 
-// Types for the CORE board structure
-type CoreCategory = {
-  name: CategoryName;
-  percentage: number;
-  required: boolean;
-  gridPercentage?: number;
-};
-
-// Define valid category names as a union type
-type CategoryName =
-  | "Pronouns"
-  | "Actions"
-  | "Adjectives/Adverbs"
-  | "Determiners"
-  | "Prepositions"
-  | "Questions"
-  | "Negation"
-  | "Interjections";
-
-type CoreWord = {
-  id: string;
-  label: string;
-  background_color: string;
-  border_color: string;
-  category: CategoryName;
-};
-
-type FixedCoreWords = {
-  Pronouns: string[];
-  Questions: string[];
-  Interjections: string[];
-  Negation: string[];
-};
-
-// Core categories with their target percentages
-const CORE_CATEGORIES: CoreCategory[] = [
-  { name: "Pronouns", percentage: 0.15, required: true, gridPercentage: 0.9 },
-  { name: "Actions", percentage: 0.25, required: false, gridPercentage: 0.8 },
-  {
-    name: "Adjectives/Adverbs",
-    percentage: 0.3,
-    required: false,
-    gridPercentage: 0.8,
-  },
-  {
-    name: "Determiners",
-    percentage: 0.08,
-    required: false,
-    gridPercentage: 0.5,
-  },
-  { name: "Prepositions", percentage: 0.15, required: false },
-  { name: "Questions", percentage: 0.05, required: true, gridPercentage: 0.4 },
-  { name: "Negation", percentage: 0.02, required: true },
-  { name: "Interjections", percentage: 0.08, required: true },
-];
-
-// Fixed core words per category that should always be included
-const FIXED_CORE_WORDS: FixedCoreWords = {
-  Pronouns: ["I", "you", "it", "we", "they", "he", "she"], //Sort these by importance
-  Questions: ["what", "where", "when", "who", "why", "how"],
-  Interjections: ["yes", "no", "please", "thank you"],
-  Negation: ["not", "don't"],
-};
-
-// Type guard to check if a category has fixed words
-function hasFixedWords(
-  category: CategoryName
-): category is keyof FixedCoreWords {
-  return category in FIXED_CORE_WORDS;
-}
-
 const MIN_BUTTONS = 20;
 const MAX_BUTTONS = 100;
 const BUTTON_STEP = 10;
@@ -330,18 +259,22 @@ async function generateCoreBoard(
     );
   }
 
-  // Initialize CoreBoardService with the global OpenAI instance
-  const coreBoardService = new CoreBoardService(globalConfiguration.openAIInstance);
+  const coreBoardService = new CoreBoardService(
+    globalConfiguration.openAIInstance,
+    {
+      arasaacURL: globalConfiguration.arasaacURL,
+      globalSymbolsURL: globalConfiguration.globalSymbolsURL,
+    }
+  );
+
   return await coreBoardService.generateCoreBoard(
-    prompt, 
-    totalButtons, 
-    symbolSet, 
-    globalSymbolsSymbolSet,
-    globalConfiguration // Pass the global configuration
+    prompt,
+    totalButtons,
+    symbolSet,
+    globalSymbolsSymbolSet
   );
 }
 
-// Helper function to get valid button counts
 function getValidButtonCounts(): number[] {
   const counts = [];
   for (let i = MIN_BUTTONS; i <= MAX_BUTTONS; i += BUTTON_STEP) {
