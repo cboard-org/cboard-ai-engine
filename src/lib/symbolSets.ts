@@ -209,3 +209,45 @@ export async function getArasaacOBFImages({
 
   return images;
 }
+
+export async function getGlobalSymbolsOBFImages({
+  URL,
+  words,
+  language,
+  symbolSet,
+}: {
+  URL: string;
+  words: string[];
+  language: string;
+  symbolSet: string | null;
+}): Promise<OBFImage[]> {
+  const requests = words.map((word) =>
+    fetchGlobalSymbolsData(URL, word, language, symbolSet)
+  );
+  const responses = await Promise.all(requests);
+  
+  const images: OBFImage[] = [];
+  
+  responses.forEach((response) => {
+    if (response && response.length > 0) {
+      // Take the first (best) match for each word
+      const label = response[0];
+      images.push({
+        id: label.id.toString(),
+        url: label.picto.image_url,
+        width: 500, // Removed invalid property access
+        height: 500, // Removed invalid property access
+        content_type: "image/png",
+        license: {
+          type: "CC BY-NC-SA",
+          copyright_notice_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+          source_url: "",
+          author_name: "",
+          author_url: "",
+        }
+      });
+    }
+  });
+
+  return images;
+}

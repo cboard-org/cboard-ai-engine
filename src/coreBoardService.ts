@@ -1,5 +1,6 @@
 import { OpenAIApi, Configuration } from "openai";
-import { getArasaacOBFImages, OBFImage } from "./lib/symbolSets";
+import { getArasaacOBFImages, getGlobalSymbolsOBFImages, OBFImage, SymbolSet } from "./lib/symbolSets";
+import { ARASAAC } from './constants';
 
 // Types for the CORE board structure
 export type CoreCategory = {
@@ -99,13 +100,16 @@ const CATEGORY_COLORS: CategoryColors = {
 export class CoreBoardService {
   private openai: OpenAIApi;
 
-  constructor(apiKey: string) {
-    this.openai = new OpenAIApi(new Configuration({ apiKey }));
+  constructor(openaiInstance: OpenAIApi) {
+    this.openai = openaiInstance;
   }
 
   async generateCoreBoard(
     prompt: string,
-    totalButtons: number = 42
+    totalButtons: number = 20,
+    symbolSet: SymbolSet = ARASAAC,
+    globalSymbolsSymbolSet?: string,
+    globalConfig?: any
   ): Promise<any> {
     // Calculate slots for each category based on percentages
     let categorySlots = CORE_CATEGORIES.map((category) => ({
@@ -120,27 +124,25 @@ export class CoreBoardService {
     // Combine fixed and dynamic words
     const allWords = this.combineWords(dynamicWords, categorySlots);
 
-    // Get ARASAAC images
-    const images = await getArasaacOBFImages({
-      URL: process.env.ARASAAC_API_URL || '',
-      words: allWords.map(w => w.label),
-      language: 'en'
-    });
-
-    // Create image ID mapping
-    const imageMapping = new Map(images.map(img => [img.url, img.id]));
-
-    // Update words with image IDs
-    const wordsWithImages = allWords.map(word => {
-      const imageUrl = `https://static.arasaac.org/pictograms/${word.id}/${word.id}_500.png`;
-      return {
-        ...word,
-        image_id: imageMapping.get(imageUrl)
-      };
-    });
+    // Get images based on symbolSet using global configuration
+    let images: OBFImage[];
+    if (symbolSet === ARASAAC) {
+      images = await getArasaacOBFImages({
+        URL: globalConfig.arasaacURL,
+        words: allWords.map(w => w.label),
+        language: 'en'
+      });
+    } else {
+      images = await getGlobalSymbolsOBFImages({
+        URL: globalConfig.globalSymbolsURL,
+        words: allWords.map(w => w.label),
+        language: 'en',
+        symbolSet: globalSymbolsSymbolSet || null
+      });
+    }
 
     // Create OBF format board
-    const board = this.createOBFBoard(wordsWithImages, prompt, images);
+    const board = this.createOBFBoard(allWords, prompt, images);
     this.visualizeBoard(board);
     return board;
   }
@@ -365,24 +367,30 @@ export class CoreBoardService {
       }
     }
 
-    //Fill bottom rows
-    currentWordsByCategory = wordsByCategory[CORE_CATEGORIES[5].name];
-    for (let col = 0; col < columns; col++) {
-      for (let row = pronounColumnSize; row < rows; row++) {
-        if (addedWords < currentWordsByCategory.length) {
-          gridOrder[row][col] = currentWordsByCategory[addedWords].id;
-          addedWords++;
-        }
-        if (addedWords >= currentWordsByCategory.length) {
-          currentCategory++;
-          if (currentCategory >= CORE_CATEGORIES.length) {
-            break;
-          }
-          currentWordsByCategory =
-            wordsByCategory[CORE_CATEGORIES[currentCategory].name] || [];
-          addedWords = 0;
-        }
-      }
+    // Fill last row with questions, negation and interjections
+    const lastRow = rows - 1;
+    const questionsWords = wordsByCategory["Questions"] || [];
+    const negationWords = wordsByCategory["Negation"] || [];
+    const interjectionsWords = wordsByCategory["Interjections"] || [];
+
+    // Calculate slots for each category in the last row
+    const questionSlots = Math.round(columns * 0.33);  // 33%
+    const negationSlots = Math.round(columns * 0.13);  // 13%
+    const interjectionSlots = columns - questionSlots - negationSlots;  // Remaining (approximately 54%)
+
+    // Fill Questions
+    for (let col = 0; col < questionSlots && col < questionsWords.length; col++) {
+      gridOrder[lastRow][col] = questionsWords[col].id;
+    }
+
+    // Fill Negation
+    for (let col = questionSlots; col < questionSlots + negationSlots && col - questionSlots < negationWords.length; col++) {
+      gridOrder[lastRow][col] = negationWords[col - questionSlots].id;
+    }
+
+    // Fill Interjections
+    for (let col = questionSlots + negationSlots; col < columns && col - (questionSlots + negationSlots) < interjectionsWords.length; col++) {
+      gridOrder[lastRow][col] = interjectionsWords[col - (questionSlots + negationSlots)].id;
     }
 
     return gridOrder;
