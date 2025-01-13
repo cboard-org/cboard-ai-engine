@@ -185,15 +185,18 @@ async function getSuggestions({
   return suggestions;
 }
 
-// A function to generate a prompt for generating images from Leonardo AI using GPT3.5-turbo-instruct and provided template and words
+// A function to generate a prompt for generating images from Leonardo AI using gpt-4o-mini and provided template and words
 export async function generatePromptForImageGeneration({
   words,
 }: {
   words: string[];
 }): Promise<Array<{ word: string; prompt: string }>> {
   const completionRequestParams = {
-    model: "gpt-3.5-turbo-instruct",
-    prompt: `Create a detailed prompt to generate a pictogram for each word of the words array: '${words}'. 
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: `Create a detailed prompt to generate a pictogram for each word of the words array: '${words}'. 
     First, determine if this is primarily an ACTION or OBJECT, then create a prompt following the appropriate template below.
 
     For ACTIONS (verbs, activities):
@@ -217,6 +220,12 @@ export async function generatePromptForImageGeneration({
     word2: 'prompt', 
     ...
     wordN: 'prompt'`,
+      },
+      {
+        role: "user",
+        content: `Generate Prompts for ${words}`,
+      },
+    ],
     temperature: 0,
     max_tokens: 1500,
   };
@@ -272,12 +281,13 @@ export async function generateAPromptForLeonardo({
   word: string;
 }): Promise<string> {
   const max_tokens = Math.round(2 * 100 + 460);
-  const response = await globalConfiguration.openAIInstance.createChatCompletion({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content: `You are an expert in creating pictogram prompts. Analyze the word and create a detailed prompt following these guidelines:
+  const response =
+    await globalConfiguration.openAIInstance.createChatCompletion({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert in creating pictogram prompts. Analyze the word and create a detailed prompt following these guidelines:
 
 CLASSIFICATION CRITERIA:
 For ACTIONS:
@@ -325,16 +335,16 @@ STYLE:
 -No gradients/shadows
 -1:1 ratio
 
-Return only the prompt, under 100 words, no explanations.`
-      },
-      {
-        role: "user",
-        content: `Create a pictogram prompt for the word: '${word}'`
-      }
-    ],
-    temperature: 0,
-    max_tokens: max_tokens
-  });
+Return only the prompt, under 100 words, no explanations.`,
+        },
+        {
+          role: "user",
+          content: `Create a pictogram prompt for the word: '${word}'`,
+        },
+      ],
+      temperature: 0,
+      max_tokens: max_tokens,
+    });
 
   const promptText = response.data?.choices[0]?.message?.content;
   if (!promptText)
