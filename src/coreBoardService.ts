@@ -1,12 +1,39 @@
-import { OpenAIApi, Configuration } from "openai";
-import { getArasaacOBFImages, OBFImage } from "./lib/symbolSets";
+import { OpenAIApi } from "openai";
+import { ARASAAC } from "./constants";
+import { OBFImage, getArasaacOBFImages, getGlobalSymbolsOBFImages } from "./lib/symbolSets";
+import { type SymbolSet } from "./lib/symbolSets";
 
-// Types for the CORE board structure
+// Types
+export type CategoryName =
+  | "Pronouns"
+  | "Actions"
+  | "Adjectives/Adverbs"
+  | "Determiners"
+  | "Prepositions"
+  | "Questions"
+  | "Negation"
+  | "Interjections";
+
 export type CoreCategory = {
   name: CategoryName;
   percentage: number;
   required: boolean;
   gridPercentage?: number;
+};
+
+export type CoreWord = {
+  id: string;
+  label: string;
+  background_color: string;
+  border_color: string;
+  category: CategoryName;
+};
+
+type FixedCoreWords = {
+  Pronouns: string[];
+  Questions: string[];
+  Interjections: string[];
+  Negation: string[];
 };
 
 type Button = {
@@ -25,55 +52,18 @@ type OBFBoard = {
   };
 };
 
-// Define valid category names as a union type
-export type CategoryName =
-  | "Actions"
-  | "Adjectives/Adverbs"
-  | "Pronouns"
-  | "Questions"
-  | "Interjections"
-  | "Determiners"
-  | "Prepositions"
-  | "Negation";
-
-export type CoreWord = {
-  id: string;
-  label: string;
-  background_color: string;
-  border_color: string;
-  category: CategoryName;
-};
-
-type FixedCoreWords = {
-  Pronouns: string[];
-  Questions: string[];
-  Interjections: string[];
-  Negation: string[];
-};
-
-// Core categories with their target percentages
-const CORE_CATEGORIES: CoreCategory[] = [
+// Constants
+export const CORE_CATEGORIES: CoreCategory[] = [
   { name: "Pronouns", percentage: 0.15, required: true, gridPercentage: 0.9 },
-  { name: "Actions", percentage: 0.3, required: false, gridPercentage: 0.8 },
-  {
-    name: "Adjectives/Adverbs",
-    percentage: 0.3,
-    required: false,
-    gridPercentage: 0.8,
-  },
-  {
-    name: "Determiners",
-    percentage: 0.05,
-    required: false,
-    gridPercentage: 0.5,
-  },
-  { name: "Prepositions", percentage: 0.05, required: false },
+  { name: "Actions", percentage: 0.25, required: false, gridPercentage: 0.8 },
+  { name: "Adjectives/Adverbs", percentage: 0.3, required: false, gridPercentage: 0.8 },
+  { name: "Determiners", percentage: 0.08, required: false, gridPercentage: 0.5 },
+  { name: "Prepositions", percentage: 0.15, required: false },
   { name: "Questions", percentage: 0.05, required: true, gridPercentage: 0.4 },
   { name: "Negation", percentage: 0.02, required: true },
-  { name: "Interjections", percentage: 0.08, required: true },
+  { name: "Interjections", percentage: 0.08, required: true }
 ];
 
-// Fixed core words per category that should always be included
 const FIXED_CORE_WORDS: FixedCoreWords = {
   Pronouns: ["I", "you", "it", "we", "they", "he", "she"],
   Questions: ["what", "where", "when", "who", "why", "how"],
@@ -81,66 +71,40 @@ const FIXED_CORE_WORDS: FixedCoreWords = {
   Negation: ["not", "don't"],
 };
 
-type CategoryColors = {
-  [K in CategoryName]: string;
-};
-
-const CATEGORY_COLORS: CategoryColors = {
-  Actions: "rgb(200, 255, 200)", // green
-  "Adjectives/Adverbs": "rgb(135, 206, 250)", // blue
-  Pronouns: "rgb(255, 255, 200)", // yellow
-  Interjections: "rgb(255, 192, 203)", // pink
-  Questions: "rgb(255, 200, 255)", // purple
-  Determiners: "rgb(240, 240, 240)", // gray
-  Prepositions: "rgb(255, 255, 255)", // white
-  Negation: "rgb(255, 140, 140)", // red
+const CATEGORY_COLORS: Record<CategoryName, string> = {
+  Actions: "rgb(200, 255, 200)",
+  "Adjectives/Adverbs": "rgb(135, 206, 250)",
+  Pronouns: "rgb(255, 255, 200)",
+  Interjections: "rgb(255, 192, 203)",
+  Questions: "rgb(255, 200, 255)",
+  Determiners: "rgb(230, 230, 230)",
+  Prepositions: "rgb(255, 255, 255)",
+  Negation: "rgb(255, 140, 140)",
 };
 
 export class CoreBoardService {
-  private openai: OpenAIApi;
-
-  constructor(apiKey: string) {
-    this.openai = new OpenAIApi(new Configuration({ apiKey }));
-  }
+  constructor(
+    private openAIInstance: OpenAIApi,
+    private config: { arasaacURL: string; globalSymbolsURL: string }
+  ) {}
 
   async generateCoreBoard(
     prompt: string,
-    totalButtons: number = 42
+    totalButtons: number,
+    symbolSet: SymbolSet = ARASAAC,
+    globalSymbolsSymbolSet?: string
   ): Promise<any> {
-    // Calculate slots for each category based on percentages
-    let categorySlots = CORE_CATEGORIES.map((category) => ({
+    // Calculate slots for each category
+    const categorySlots = CORE_CATEGORIES.map((category) => ({
       name: category.name,
       slots: Math.round(totalButtons * category.percentage),
       required: category.required,
     }));
 
-    // Generate dynamic words from LLM for non-fixed categories
     const dynamicWords = await this.generateDynamicWords(prompt, categorySlots);
-
-    // Combine fixed and dynamic words
     const allWords = this.combineWords(dynamicWords, categorySlots);
-
-    // Get ARASAAC images
-    const images = await getArasaacOBFImages({
-      URL: process.env.ARASAAC_API_URL || '',
-      words: allWords.map(w => w.label),
-      language: 'en'
-    });
-
-    // Create image ID mapping
-    const imageMapping = new Map(images.map(img => [img.url, img.id]));
-
-    // Update words with image IDs
-    const wordsWithImages = allWords.map(word => {
-      const imageUrl = `https://static.arasaac.org/pictograms/${word.id}/${word.id}_500.png`;
-      return {
-        ...word,
-        image_id: imageMapping.get(imageUrl)
-      };
-    });
-
-    // Create OBF format board
-    const board = this.createOBFBoard(wordsWithImages, prompt, images);
+    const images = await this.getImages(allWords, symbolSet, globalSymbolsSymbolSet);
+    const board = this.createOBFBoard(allWords, prompt, images, totalButtons);
     this.visualizeBoard(board);
     return board;
   }
@@ -156,7 +120,7 @@ export class CoreBoardService {
     const max_tokens = Math.round(4.5 * 50 + 200);
 
     for (const category of dynamicCategories) {
-      const response = await this.openai.createChatCompletion({
+      const response = await this.openAIInstance.createChatCompletion({
         model: "gpt-4o-mini",
         messages: [
           {
@@ -191,10 +155,12 @@ export class CoreBoardService {
     return wordsMap;
   }
 
-  private hasFixedWords(
-    category: CategoryName
-  ): category is keyof FixedCoreWords {
+  private hasFixedWords(category: CategoryName): category is keyof FixedCoreWords {
     return category in FIXED_CORE_WORDS;
+  }
+
+  private getCategoryColor(category: CategoryName): string {
+    return CATEGORY_COLORS[category];
   }
 
   private combineWords(
@@ -241,23 +207,37 @@ export class CoreBoardService {
     return allWords;
   }
 
-  private getCategoryColor(category: CategoryName): string {
-    return CATEGORY_COLORS[category];
+  private async getImages(
+    allWords: CoreWord[],
+    symbolSet: SymbolSet,
+    globalSymbolsSymbolSet?: string
+  ): Promise<OBFImage[]> {
+    if (symbolSet === ARASAAC) {
+      return await getArasaacOBFImages({
+        URL: this.config.arasaacURL,
+        words: allWords.map(w => w.label),
+        language: 'en'
+      });
+    } else {
+      return await getGlobalSymbolsOBFImages({
+        URL: this.config.globalSymbolsURL,
+        words: allWords.map(w => w.label),
+        language: 'en',
+        symbolSet: globalSymbolsSymbolSet || null
+      });
+    }
   }
 
   private createOBFBoard(
     words: CoreWord[],
     prompt: string,
-    images: OBFImage[]
+    images: OBFImage[],
+    totalButtons: number
   ): any {
-    // Calculate grid dimensions
-    const columns = Math.ceil(Math.sqrt(words.length));
-    const rows = Math.ceil(words.length / columns);
-
-    // Create grid order
+    const columns = Math.ceil(Math.sqrt(totalButtons));
+    const rows = Math.ceil(totalButtons / columns);
     const gridOrder = this.createGridOrder(words, rows, columns);
 
-    // Create OBF format object
     return {
       format: "open-board-0.1",
       id: "1",
@@ -270,12 +250,12 @@ export class CoreBoardService {
         author_name: "OpenAAC",
         author_url: "https://www.openaac.org",
       },
-      buttons: words.map((word) => ({
+      buttons: words.map((word, index) => ({
         id: word.id,
         label: word.label,
         background_color: word.background_color,
         border_color: word.border_color,
-        image_id: word.id
+        image_id: images[index]?.id.toString()
       })),
       grid: {
         rows,
@@ -317,6 +297,7 @@ export class CoreBoardService {
     let currentWordsByCategory =
       wordsByCategory[CORE_CATEGORIES[currentCategory].name] || [];
 
+    // Fill pronouns, actions and adjectives
     for (let col = 0; col < columns; col++) {
       for (let row = 0; row < currentRowLimit; row++) {
         if (addedWords < currentWordsByCategory.length) {
@@ -342,11 +323,11 @@ export class CoreBoardService {
       ((wordsByCategory[CORE_CATEGORIES[0].name] || []).length - 1) /
         pronounColumnSize
     );
+
     addedWords = 0;
     currentCategory = 3;
     currentWordsByCategory =
       wordsByCategory[CORE_CATEGORIES[currentCategory].name];
-
     for (let col = lastPronounCol; col < columns; col++) {
       for (let row = actionColumnSize; row < pronounColumnSize; row++) {
         if (addedWords < currentWordsByCategory.length) {
@@ -365,7 +346,7 @@ export class CoreBoardService {
       }
     }
 
-    //Fill bottom rows
+    // Fill bottom rows
     currentWordsByCategory = wordsByCategory[CORE_CATEGORIES[5].name];
     for (let col = 0; col < columns; col++) {
       for (let row = pronounColumnSize; row < rows; row++) {
@@ -407,7 +388,7 @@ export class CoreBoardService {
     console.log("=".repeat(grid.columns * 15));
 
     for (const row of grid.order) {
-      const rowVisual = row.map((buttonId: string | null) => {
+      const rowVisual = row.map((buttonId) => {
         if (!buttonId) {
           return "---empty---".padEnd(12);
         }

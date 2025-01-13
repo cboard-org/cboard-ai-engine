@@ -29,12 +29,10 @@ const engineInstance = initEngine({
   contentSafetyConfiguration,
 });
 
-const prompt = "jungle birds";
-const maxSuggestions = 15;
-const symbolSet = "arasaac";
-//const symbolSet = "global-symbols";
-const globalSymbolsSymbolSet = "global-symbols";
-//const language = "es";
+const prompt = "go to the cinema";
+const totalButtons = 50;
+const symbolSet = "global-symbols";
+const globalSymbolsSet = "mulberry";
 const language = "en";
 
 //Check content safety
@@ -67,29 +65,26 @@ engineInstance
   );*/
 
 const promptCore = "go to the cinema";
-const totalButtons = 45; // Define how many buttons you want in total
 // First check if content is safe
 engineInstance.isContentSafe(promptCore).then(async (isSafe) => {
   console.log("Is content safe?", isSafe);
 
   if (isSafe) {
     try {
-      // Generate CORE board
-      console.log("Generating CORE board...");
+      // Generate CORE board with Global Symbols
+      console.log("Generating CORE board with Global Symbols...");
       const coreBoard = await engineInstance.generateCoreBoard(
         promptCore,
-        totalButtons
+        totalButtons,
+        symbolSet,
+        globalSymbolsSet
       );
 
       // Save to file
-      const filename = `${promptCore}CoreBoard.obf`;
+      const filename = `${promptCore}_GlobalSymbols_CoreBoard.obf`;
       console.log(`Saving CORE board to file: ${filename}`);
       fs.writeFileSync(filename, JSON.stringify(coreBoard, null, 2));
 
-      /*console.log(
-        "\nCore Board Generated ------------------------------------\n"
-      );*/
-      //console.dir(coreBoard, { depth: 5 });
     } catch (error) {
       console.error("Error generating CORE board:", error);
     }
