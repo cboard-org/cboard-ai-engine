@@ -73,6 +73,7 @@ export function init({
   return {
     getSuggestions,
     isContentSafe,
+    generateAPromptForLeonardo,
   };
 }
 
@@ -122,7 +123,6 @@ async function getWordSuggestions({
           .map((word) => word.trim())
           .slice(0, maxWords)
       : [];
-    console.log(wordsSuggestionsList);
     if (!wordsSuggestionsList.length)
       throw new Error("ERROR: Suggestion list is empty or maxToken reached");
     return wordsSuggestionsList;
@@ -183,6 +183,83 @@ async function getSuggestions({
   });
 
   return suggestions;
+}
+
+export async function generateAPromptForLeonardo({
+  word,
+}: {
+  word: string;
+}): Promise<string> {
+  const max_tokens = Math.round(2 * 100 + 460);
+  const response =
+    await globalConfiguration.openAIInstance.createChatCompletion({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert in creating pictogram prompts. Analyze the word and create a detailed prompt following these guidelines:
+
+CLASSIFICATION CRITERIA:
+For ACTIONS:
+-Can it be performed/demonstrated?
+-Does it involve movement or change?
+-Can you complete the phrase "to [word]"?
+
+For OBJECTS:
+-Can it be touched or physically exist?
+-Is it a person, place, or thing?
+-Can you put "the" or "a" before it?
+
+For ADJECTIVES:
+-Does it describe a quality or state?
+-Can you put "very" before it?
+-Can you add "-er" or "-est" to compare it?
+
+TEMPLATE REQUIREMENTS:
+For ACTIONS:
+-Show simplified human figure mid-action
+-Capture distinctive moment
+-Include motion indicators
+-Use appropriate view angle
+-Include essential props only
+
+For OBJECTS:
+-Show complete item in recognizable form
+-Use optimal viewing angle
+-Follow specific guidelines for category
+-Avoid interaction/movement
+
+For ADJECTIVES:
+-Show clear comparison/extreme example
+-Use split scenes if needed
+-Include reference objects
+-Use universal symbols
+-Emphasize through composition
+
+STYLE:
+-Bold black outlines (3px)
+-Flat colors
+-High contrast
+-Centered composition
+-White background
+-No gradients/shadows
+-1:1 ratio
+
+Return only the prompt, under 100 words, no explanations.`,
+        },
+        {
+          role: "user",
+          content: `Create a pictogram prompt for the word: '${word}'`,
+        },
+      ],
+      temperature: 0,
+      max_tokens: max_tokens,
+    });
+
+  const promptText = response.data?.choices[0]?.message?.content;
+  if (!promptText)
+    throw new Error("Error generating prompt for image generation");
+  return promptText;
 }
 
 async function isContentSafe(textPrompt: string): Promise<boolean> {
