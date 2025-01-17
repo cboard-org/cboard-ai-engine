@@ -1,0 +1,808 @@
+{
+  "format": "open-board-0.1",
+  "id": "1",
+  "locale": "en",
+  "name": "Core Board - go to the beach",
+  "description_html": "Core vocabulary board generated for the topic: go to the beach",
+  "license": {
+    "type": "CC By",
+    "copyright_notice_url": "https://creativecommons.org/licenses/by/4.0/",
+    "author_name": "OpenAAC",
+    "author_url": "https://www.openaac.org"
+  },
+  "buttons": [
+    {
+      "id": "1",
+      "label": "I",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "2",
+      "label": "you",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "3",
+      "label": "it",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "4",
+      "label": "we",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "5",
+      "label": "they",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "6",
+      "label": "he",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "7",
+      "label": "she",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "8",
+      "label": "my",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "9",
+      "label": "your",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "10",
+      "label": "their",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "11",
+      "label": "his",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "12",
+      "label": "her",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "13",
+      "label": "our",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "14",
+      "label": "its",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "15",
+      "label": "what",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "16",
+      "label": "where",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "17",
+      "label": "when",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "18",
+      "label": "who",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "19",
+      "label": "why",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "20",
+      "label": "how",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "21",
+      "label": "which",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "22",
+      "label": "whose",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "23",
+      "label": "can",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "24",
+      "label": "yes",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "25",
+      "label": "no",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "26",
+      "label": "please",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "27",
+      "label": "thank you",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "28",
+      "label": "hello",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "29",
+      "label": "hi",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "30",
+      "label": "bye",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "31",
+      "label": "goodbye",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "32",
+      "label": "wow",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "33",
+      "label": "oh",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "34",
+      "label": "ah",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "35",
+      "label": "ouch",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "36",
+      "label": "sorry",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "37",
+      "label": "excuse me",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "38",
+      "label": "not",
+      "background_color": "rgb(255, 140, 140)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "39",
+      "label": "don't",
+      "background_color": "rgb(255, 140, 140)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "40",
+      "label": "no",
+      "background_color": "rgb(255, 140, 140)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "41",
+      "label": "never",
+      "background_color": "rgb(255, 140, 140)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "42",
+      "label": "none",
+      "background_color": "rgb(255, 140, 140)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "43",
+      "label": "go",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "44",
+      "label": "play",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "45",
+      "label": "swim",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "46",
+      "label": "run",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "47",
+      "label": "walk",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "48",
+      "label": "build",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "49",
+      "label": "dig",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "50",
+      "label": "splash",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "51",
+      "label": "relax",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "52",
+      "label": "sit",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "53",
+      "label": "sunbathe",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "54",
+      "label": "collect",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "55",
+      "label": "find",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "56",
+      "label": "explore",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "57",
+      "label": "jump",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "58",
+      "label": "throw",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "59",
+      "label": "catch",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "60",
+      "label": "eat",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "61",
+      "label": "drink",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "62",
+      "label": "look",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "63",
+      "label": "listen",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "64",
+      "label": "share",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "65",
+      "label": "take",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "66",
+      "label": "bring",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "67",
+      "label": "pack",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "68",
+      "label": "enjoy",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "69",
+      "label": "sunny",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "70",
+      "label": "sandy",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "71",
+      "label": "warm",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "72",
+      "label": "cool",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "73",
+      "label": "fun",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "74",
+      "label": "relaxing",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "75",
+      "label": "exciting",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "76",
+      "label": "beautiful",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "77",
+      "label": "quiet",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "78",
+      "label": "busy",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "79",
+      "label": "clear",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "80",
+      "label": "salty",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "81",
+      "label": "bright",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "82",
+      "label": "playful",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "83",
+      "label": "adventurous",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "84",
+      "label": "safe",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "85",
+      "label": "friendly",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "86",
+      "label": "colorful",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "87",
+      "label": "easy",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "88",
+      "label": "fast",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "89",
+      "label": "slow",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "90",
+      "label": "happy",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "91",
+      "label": "wet",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "92",
+      "label": "dry",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "93",
+      "label": "nearby",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "94",
+      "label": "far",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "95",
+      "label": "open",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "96",
+      "label": "the",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "97",
+      "label": "a",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "98",
+      "label": "my",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "99",
+      "label": "your",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "100",
+      "label": "this",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "101",
+      "label": "that",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "102",
+      "label": "some",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "103",
+      "label": "any",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "104",
+      "label": "all",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "105",
+      "label": "to",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "106",
+      "label": "in",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "107",
+      "label": "on",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "108",
+      "label": "at",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "109",
+      "label": "by",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "110",
+      "label": "with",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "111",
+      "label": "for",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "112",
+      "label": "from",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "113",
+      "label": "under",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    }
+  ],
+  "grid": {
+    "rows": 9,
+    "columns": 10,
+    "order": [
+      [
+        "1",
+        "8",
+        "43",
+        "48",
+        "53",
+        "58",
+        "63",
+        "68",
+        "73",
+        "78"
+      ],
+      [
+        "2",
+        "9",
+        "44",
+        "49",
+        "54",
+        "59",
+        "64",
+        "69",
+        "74",
+        "79"
+      ],
+      [
+        "3",
+        "10",
+        "45",
+        "50",
+        "55",
+        "60",
+        "65",
+        "70",
+        "75",
+        "80"
+      ],
+      [
+        "4",
+        "11",
+        "46",
+        "51",
+        "56",
+        "61",
+        "66",
+        "71",
+        "76",
+        "81"
+      ],
+      [
+        "5",
+        "12",
+        "47",
+        "52",
+        "57",
+        "62",
+        "67",
+        "72",
+        "77",
+        "82"
+      ],
+      [
+        "6",
+        "96",
+        "98",
+        "100",
+        "102",
+        "104",
+        "105",
+        "107",
+        "109",
+        "111"
+      ],
+      [
+        "7",
+        "97",
+        "99",
+        "101",
+        "103",
+        null,
+        "106",
+        "108",
+        "110",
+        "112"
+      ],
+      [
+        "15",
+        "17",
+        "19",
+        "21",
+        "23",
+        "38",
+        "40",
+        "42",
+        "24",
+        "26"
+      ],
+      [
+        "16",
+        "18",
+        "20",
+        "22",
+        null,
+        "39",
+        "41",
+        null,
+        "25",
+        "27"
+      ]
+    ]
+  },
+  "images": []
+}

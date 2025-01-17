@@ -29,8 +29,8 @@ const engineInstance = initEngine({
   contentSafetyConfiguration,
 });
 
-const prompt = "go to the cinema";
-const totalButtons = 50;
+const prompt = "go to Dubai";
+const totalButtons = 90;
 const symbolSet = "global-symbols";
 const globalSymbolsSet = "mulberry";
 const language = "en";
@@ -64,7 +64,7 @@ engineInstance
     //console.dir(suggestions, { depth: 2 })
   );*/
 
-const promptCore = "go to the cinema";
+const promptCore = "go to the beach";
 // First check if content is safe
 engineInstance.isContentSafe(promptCore).then(async (isSafe) => {
   console.log("Is content safe?", isSafe);
@@ -84,7 +84,6 @@ engineInstance.isContentSafe(promptCore).then(async (isSafe) => {
       const filename = `${promptCore}_GlobalSymbols_CoreBoard.obf`;
       console.log(`Saving CORE board to file: ${filename}`);
       fs.writeFileSync(filename, JSON.stringify(coreBoard, null, 2));
-
     } catch (error) {
       console.error("Error generating CORE board:", error);
     }

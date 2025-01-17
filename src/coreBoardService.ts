@@ -1,6 +1,10 @@
 import { OpenAIApi } from "openai";
 import { ARASAAC } from "./constants";
-import { OBFImage, getArasaacOBFImages, getGlobalSymbolsOBFImages } from "./lib/symbolSets";
+import {
+  OBFImage,
+  getArasaacOBFImages,
+  getGlobalSymbolsOBFImages,
+} from "./lib/symbolSets";
 import { type SymbolSet } from "./lib/symbolSets";
 
 // Types
@@ -55,20 +59,120 @@ type OBFBoard = {
 // Constants
 export const CORE_CATEGORIES: CoreCategory[] = [
   { name: "Pronouns", percentage: 0.15, required: true, gridPercentage: 0.9 },
-  { name: "Actions", percentage: 0.25, required: false, gridPercentage: 0.8 },
-  { name: "Adjectives/Adverbs", percentage: 0.3, required: false, gridPercentage: 0.8 },
-  { name: "Determiners", percentage: 0.08, required: false, gridPercentage: 0.5 },
-  { name: "Prepositions", percentage: 0.15, required: false },
-  { name: "Questions", percentage: 0.05, required: true, gridPercentage: 0.4 },
-  { name: "Negation", percentage: 0.02, required: true },
-  { name: "Interjections", percentage: 0.08, required: true }
+  { name: "Actions", percentage: 0.3, required: false, gridPercentage: 0.8 },
+  {
+    name: "Adjectives/Adverbs",
+    percentage: 0.3,
+    required: false,
+    gridPercentage: 0.8,
+  },
+  {
+    name: "Determiners",
+    percentage: 0.1,
+    required: false,
+    gridPercentage: 0.5,
+  },
+  { name: "Prepositions", percentage: 0.1, required: false },
+  { name: "Questions", percentage: 0.1, required: true, gridPercentage: 0.4 },
+  { name: "Negation", percentage: 0.05, required: true },
+  { name: "Interjections", percentage: 0.15, required: true },
 ];
 
 const FIXED_CORE_WORDS: FixedCoreWords = {
-  Pronouns: ["I", "you", "it", "we", "they", "he", "she"],
-  Questions: ["what", "where", "when", "who", "why", "how"],
-  Interjections: ["yes", "no", "please", "thank you"],
-  Negation: ["not", "don't"],
+  Pronouns: [
+    // Personal pronouns
+    "I",
+    "you",
+    "it",
+    "we",
+    "they",
+    "he",
+    "she",
+    // Possessive pronouns
+    "my",
+    "your",
+    "their",
+    "his",
+    "her",
+    "our",
+    "its",
+    // Demonstrative pronouns
+    "this",
+    "that",
+    "these",
+    "those",
+    // Reflexive pronouns
+    "myself",
+    "yourself",
+    "themselves",
+  ],
+  Questions: [
+    // Basic question words
+    "what",
+    "where",
+    "when",
+    "who",
+    "why",
+    "how",
+    // Extended question starters
+    "which",
+    "whose",
+    "can",
+    "will",
+    "did",
+    // Time-based questions
+    "how long",
+    "how often",
+    "how many",
+    // Clarification questions
+    "really",
+    "right",
+    "okay",
+  ],
+  Interjections: [
+    // Basic responses
+    "yes",
+    "no",
+    "please",
+    "thank you",
+    // Greetings
+    "hello",
+    "hi",
+    "bye",
+    "goodbye",
+    // Emotions
+    "wow",
+    "oh",
+    "ah",
+    "ouch",
+    // Social expressions
+    "sorry",
+    "excuse me",
+    "okay",
+    "well",
+    // Attention-getters
+    "hey",
+    "look",
+    "listen",
+    "wait",
+  ],
+  Negation: [
+    // Basic negatives
+    "not",
+    "don't",
+    // Additional negatives
+    "no",
+    "never",
+    "none",
+    // Negative auxiliaries
+    "can't",
+    "won't",
+    "didn't",
+    // Negative adverbs
+    "nothing",
+    "nowhere",
+    "nobody",
+  ],
 };
 
 const CATEGORY_COLORS: Record<CategoryName, string> = {
@@ -100,10 +204,16 @@ export class CoreBoardService {
       slots: Math.round(totalButtons * category.percentage),
       required: category.required,
     }));
+    console.log("categorySlots: ", categorySlots);
 
     const dynamicWords = await this.generateDynamicWords(prompt, categorySlots);
     const allWords = this.combineWords(dynamicWords, categorySlots);
-    const images = await this.getImages(allWords, symbolSet, globalSymbolsSymbolSet);
+    const images: OBFImage[] = [];
+    /*const images = await this.getImages(
+      allWords,
+      symbolSet,
+      globalSymbolsSymbolSet
+    );*/
     const board = this.createOBFBoard(allWords, prompt, images, totalButtons);
     this.visualizeBoard(board);
     return board;
@@ -155,7 +265,9 @@ export class CoreBoardService {
     return wordsMap;
   }
 
-  private hasFixedWords(category: CategoryName): category is keyof FixedCoreWords {
+  private hasFixedWords(
+    category: CategoryName
+  ): category is keyof FixedCoreWords {
     return category in FIXED_CORE_WORDS;
   }
 
@@ -215,15 +327,15 @@ export class CoreBoardService {
     if (symbolSet === ARASAAC) {
       return await getArasaacOBFImages({
         URL: this.config.arasaacURL,
-        words: allWords.map(w => w.label),
-        language: 'en'
+        words: allWords.map((w) => w.label),
+        language: "en",
       });
     } else {
       return await getGlobalSymbolsOBFImages({
         URL: this.config.globalSymbolsURL,
-        words: allWords.map(w => w.label),
-        language: 'en',
-        symbolSet: globalSymbolsSymbolSet || null
+        words: allWords.map((w) => w.label),
+        language: "en",
+        symbolSet: globalSymbolsSymbolSet || null,
       });
     }
   }
@@ -236,7 +348,7 @@ export class CoreBoardService {
   ): any {
     const columns = Math.ceil(Math.sqrt(totalButtons));
     const rows = Math.ceil(totalButtons / columns);
-    const gridOrder = this.createGridOrder(words, rows, columns);
+    const gridOrder = this.createGridOrder2(words, rows, columns);
 
     return {
       format: "open-board-0.1",
@@ -255,14 +367,14 @@ export class CoreBoardService {
         label: word.label,
         background_color: word.background_color,
         border_color: word.border_color,
-        image_id: images[index]?.id.toString()
+        image_id: images[index]?.id.toString(),
       })),
       grid: {
         rows,
         columns,
         order: gridOrder,
       },
-      images: images
+      images: images,
     };
   }
 
@@ -302,6 +414,14 @@ export class CoreBoardService {
       for (let row = 0; row < currentRowLimit; row++) {
         if (addedWords < currentWordsByCategory.length) {
           gridOrder[row][col] = currentWordsByCategory[addedWords].id;
+          console.log(
+            "Added word: [" +
+              row +
+              "][" +
+              col +
+              "]: " +
+              currentWordsByCategory[addedWords].label
+          );
           addedWords++;
         }
         if (addedWords >= currentWordsByCategory.length) {
@@ -332,6 +452,14 @@ export class CoreBoardService {
       for (let row = actionColumnSize; row < pronounColumnSize; row++) {
         if (addedWords < currentWordsByCategory.length) {
           gridOrder[row][col] = currentWordsByCategory[addedWords].id;
+          console.log(
+            "Added word: [" +
+              row +
+              "][" +
+              col +
+              "]: " +
+              currentWordsByCategory[addedWords].label
+          );
           addedWords++;
         }
         if (addedWords >= currentWordsByCategory.length) {
@@ -352,6 +480,14 @@ export class CoreBoardService {
       for (let row = pronounColumnSize; row < rows; row++) {
         if (addedWords < currentWordsByCategory.length) {
           gridOrder[row][col] = currentWordsByCategory[addedWords].id;
+          console.log(
+            "Added word: [" +
+              row +
+              "][" +
+              col +
+              "]: " +
+              currentWordsByCategory[addedWords].label
+          );
           addedWords++;
         }
         if (addedWords >= currentWordsByCategory.length) {
@@ -367,6 +503,218 @@ export class CoreBoardService {
     }
 
     return gridOrder;
+  }
+
+  private createGridOrder2(
+    words: CoreWord[],
+    rows: number,
+    columns: number
+  ): (string | null)[][] {
+    // Initialize grid with nulls
+    const grid: (string | null)[][] = Array(rows)
+      .fill(null)
+      .map(() => Array(columns).fill(null));
+
+    // Group words by category
+    const wordsByCategory = words.reduce((acc, word) => {
+      if (!acc[word.category]) {
+        acc[word.category] = [];
+      }
+      acc[word.category].push(word);
+      return acc;
+    }, {} as Record<CategoryName, CoreWord[]>);
+
+    // Helper function to place words in the grid
+    const placeWords = (
+      category: CategoryName,
+      startRow: number,
+      startCol: number,
+      maxRow: number,
+      endCol: number = columns,
+      isTop: boolean = false
+    ): { lastRow: number; lastCol: number } => {
+      const categoryWords = wordsByCategory[category] || [];
+      let row = startRow;
+      let col = startCol;
+      let isFirstColumn = true;
+      let wordsInCurrentColumn = 0;
+      let maxWordsPerColumn = maxRow - (isFirstColumn ? startRow : 0);
+
+      for (const word of categoryWords) {
+        if (wordsInCurrentColumn >= maxWordsPerColumn) {
+          col++;
+          row = isTop ? 0 : startRow;
+          isFirstColumn = false;
+          wordsInCurrentColumn = 0;
+          maxWordsPerColumn = maxRow - (isTop ? 0 : startRow);
+        }
+        if (col >= endCol) break;
+
+        if (row >= 0 && row < rows && col >= 0 && col < columns) {
+          grid[row][col] = word.id;
+          row++;
+          wordsInCurrentColumn++;
+        } else {
+          console.warn(
+            `Attempted to place word outside grid bounds: word=${word.label}, row=${row}, col=${col}`
+          );
+          break; // Exit the loop if we're out of bounds
+        }
+      }
+
+      // Calculate actual last position
+      const actualLastCol = col === startCol ? col + 1 : col;
+      return { lastRow: row, lastCol: actualLastCol };
+    };
+
+    // Calculate space allocation
+    const usableRows = rows; // Reserve bottom row for special categories
+    const pronounsEndRow = Math.floor(usableRows * 0.8); // Pronouns use 90% of vertical space
+    const middleSection = Math.floor(pronounsEndRow * 0.8); //Math.floor(pronounsEndRow * 0.9);
+
+    console.log("Usable rows: " + usableRows + " Usable columns: " + columns);
+    console.log("Middle section: ", middleSection);
+    console.log("Pronouns end row: ", pronounsEndRow);
+
+    // 1. Place Pronouns (15% of total words)
+    console.log(
+      "Logging pronouns: [0,0," + pronounsEndRow + "," + columns + "]"
+    );
+    const pronounsResult = placeWords(
+      "Pronouns",
+      0,
+      0,
+      pronounsEndRow,
+      columns,
+      true
+    );
+    console.log("Pronoun result: ", pronounsResult);
+
+    // 2. Place Actions (30% of total words)
+    console.log(
+      "Logging actions: [" +
+        pronounsResult.lastRow +
+        "," +
+        pronounsResult.lastCol +
+        "," +
+        middleSection +
+        "," +
+        columns +
+        "]"
+    );
+    const actionsResult = placeWords(
+      "Actions",
+      pronounsResult.lastRow,
+      pronounsResult.lastCol,
+      middleSection,
+      columns,
+      true
+    );
+    console.log("Actions result: ", actionsResult);
+    // 3. Place Adjectives/Adverbs (30%) after Actions section
+    console.log(
+      "Logging adjectives: [" +
+        actionsResult.lastRow +
+        "," +
+        actionsResult.lastCol +
+        "," +
+        middleSection +
+        "," +
+        columns +
+        "]"
+    );
+    const adjectivesResult = placeWords(
+      "Adjectives/Adverbs",
+      actionsResult.lastRow,
+      actionsResult.lastCol,
+      middleSection,
+      columns,
+      true
+    );
+    console.log("Adjectives result: ", adjectivesResult);
+
+    // 4. Place Determiners (5%) in the middle
+    console.log(
+      "Logging determiners: [" +
+        middleSection +
+        "," +
+        pronounsResult.lastCol +
+        "," +
+        pronounsEndRow +
+        "," +
+        columns +
+        "]"
+    );
+    const determinersResult = placeWords(
+      "Determiners",
+      middleSection,
+      pronounsResult.lastCol,
+      pronounsEndRow,
+      columns,
+      false
+    );
+    console.log("Determiners result: ", determinersResult);
+
+    // 5. Place Prepositions (5%) next to Determiners
+    console.log(
+      "Logging prepositions: [" +
+        middleSection +
+        "," +
+        (determinersResult.lastCol + 1) +
+        "," +
+        pronounsEndRow +
+        "," +
+        columns +
+        "]"
+    );
+
+    const prepositionsResult = placeWords(
+      "Prepositions",
+      middleSection,
+      determinersResult.lastCol + 1,
+      pronounsEndRow,
+      columns,
+      false
+    );
+    console.log("Prepositions result: ", prepositionsResult);
+
+    // 6. Place Questions (5%) at the bottom
+    const questionsResult = placeWords(
+      "Questions",
+      pronounsEndRow,
+      0,
+      rows,
+      columns,
+      false
+    );
+
+    // 7. Place Negation (2%) next to Questions
+    const negationsResult = placeWords(
+      "Negation",
+      pronounsEndRow,
+      questionsResult.lastCol + 1,
+      rows,
+      columns,
+      false
+    );
+
+    // 8. Place Interjections (8%) next to Negation
+    const interjectionsResult = placeWords(
+      "Interjections",
+      pronounsEndRow,
+      negationsResult.lastCol + 1,
+      rows,
+      columns,
+      false
+    );
+
+    // Debug information
+    /*console.log("Word distribution:");
+    Object.entries(wordsByCategory).forEach(([category, words]) => {
+      console.log(`${category}: ${words.length} words`);
+    });*/
+
+    return grid;
   }
 
   private rgbToAnsi(rgbColor: string): string {
@@ -407,4 +755,8 @@ export class CoreBoardService {
     }
     console.log("\x1b[0m");
   }
+}
+
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

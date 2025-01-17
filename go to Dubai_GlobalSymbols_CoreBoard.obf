@@ -1,0 +1,794 @@
+{
+  "format": "open-board-0.1",
+  "id": "1",
+  "locale": "en",
+  "name": "Core Board - go to Dubai",
+  "description_html": "Core vocabulary board generated for the topic: go to Dubai",
+  "license": {
+    "type": "CC By",
+    "copyright_notice_url": "https://creativecommons.org/licenses/by/4.0/",
+    "author_name": "OpenAAC",
+    "author_url": "https://www.openaac.org"
+  },
+  "buttons": [
+    {
+      "id": "1",
+      "label": "I",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "1696"
+    },
+    {
+      "id": "2",
+      "label": "you",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "3106"
+    },
+    {
+      "id": "3",
+      "label": "it",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "1720"
+    },
+    {
+      "id": "4",
+      "label": "we",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "3029"
+    },
+    {
+      "id": "5",
+      "label": "they",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "1627"
+    },
+    {
+      "id": "6",
+      "label": "he",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "3042"
+    },
+    {
+      "id": "7",
+      "label": "what",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "3051"
+    },
+    {
+      "id": "8",
+      "label": "where",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "3050"
+    },
+    {
+      "id": "9",
+      "label": "when",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "3103"
+    },
+    {
+      "id": "10",
+      "label": "yes",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "2040"
+    },
+    {
+      "id": "11",
+      "label": "no",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "2051"
+    },
+    {
+      "id": "12",
+      "label": "please",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "512901"
+    },
+    {
+      "id": "13",
+      "label": "thank you",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "2504"
+    },
+    {
+      "id": "14",
+      "label": "not",
+      "background_color": "rgb(255, 140, 140)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "2982"
+    },
+    {
+      "id": "15",
+      "label": "go",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "1412"
+    },
+    {
+      "id": "16",
+      "label": "see",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "512891"
+    },
+    {
+      "id": "17",
+      "label": "visit",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "2546"
+    },
+    {
+      "id": "18",
+      "label": "fly",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "2766"
+    },
+    {
+      "id": "19",
+      "label": "stay",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "3004"
+    },
+    {
+      "id": "20",
+      "label": "explore",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "314"
+    },
+    {
+      "id": "21",
+      "label": "eat",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "2434"
+    },
+    {
+      "id": "22",
+      "label": "shop",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "2817"
+    },
+    {
+      "id": "23",
+      "label": "take",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "2004"
+    },
+    {
+      "id": "24",
+      "label": "enjoy",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "2862"
+    },
+    {
+      "id": "25",
+      "label": "exciting",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "1702"
+    },
+    {
+      "id": "26",
+      "label": "beautiful",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "2080"
+    },
+    {
+      "id": "27",
+      "label": "modern",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "67"
+    },
+    {
+      "id": "28",
+      "label": "vibrant",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "1485"
+    },
+    {
+      "id": "29",
+      "label": "luxurious",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)",
+      "image_id": "2534"
+    },
+    {
+      "id": "30",
+      "label": "warm",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "31",
+      "label": "busy",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "32",
+      "label": "diverse",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "33",
+      "label": "safe",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "34",
+      "label": "popular",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "35",
+      "label": "easy",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "36",
+      "label": "quick",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "37",
+      "label": "interesting",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "38",
+      "label": "unique",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "39",
+      "label": "the",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "40",
+      "label": "my",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "41",
+      "label": "your",
+      "background_color": "rgb(230, 230, 230)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "42",
+      "label": "to",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "43",
+      "label": "in",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "44",
+      "label": "on",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "45",
+      "label": "at",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "46",
+      "label": "from",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "47",
+      "label": "with",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    }
+  ],
+  "grid": {
+    "rows": 6,
+    "columns": 7,
+    "order": [
+      [
+        "1",
+        "15",
+        "20",
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "2",
+        "16",
+        "21",
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "3",
+        "17",
+        "22",
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "4",
+        "18",
+        "23",
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "5",
+        "19",
+        "24",
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        "7",
+        "14",
+        "10",
+        "40",
+        "41",
+        "42",
+        "43"
+      ]
+    ]
+  },
+  "images": [
+    {
+      "id": "1696",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/4812/13_4812_05f6a448-fc39-4de7-bf91-77f39a610a3a.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "3106",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/6222/13_6222_3eb66efb-7570-4573-91ee-13f87fd1acec.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "1720",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/4836/13_4836_2e9d4476-4fca-4694-b0b0-3c8f0c22af17.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "3029",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/6145/13_6145_18a7b07b-226f-44b4-b6ad-69f23327bba2.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "1627",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/4743/13_4743_99c99804-baa8-43a1-9afc-8663e0484a14.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "3042",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/6158/13_6158_2c081d97-f25b-4cfd-a7a4-f1aba2c76a50.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "3051",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/6167/13_6167_c7012c8a-6c17-4682-8a80-3294fa3e8a00.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "3050",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/6166/13_6166_64e690b3-7470-4efb-9f4a-81d9cab19ba9.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "3103",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/6219/13_6219_627626b1-e6cc-4367-8901-f31d31877616.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "2040",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/5156/13_5156_d3c81239-71fa-4e98-86eb-e851f3c0d503.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "2051",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/5167/13_5167_3503b35d-b4e7-4f86-b155-982016cb21ba.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "512901",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/49198/13_49199_70e87867-ff0f-425f-b601-6d421957854d.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "2504",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/5620/13_5620_194d8608-a5a7-47a4-9432-f0c197288e7c.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "2982",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/6098/13_6098_11e44114-aff0-4d20-bf3f-08b02ed67b92.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "1412",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/4528/13_4528_7d3e1d76-705d-4f4b-abbb-f71999377a8f.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "512891",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/49188/13_49189_34b5b05e-f5ef-481a-ba72-306fb5d4eda1.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "2546",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/5662/13_5662_19509d3b-e42c-4de2-aefa-6bf846be9739.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "2766",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/5882/13_5882_caa0ffe1-eb2b-4540-8a26-1bcd09d2bfa2.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "3004",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/6120/13_6120_258124d6-58a7-4f74-8b04-3923144a69cf.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "314",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/3430/13_3430_cb9c0def-858a-4f9d-85d2-bbf3aba941f9.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "2434",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/5550/13_5550_e01d0de8-21d3-4278-ae7f-4a43994db675.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "2817",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/5933/13_5933_1041812d-fcb4-4013-8316-5d0f346c0ccc.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "2004",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/5120/13_5120_3cba91ac-a932-4f4e-895e-6af62bc69259.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "2862",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/5978/13_5978_c9c3d663-71cd-4fd5-98f9-86052d6cf839.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "1702",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/4818/13_4818_27df1763-b156-457d-8b4f-f5d8bc1d7af9.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "2080",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/5196/13_5196_1cb44ff7-d70c-4954-81f1-1b9e95d8adc3.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "67",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/3183/13_3183_bf35f964-7ecf-4a8b-b472-5890c3cec6ff.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "1485",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/4601/13_4601_d08e6b9e-c215-49c2-966f-af617f6398cd.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    },
+    {
+      "id": "2534",
+      "url": "https://globalsymbols.com/uploads/production/image/imagefile/5650/13_5650_ab9cee6b-8ca1-4bed-abee-26a383ade2af.svg",
+      "width": 500,
+      "height": 500,
+      "content_type": "image/png",
+      "license": {
+        "type": "CC BY-NC-SA",
+        "copyright_notice_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "source_url": "",
+        "author_name": "",
+        "author_url": ""
+      }
+    }
+  ]
+}
