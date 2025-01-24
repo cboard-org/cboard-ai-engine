@@ -29,8 +29,8 @@ const engineInstance = initEngine({
   contentSafetyConfiguration,
 });
 
-const prompt = "go to Dubai";
-const totalButtons = 90;
+const prompt = "go to the beach";
+const totalButtons = 30;
 const symbolSet = "global-symbols";
 const globalSymbolsSet = "mulberry";
 const language = "en";

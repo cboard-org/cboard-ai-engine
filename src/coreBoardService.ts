@@ -74,7 +74,7 @@ export const CORE_CATEGORIES: CoreCategory[] = [
   },
   { name: "Prepositions", percentage: 0.1, required: false },
   { name: "Questions", percentage: 0.1, required: true, gridPercentage: 0.4 },
-  { name: "Negation", percentage: 0.05, required: true },
+  { name: "Negation", percentage: 0.1, required: true },
   { name: "Interjections", percentage: 0.15, required: true },
 ];
 
@@ -531,9 +531,12 @@ export class CoreBoardService {
       startCol: number,
       maxRow: number,
       endCol: number = columns,
-      isTop: boolean = false
+      isTop: boolean = false,
+      balanceNumber: number = 0
     ): { lastRow: number; lastCol: number } => {
-      const categoryWords = wordsByCategory[category] || [];
+      //resize category words by balanceCoef
+      let categoryWords = wordsByCategory[category] || [];
+      categoryWords = categoryWords.slice(0, balanceNumber);
       let row = startRow;
       let col = startCol;
       let isFirstColumn = true;
@@ -586,7 +589,8 @@ export class CoreBoardService {
       0,
       pronounsEndRow,
       columns,
-      true
+      true,
+      100
     );
     console.log("Pronoun result: ", pronounsResult);
 
@@ -602,13 +606,24 @@ export class CoreBoardService {
         columns +
         "]"
     );
+    console.log(
+      "available slots actions: ",
+      middleSection -
+        pronounsResult.lastRow +
+        (columns - (pronounsResult.lastCol + 1)) * middleSection
+    );
+    let availableSlots =
+      middleSection -
+      pronounsResult.lastRow +
+      (columns - (pronounsResult.lastCol + 1)) * middleSection;
     const actionsResult = placeWords(
       "Actions",
       pronounsResult.lastRow,
       pronounsResult.lastCol,
       middleSection,
       columns,
-      true
+      true,
+      Math.floor(availableSlots * 0.5)
     );
     console.log("Actions result: ", actionsResult);
     // 3. Place Adjectives/Adverbs (30%) after Actions section
@@ -629,7 +644,8 @@ export class CoreBoardService {
       actionsResult.lastCol,
       middleSection,
       columns,
-      true
+      true,
+      100
     );
     console.log("Adjectives result: ", adjectivesResult);
 
@@ -645,13 +661,20 @@ export class CoreBoardService {
         columns +
         "]"
     );
+    console.log(
+      "available slots det: ",
+      (pronounsEndRow - middleSection) * (columns - pronounsResult.lastCol)
+    );
+    availableSlots =
+      (pronounsEndRow - middleSection) * (columns - pronounsResult.lastCol);
     const determinersResult = placeWords(
       "Determiners",
       middleSection,
       pronounsResult.lastCol,
       pronounsEndRow,
       columns,
-      false
+      false,
+      Math.floor(availableSlots * 0.5)
     );
     console.log("Determiners result: ", determinersResult);
 
@@ -674,18 +697,21 @@ export class CoreBoardService {
       determinersResult.lastCol + 1,
       pronounsEndRow,
       columns,
-      false
+      false,
+      100
     );
     console.log("Prepositions result: ", prepositionsResult);
 
     // 6. Place Questions (5%) at the bottom
+    availableSlots = (usableRows - pronounsEndRow) * columns;
     const questionsResult = placeWords(
       "Questions",
       pronounsEndRow,
       0,
       rows,
       columns,
-      false
+      false,
+      Math.floor(availableSlots * 0.4)
     );
 
     // 7. Place Negation (2%) next to Questions
@@ -695,7 +721,8 @@ export class CoreBoardService {
       questionsResult.lastCol + 1,
       rows,
       columns,
-      false
+      false,
+      Math.floor(availableSlots * 0.2)
     );
 
     // 8. Place Interjections (8%) next to Negation
@@ -705,7 +732,8 @@ export class CoreBoardService {
       negationsResult.lastCol + 1,
       rows,
       columns,
-      false
+      false,
+      100
     );
 
     // Debug information
