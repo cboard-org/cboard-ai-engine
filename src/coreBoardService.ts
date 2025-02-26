@@ -68,11 +68,11 @@ export const CORE_CATEGORIES: CoreCategory[] = [
   },
   {
     name: "Determiners",
-    percentage: 0.1,
+    percentage: 0.15,
     required: false,
     gridPercentage: 0.5,
   },
-  { name: "Prepositions", percentage: 0.1, required: false },
+  { name: "Prepositions", percentage: 0.15, required: false },
   { name: "Questions", percentage: 0.1, required: true, gridPercentage: 0.4 },
   { name: "Negation", percentage: 0.1, required: true },
   { name: "Interjections", percentage: 0.15, required: true },
@@ -181,7 +181,7 @@ const CATEGORY_COLORS: Record<CategoryName, string> = {
   Pronouns: "rgb(255, 255, 200)",
   Interjections: "rgb(255, 192, 203)",
   Questions: "rgb(255, 200, 255)",
-  Determiners: "rgb(230, 230, 230)",
+  Determiners: "rgb(180, 180, 180)",
   Prepositions: "rgb(255, 255, 255)",
   Negation: "rgb(255, 140, 140)",
 };
@@ -199,11 +199,21 @@ export class CoreBoardService {
     globalSymbolsSymbolSet?: string
   ): Promise<any> {
     // Calculate slots for each category
-    const categorySlots = CORE_CATEGORIES.map((category) => ({
-      name: category.name,
-      slots: Math.round(totalButtons * category.percentage),
-      required: category.required,
-    }));
+    const categorySlots = CORE_CATEGORIES.map((category) => {
+      // Calculate initial slots
+      let slots = Math.round(totalButtons * category.percentage);
+
+      // If slots is odd, add 1 to make it even
+      if (slots % 2 !== 0) {
+        slots += 1;
+      }
+
+      return {
+        name: category.name,
+        slots: slots,
+        required: category.required,
+      };
+    });
     console.log("categorySlots: ", categorySlots);
 
     const dynamicWords = await this.generateDynamicWords(prompt, categorySlots);
@@ -378,133 +388,6 @@ export class CoreBoardService {
     };
   }
 
-  private createGridOrder(
-    words: CoreWord[],
-    rows: number,
-    columns: number
-  ): (string | null)[][] {
-    const gridOrder: (string | null)[][] = Array(rows)
-      .fill(null)
-      .map(() => Array(columns).fill(null));
-
-    // Calculate absolute sizes of each category
-    const pronounColumnSize = Math.floor(rows * 0.9);
-    const actionColumnSize = Math.floor(rows * 0.7);
-    const questionRowSize = Math.floor(columns * 0.4);
-
-    // Group words by category
-    const wordsByCategory = words.reduce((acc, word) => {
-      if (!acc[word.category]) {
-        acc[word.category] = [];
-      }
-      acc[word.category].push(word);
-      return acc;
-    }, {} as Record<CategoryName, CoreWord[]>);
-
-    // Fill board with each category
-    let addedWords = 0;
-    let currentCol = 0;
-    let currentRowLimit = pronounColumnSize;
-    let currentCategory = 0;
-    let currentWordsByCategory =
-      wordsByCategory[CORE_CATEGORIES[currentCategory].name] || [];
-
-    // Fill pronouns, actions and adjectives
-    for (let col = 0; col < columns; col++) {
-      for (let row = 0; row < currentRowLimit; row++) {
-        if (addedWords < currentWordsByCategory.length) {
-          gridOrder[row][col] = currentWordsByCategory[addedWords].id;
-          console.log(
-            "Added word: [" +
-              row +
-              "][" +
-              col +
-              "]: " +
-              currentWordsByCategory[addedWords].label
-          );
-          addedWords++;
-        }
-        if (addedWords >= currentWordsByCategory.length) {
-          currentCategory++;
-          currentWordsByCategory =
-            wordsByCategory[CORE_CATEGORIES[currentCategory].name] || [];
-          currentRowLimit = actionColumnSize;
-          addedWords = 0;
-        }
-      }
-    }
-
-    // Fill determiners and prepositions
-    let lastPronounRow = Math.floor(
-      ((wordsByCategory[CORE_CATEGORIES[0].name] || []).length - 1) %
-        pronounColumnSize
-    );
-    let lastPronounCol = Math.floor(
-      ((wordsByCategory[CORE_CATEGORIES[0].name] || []).length - 1) /
-        pronounColumnSize
-    );
-
-    addedWords = 0;
-    currentCategory = 3;
-    currentWordsByCategory =
-      wordsByCategory[CORE_CATEGORIES[currentCategory].name];
-    for (let col = lastPronounCol; col < columns; col++) {
-      for (let row = actionColumnSize; row < pronounColumnSize; row++) {
-        if (addedWords < currentWordsByCategory.length) {
-          gridOrder[row][col] = currentWordsByCategory[addedWords].id;
-          console.log(
-            "Added word: [" +
-              row +
-              "][" +
-              col +
-              "]: " +
-              currentWordsByCategory[addedWords].label
-          );
-          addedWords++;
-        }
-        if (addedWords >= currentWordsByCategory.length) {
-          currentCategory++;
-          if (currentCategory >= CORE_CATEGORIES.length) {
-            break;
-          }
-          currentWordsByCategory =
-            wordsByCategory[CORE_CATEGORIES[currentCategory].name] || [];
-          addedWords = 0;
-        }
-      }
-    }
-
-    // Fill bottom rows
-    currentWordsByCategory = wordsByCategory[CORE_CATEGORIES[5].name];
-    for (let col = 0; col < columns; col++) {
-      for (let row = pronounColumnSize; row < rows; row++) {
-        if (addedWords < currentWordsByCategory.length) {
-          gridOrder[row][col] = currentWordsByCategory[addedWords].id;
-          console.log(
-            "Added word: [" +
-              row +
-              "][" +
-              col +
-              "]: " +
-              currentWordsByCategory[addedWords].label
-          );
-          addedWords++;
-        }
-        if (addedWords >= currentWordsByCategory.length) {
-          currentCategory++;
-          if (currentCategory >= CORE_CATEGORIES.length) {
-            break;
-          }
-          currentWordsByCategory =
-            wordsByCategory[CORE_CATEGORIES[currentCategory].name] || [];
-          addedWords = 0;
-        }
-      }
-    }
-
-    return gridOrder;
-  }
-
   private createGridOrder2(
     words: CoreWord[],
     rows: number,
@@ -580,9 +463,6 @@ export class CoreBoardService {
     console.log("Pronouns end row: ", pronounsEndRow);
 
     // 1. Place Pronouns (15% of total words)
-    console.log(
-      "Logging pronouns: [0,0," + pronounsEndRow + "," + columns + "]"
-    );
     const pronounsResult = placeWords(
       "Pronouns",
       0,
@@ -592,30 +472,18 @@ export class CoreBoardService {
       true,
       100
     );
-    console.log("Pronoun result: ", pronounsResult);
 
     // 2. Place Actions (30% of total words)
-    console.log(
-      "Logging actions: [" +
-        pronounsResult.lastRow +
-        "," +
-        pronounsResult.lastCol +
-        "," +
-        middleSection +
-        "," +
-        columns +
-        "]"
-    );
-    console.log(
-      "available slots actions: ",
-      middleSection -
-        pronounsResult.lastRow +
-        (columns - (pronounsResult.lastCol + 1)) * middleSection
-    );
     let availableSlots =
       middleSection -
       pronounsResult.lastRow +
       (columns - (pronounsResult.lastCol + 1)) * middleSection;
+    console.log(
+      "Actions Available slots: " +
+        availableSlots +
+        "Balance number: " +
+        this.calculateBalanceNumber(rows * columns, availableSlots, 0.5, 0.5)
+    );
     const actionsResult = placeWords(
       "Actions",
       pronounsResult.lastRow,
@@ -623,21 +491,9 @@ export class CoreBoardService {
       middleSection,
       columns,
       true,
-      Math.floor(availableSlots * 0.5)
+      this.calculateBalanceNumber(rows * columns, availableSlots, 0.5, 0.5)
     );
-    console.log("Actions result: ", actionsResult);
     // 3. Place Adjectives/Adverbs (30%) after Actions section
-    console.log(
-      "Logging adjectives: [" +
-        actionsResult.lastRow +
-        "," +
-        actionsResult.lastCol +
-        "," +
-        middleSection +
-        "," +
-        columns +
-        "]"
-    );
     const adjectivesResult = placeWords(
       "Adjectives/Adverbs",
       actionsResult.lastRow,
@@ -647,26 +503,17 @@ export class CoreBoardService {
       true,
       100
     );
-    console.log("Adjectives result: ", adjectivesResult);
 
     // 4. Place Determiners (5%) in the middle
-    console.log(
-      "Logging determiners: [" +
-        middleSection +
-        "," +
-        pronounsResult.lastCol +
-        "," +
-        pronounsEndRow +
-        "," +
-        columns +
-        "]"
-    );
-    console.log(
-      "available slots det: ",
-      (pronounsEndRow - middleSection) * (columns - pronounsResult.lastCol)
-    );
     availableSlots =
       (pronounsEndRow - middleSection) * (columns - pronounsResult.lastCol);
+    console.log(
+      "Determiner Available slots: " +
+        availableSlots +
+        "Balance number: " +
+        this.calculateBalanceNumber(rows * columns, availableSlots, 0.5, 0.5)
+    );
+
     const determinersResult = placeWords(
       "Determiners",
       middleSection,
@@ -674,23 +521,10 @@ export class CoreBoardService {
       pronounsEndRow,
       columns,
       false,
-      Math.floor(availableSlots * 0.5)
+      this.calculateBalanceNumber(rows * columns, availableSlots, 0.5, 0.5)
     );
-    console.log("Determiners result: ", determinersResult);
 
     // 5. Place Prepositions (5%) next to Determiners
-    console.log(
-      "Logging prepositions: [" +
-        middleSection +
-        "," +
-        (determinersResult.lastCol + 1) +
-        "," +
-        pronounsEndRow +
-        "," +
-        columns +
-        "]"
-    );
-
     const prepositionsResult = placeWords(
       "Prepositions",
       middleSection,
@@ -700,10 +534,15 @@ export class CoreBoardService {
       false,
       100
     );
-    console.log("Prepositions result: ", prepositionsResult);
-
     // 6. Place Questions (5%) at the bottom
     availableSlots = (usableRows - pronounsEndRow) * columns;
+    console.log(
+      "Questions Available slots: " +
+        availableSlots +
+        "Balance number: " +
+        this.calculateBalanceNumber(rows * columns, availableSlots, 0.3, 0.4)
+    );
+
     const questionsResult = placeWords(
       "Questions",
       pronounsEndRow,
@@ -711,10 +550,17 @@ export class CoreBoardService {
       rows,
       columns,
       false,
-      Math.floor(availableSlots * 0.4)
+      this.calculateBalanceNumber(rows * columns, availableSlots, 0.3, 0.4)
     );
 
     // 7. Place Negation (2%) next to Questions
+    console.log(
+      "Negation Available slots: " +
+        availableSlots +
+        "Balance number: " +
+        this.calculateBalanceNumber(rows * columns, availableSlots, 0.2, 0.3)
+    );
+
     const negationsResult = placeWords(
       "Negation",
       pronounsEndRow,
@@ -722,7 +568,7 @@ export class CoreBoardService {
       rows,
       columns,
       false,
-      Math.floor(availableSlots * 0.2)
+      this.calculateBalanceNumber(rows * columns, availableSlots, 0.3, 0.3)
     );
 
     // 8. Place Interjections (8%) next to Negation
@@ -782,6 +628,21 @@ export class CoreBoardService {
       console.log("-".repeat(grid.columns * 15));
     }
     console.log("\x1b[0m");
+  }
+  private calculateBalanceNumber(
+    gridSize: number,
+    availableSlots: number,
+    smallGridPercentage: number,
+    largeGridPercentage: number
+  ): number {
+    let balanceNumber = 0;
+    if (gridSize < 60) {
+      balanceNumber = Math.floor(availableSlots * smallGridPercentage);
+    } else {
+      balanceNumber = Math.floor(availableSlots * largeGridPercentage);
+    }
+    if (balanceNumber % 2 !== 0) balanceNumber += 1;
+    return balanceNumber;
   }
 }
 

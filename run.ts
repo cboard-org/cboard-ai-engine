@@ -30,7 +30,7 @@ const engineInstance = initEngine({
 });
 
 const prompt = "go to the beach";
-const totalButtons = 30;
+const totalButtons = 70;
 const symbolSet = "global-symbols";
 const globalSymbolsSet = "mulberry";
 const language = "en";
