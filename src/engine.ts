@@ -19,45 +19,20 @@ import {
   getGlobalSymbolsOBFImages,
 } from "./lib/symbolSets";
 import { type SymbolSet } from "./lib/symbolSets";
-import { getLanguageName, getLanguageTwoLetterCode } from "./utils/language";
+import { getLanguageTwoLetterCode } from "./utils/language";
 import { CoreBoardService } from "./coreBoardService";
+import { OpenAIService } from "./utils/openAIservice";
+import { ContentSafetyConfiguration, Suggestion } from "./types/types";
+
+// Export Suggestion type to make it available to importers
+export type { Suggestion, ContentSafetyConfiguration };
 
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
+  openAIService: {} as OpenAIService,
   globalSymbolsURL: DEFAULT_GLOBAL_SYMBOLS_URL,
   arasaacURL: DEFAULT_ARASAAC_URL,
   contentSafety: {} as ContentSafetyConfiguration,
-};
-
-export type Suggestion = {
-  id: string;
-  label: string;
-  locale: string;
-  pictogram: {
-    images:
-      | {
-          id: string;
-          symbolSet: string;
-          url: string;
-        }[];
-  };
-};
-
-export type ContentSafetyConfiguration = {
-  endpoint: string;
-  key: string;
-};
-
-//New type CoreVocabularyWord
-export type CoreVocabularyWord = {
-  [key: string]: string;
-};
-
-//New type CoreBoard
-export type CoreBoard = {
-  BoardName: {
-    words: CoreVocabularyWord[];
-  }[];
 };
 
 export function init({
@@ -73,6 +48,9 @@ export function init({
 }) {
   const configuration = new Configuration(openAIConfiguration);
   globalConfiguration.openAIInstance = new OpenAIApi(configuration);
+  globalConfiguration.openAIService = new OpenAIService(
+    globalConfiguration.openAIInstance
+  );
 
   if (globalSymbolsApiURL) {
     globalConfiguration.globalSymbolsURL = globalSymbolsApiURL;
@@ -89,63 +67,8 @@ export function init({
   return {
     getSuggestions,
     isContentSafe,
-    //getCoreBoardSuggestions,
     generateCoreBoard,
   };
-}
-
-async function getWordSuggestions({
-  prompt,
-  maxWords,
-  language,
-}: {
-  prompt: string;
-  maxWords: number;
-  language: string;
-}): Promise<string[]> {
-  const languageName = getLanguageName(language);
-  const max_tokens = Math.round(4.5 * maxWords + 200);
-  const response =
-    await globalConfiguration.openAIInstance.createChatCompletion({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `act as a speech pathologist selecting pictograms in language ${languageName} 
-        for a non verbal person about what the user asks you to.
-        Here are mandatory instructions for the list:
-         -Ensure that the list contains precisely ${maxWords} words; it must not be shorter or longer.
-         -The words should be related to the topic.
-         -When using verbs, you must use the infinitive form. Do not use gerunds, conjugated forms, or any other variations of the verb. 
-         -Do not repeat any words.
-         -Do not include any additional text, symbols, or characters beyond the words requested.
-         -The list should follow this exact format: {word1, word2, word3,..., wordN}.`,
-        },
-        {
-          role: "user",
-          content: `Create a board about ${prompt}`,
-        },
-      ],
-      temperature: 0,
-      max_tokens: max_tokens,
-    });
-
-  const wordsSuggestionsData = response.data?.choices[0]?.message?.content;
-  if (wordsSuggestionsData) {
-    const trimmedString = wordsSuggestionsData.replace(/\n\n/g, "");
-    const match = trimmedString.match(/{(.*?)}/);
-    const wordsSuggestionsList = match
-      ? match[1]
-          .split(",")
-          .map((word) => word.trim())
-          .slice(0, maxWords)
-      : [];
-    console.log(wordsSuggestionsList);
-    if (!wordsSuggestionsList.length)
-      throw new Error("ERROR: Suggestion list is empty or maxToken reached");
-    return wordsSuggestionsList;
-  }
-  throw new Error("ERROR: Suggestion list is empty");
 }
 
 async function fetchPictogramsURLs({
@@ -188,11 +111,13 @@ async function getSuggestions({
   symbolSet?: SymbolSet;
   globalSymbolsSymbolSet?: string;
 }): Promise<Suggestion[]> {
-  const words: string[] = await getWordSuggestions({
-    prompt,
-    maxWords: maxSuggestions,
-    language,
-  });
+  const words: string[] =
+    await globalConfiguration.openAIService.getWordSuggestions({
+      prompt,
+      maxWords: maxSuggestions,
+      language,
+    });
+
   const suggestions: Suggestion[] = await fetchPictogramsURLs({
     words,
     language,
@@ -255,12 +180,14 @@ async function generateCoreBoard(
 
   if ((totalButtons - MIN_BUTTONS) % BUTTON_STEP !== 0) {
     throw new Error(
-      `Total buttons must be in steps of ${BUTTON_STEP} (${getValidButtonCounts().join(", ")}). Received: ${totalButtons}`
+      `Total buttons must be in steps of ${BUTTON_STEP} (${getValidButtonCounts().join(
+        ", "
+      )}). Received: ${totalButtons}`
     );
   }
 
   const coreBoardService = new CoreBoardService(
-    globalConfiguration.openAIInstance,
+    globalConfiguration.openAIService,
     {
       arasaacURL: globalConfiguration.arasaacURL,
       globalSymbolsURL: globalConfiguration.globalSymbolsURL,
@@ -283,4 +210,10 @@ function getValidButtonCounts(): number[] {
   return counts;
 }
 
-export { generateCoreBoard, MIN_BUTTONS, MAX_BUTTONS, BUTTON_STEP, getValidButtonCounts };
+export {
+  generateCoreBoard,
+  MIN_BUTTONS,
+  MAX_BUTTONS,
+  BUTTON_STEP,
+  getValidButtonCounts,
+};
