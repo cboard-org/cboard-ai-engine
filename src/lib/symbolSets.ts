@@ -4,6 +4,7 @@ import { LabelsSearchApiResponse } from "../types/global-symbols";
 import { BestSearchApiResponse } from "../types/arasaac";
 import { Suggestion } from "../engine";
 import { ARASAAC } from "../constants";
+import { getSynonym } from "../engine";
 
 export type SymbolSet = "arasaac" | "global-symbols";
 
@@ -45,7 +46,11 @@ export async function getArasaacPictogramSuggestions({
   );
 }
 
-async function fetchArasaacData(URL: string, word: string, language: string) {
+async function fetchArasaacData(
+  URL: string,
+  word: string,
+  language: string
+): Promise<BestSearchApiResponse | []> {
   const cleanedWord = removeDiacritics(word);
   const bestSearchUrl = `${URL}/${language}/bestsearch/${encodeURIComponent(
     cleanedWord
@@ -54,18 +59,48 @@ async function fetchArasaacData(URL: string, word: string, language: string) {
     cleanedWord
   )}`;
 
-  try {
-    const { data } = await axios.get<BestSearchApiResponse>(bestSearchUrl);
+  let data: BestSearchApiResponse | [] = [];
+
+  const bestSearchResponse = await axios
+    .get<BestSearchApiResponse>(bestSearchUrl)
+    .catch(() => null);
+  if (bestSearchResponse && bestSearchResponse.data.length) {
+    return bestSearchResponse.data;
+  }
+
+  const searchResponse = await axios
+    .get<BestSearchApiResponse>(searchUrl)
+    .catch(() => null);
+  if (searchResponse && searchResponse.data.length) {
+    data =
+      searchResponse.data.length > 5
+        ? searchResponse.data.slice(0, 5)
+        : searchResponse.data;
     return data;
-  } catch {
-    try {
-      let { data } = await axios.get<BestSearchApiResponse>(searchUrl);
-      if (data.length > 5) data = data.slice(0, 5);
+  }
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const synonym = await getSynonym(word, language).catch(() => "");
+    if (!synonym) continue;
+    word = synonym;
+    const cleanedSynonym = removeDiacritics(synonym);
+    const synonymSearchUrl = `${URL}/${language}/search/${encodeURIComponent(
+      cleanedSynonym
+    )}`;
+
+    const synonymResponse = await axios
+      .get<BestSearchApiResponse>(synonymSearchUrl)
+      .catch(() => null);
+    if (synonymResponse && synonymResponse.data.length) {
+      data =
+        synonymResponse.data.length > 5
+          ? synonymResponse.data.slice(0, 5)
+          : synonymResponse.data;
       return data;
-    } catch {
-      return [];
     }
   }
+
+  return data;
 }
 
 function mapArasaacResponse(
@@ -116,7 +151,7 @@ async function fetchGlobalSymbolsData(
   word: string,
   language: string,
   symbolSet: string | null
-) {
+): Promise<LabelsSearchApiResponse | []> {
   const cleanedWord = removeDiacritics(word);
   const config: AxiosRequestConfig = {
     params: {
