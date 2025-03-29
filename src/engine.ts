@@ -292,3 +292,32 @@ async function isContentSafe(textPrompt: string): Promise<boolean> {
     throw new Error("Error checking content safety: " + error);
   }
 }
+
+export async function getSynonym(
+  word: string,
+  language: string
+): Promise<string> {
+  const languageName = getLanguageName(language);
+  const prompt = `Provide a simple, commonly used synonym for the word "${word}" in ${languageName} to support a non-verbal person. Follow these mandatory instructions:
+    - Return only one synonym.
+    - Ensure the synonym is simple, familiar, and frequently used in everyday language.
+    - If no suitable synonym exists, return the original word unchanged.
+    - Do not include any additional words, explanations, symbols, or characters; only the synonym itself.
+  `;
+  const completionRequestParams = {
+    model: "gpt-3.5-turbo-instruct",
+    prompt: prompt,
+    temperature: 0,
+    max_tokens: 10,
+  };
+
+  const response = await globalConfiguration.openAIInstance.createCompletion(
+    completionRequestParams
+  );
+  const synonymData = response.data?.choices[0]?.text;
+  if (synonymData) {
+    const synonym = synonymData.trim();
+    if (synonym) return synonym;
+  }
+  throw new Error("ERROR: Synonym not found");
+}
