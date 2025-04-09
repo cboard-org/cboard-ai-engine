@@ -1,0 +1,615 @@
+{
+  "format": "open-board-0.1",
+  "id": "1",
+  "locale": "en",
+  "name": "Core Board - math",
+  "description_html": "Core vocabulary board generated for the topic: math",
+  "buttons": [
+    {
+      "id": "1",
+      "label": "I",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "2",
+      "label": "you",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "3",
+      "label": "it",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "4",
+      "label": "we",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "5",
+      "label": "they",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "6",
+      "label": "he",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "7",
+      "label": "she",
+      "background_color": "rgb(255, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "8",
+      "label": "what",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "9",
+      "label": "where",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "10",
+      "label": "when",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "11",
+      "label": "who",
+      "background_color": "rgb(255, 200, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "12",
+      "label": "yes",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "13",
+      "label": "no",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "14",
+      "label": "please",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "15",
+      "label": "thank you",
+      "background_color": "rgb(255, 192, 203)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "16",
+      "label": "not",
+      "background_color": "rgb(255, 140, 140)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "17",
+      "label": "don't",
+      "background_color": "rgb(255, 140, 140)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "18",
+      "label": "add",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "19",
+      "label": "subtract",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "20",
+      "label": "multiply",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "21",
+      "label": "divide",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "22",
+      "label": "count",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "23",
+      "label": "measure",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "24",
+      "label": "compare",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "25",
+      "label": "solve",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "26",
+      "label": "calculate",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "27",
+      "label": "estimate",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "28",
+      "label": "round",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "29",
+      "label": "graph",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "30",
+      "label": "plot",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "31",
+      "label": "analyze",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "32",
+      "label": "evaluate",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "33",
+      "label": "simplify",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "34",
+      "label": "find",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "35",
+      "label": "total",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "36",
+      "label": "share",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "37",
+      "label": "group",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "38",
+      "label": "arrange",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "39",
+      "label": "list",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "40",
+      "label": "check",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "41",
+      "label": "write",
+      "background_color": "rgb(200, 255, 200)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "42",
+      "label": "simple",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "43",
+      "label": "complex",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "44",
+      "label": "equal",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "45",
+      "label": "greater",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "46",
+      "label": "less",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "47",
+      "label": "accurate",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "48",
+      "label": "precise",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "49",
+      "label": "logical",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "50",
+      "label": "random",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "51",
+      "label": "consistent",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "52",
+      "label": "variable",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "53",
+      "label": "specific",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "54",
+      "label": "total",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "55",
+      "label": "approximate",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "56",
+      "label": "negative",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "57",
+      "label": "positive",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "58",
+      "label": "even",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "59",
+      "label": "odd",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "60",
+      "label": "clear",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "61",
+      "label": "quick",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "62",
+      "label": "slow",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "63",
+      "label": "detailed",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "64",
+      "label": "efficient",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "65",
+      "label": "necessary",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "66",
+      "label": "relevant",
+      "background_color": "rgb(135, 206, 250)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "67",
+      "label": "the",
+      "background_color": "rgb(240, 240, 240)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "68",
+      "label": "a",
+      "background_color": "rgb(240, 240, 240)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "69",
+      "label": "an",
+      "background_color": "rgb(240, 240, 240)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "70",
+      "label": "this",
+      "background_color": "rgb(240, 240, 240)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "71",
+      "label": "that",
+      "background_color": "rgb(240, 240, 240)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "72",
+      "label": "these",
+      "background_color": "rgb(240, 240, 240)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "73",
+      "label": "those",
+      "background_color": "rgb(240, 240, 240)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "74",
+      "label": "my",
+      "background_color": "rgb(240, 240, 240)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "75",
+      "label": "in",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "76",
+      "label": "on",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "77",
+      "label": "under",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "78",
+      "label": "above",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "79",
+      "label": "between",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "80",
+      "label": "next",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "81",
+      "label": "with",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    },
+    {
+      "id": "82",
+      "label": "without",
+      "background_color": "rgb(255, 255, 255)",
+      "border_color": "rgb(0, 0, 0)"
+    }
+  ],
+  "grid": {
+    "rows": 9,
+    "columns": 10,
+    "order": [
+      [
+        "1",
+        "18",
+        "24",
+        "30",
+        "36",
+        "42",
+        "48",
+        "54",
+        "60",
+        "66"
+      ],
+      [
+        "2",
+        "19",
+        "25",
+        "31",
+        "37",
+        "43",
+        "49",
+        "55",
+        "61",
+        "67"
+      ],
+      [
+        "3",
+        "20",
+        "26",
+        "32",
+        "38",
+        "44",
+        "50",
+        "56",
+        "62",
+        "68"
+      ],
+      [
+        "4",
+        "21",
+        "27",
+        "33",
+        "39",
+        "45",
+        "51",
+        "57",
+        "63",
+        "69"
+      ],
+      [
+        "5",
+        "22",
+        "28",
+        "34",
+        "40",
+        "46",
+        "52",
+        "58",
+        "64",
+        "70"
+      ],
+      [
+        "6",
+        "23",
+        "29",
+        "35",
+        "41",
+        "47",
+        "53",
+        "59",
+        "65",
+        "71"
+      ],
+      [
+        "67",
+        "69",
+        "71",
+        "73",
+        "75",
+        "77",
+        "79",
+        "81",
+        "8",
+        "10"
+      ],
+      [
+        "68",
+        "70",
+        "72",
+        "74",
+        "76",
+        "78",
+        "80",
+        "82",
+        "9",
+        "11"
+      ],
+      [
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        null,
+        null
+      ]
+    ]
+  }
+}

@@ -2,6 +2,8 @@
 // npm run dev
 require("dotenv").config();
 import { type ContentSafetyConfiguration, initEngine } from "./src/index";
+import * as fs from "fs";
+import { CoreBoardService } from "./src/coreBoardService";
 
 const apiKey = process.env.OPENAI_API_KEY;
 const basePath = process.env.OPENAI_BASE_PATH;
@@ -27,12 +29,10 @@ const engineInstance = initEngine({
   contentSafetyConfiguration,
 });
 
-const prompt = "jungle birds";
-const maxSuggestions = 15;
-const symbolSet = "arasaac";
-//const symbolSet = "global-symbols";
-const globalSymbolsSymbolSet = "global-symbols";
-//const language = "es";
+const prompt = "go to the beach";
+const totalButtons = 70;
+const symbolSet = "global-symbols";
+const globalSymbolsSet = "mulberry";
 const language = "en";
 
 //Check content safety
@@ -41,6 +41,7 @@ engineInstance.isContentSafe(prompt).then((result) => {
   console.log("Is content safe?", result);
 });
 
+/*
 // Get suggestions with GlobalSymbols
 engineInstance
   .getSuggestions({
@@ -61,4 +62,32 @@ engineInstance
         "\nSuggestions -----------------------------------------------\n"
       )
     //console.dir(suggestions, { depth: 2 })
-  );
+  );*/
+
+const promptCore = "go to the beach";
+// First check if content is safe
+engineInstance.isContentSafe(promptCore).then(async (isSafe) => {
+  console.log("Is content safe?", isSafe);
+
+  if (isSafe) {
+    try {
+      // Generate CORE board with Global Symbols
+      console.log("Generating CORE board with Global Symbols...");
+      const coreBoard = await engineInstance.generateCoreBoard(
+        promptCore,
+        totalButtons,
+        symbolSet,
+        globalSymbolsSet
+      );
+
+      // Save to file
+      const filename = `${promptCore}_GlobalSymbols_CoreBoard.obf`;
+      console.log(`Saving CORE board to file: ${filename}`);
+      fs.writeFileSync(filename, JSON.stringify(coreBoard, null, 2));
+    } catch (error) {
+      console.error("Error generating CORE board:", error);
+    }
+  } else {
+    console.log("Content was flagged as unsafe, aborting board generation");
+  }
+});

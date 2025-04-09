@@ -14,9 +14,13 @@ import { AzureKeyCredential } from "@azure/core-auth";
 import {
   getArasaacPictogramSuggestions,
   getGlobalSymbolsPictogramSuggestions,
+  getArasaacOBFImages,
+  OBFImage,
+  getGlobalSymbolsOBFImages,
 } from "./lib/symbolSets";
 import { type SymbolSet } from "./lib/symbolSets";
 import { getLanguageName, getLanguageTwoLetterCode } from "./utils/language";
+import { CoreBoardService } from "./coreBoardService";
 
 const globalConfiguration = {
   openAIInstance: {} as OpenAIApi,
@@ -42,6 +46,18 @@ export type Suggestion = {
 export type ContentSafetyConfiguration = {
   endpoint: string;
   key: string;
+};
+
+//New type CoreVocabularyWord
+export type CoreVocabularyWord = {
+  [key: string]: string;
+};
+
+//New type CoreBoard
+export type CoreBoard = {
+  BoardName: {
+    words: CoreVocabularyWord[];
+  }[];
 };
 
 export function init({
@@ -74,6 +90,7 @@ export function init({
     getSuggestions,
     isContentSafe,
     generateAPromptForLeonardo,
+    generateCoreBoard,
   };
 }
 
@@ -292,3 +309,54 @@ async function isContentSafe(textPrompt: string): Promise<boolean> {
     throw new Error("Error checking content safety: " + error);
   }
 }
+
+export { getSuggestions, isContentSafe };
+
+const MIN_BUTTONS = 20;
+const MAX_BUTTONS = 100;
+const BUTTON_STEP = 10;
+
+async function generateCoreBoard(
+  prompt: string,
+  totalButtons: number = 20,
+  symbolSet: SymbolSet = ARASAAC,
+  globalSymbolsSymbolSet?: string
+): Promise<any> {
+  // Validate totalButtons range and step
+  if (totalButtons < MIN_BUTTONS || totalButtons > MAX_BUTTONS) {
+    throw new Error(
+      `Total buttons must be between ${MIN_BUTTONS} and ${MAX_BUTTONS}. Received: ${totalButtons}`
+    );
+  }
+
+  if ((totalButtons - MIN_BUTTONS) % BUTTON_STEP !== 0) {
+    throw new Error(
+      `Total buttons must be in steps of ${BUTTON_STEP} (${getValidButtonCounts().join(", ")}). Received: ${totalButtons}`
+    );
+  }
+
+  const coreBoardService = new CoreBoardService(
+    globalConfiguration.openAIInstance,
+    {
+      arasaacURL: globalConfiguration.arasaacURL,
+      globalSymbolsURL: globalConfiguration.globalSymbolsURL,
+    }
+  );
+
+  return await coreBoardService.generateCoreBoard(
+    prompt,
+    totalButtons,
+    symbolSet,
+    globalSymbolsSymbolSet
+  );
+}
+
+function getValidButtonCounts(): number[] {
+  const counts = [];
+  for (let i = MIN_BUTTONS; i <= MAX_BUTTONS; i += BUTTON_STEP) {
+    counts.push(i);
+  }
+  return counts;
+}
+
+export { generateCoreBoard, MIN_BUTTONS, MAX_BUTTONS, BUTTON_STEP, getValidButtonCounts };
